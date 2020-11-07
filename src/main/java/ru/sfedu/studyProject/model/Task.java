@@ -1,18 +1,22 @@
 package ru.sfedu.studyProject.model;
 
-
-import lombok.*;
-import ru.sfedu.studyProject.enums.EventStatuses;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import ru.sfedu.studyProject.enums.TaskStatuses;
 import ru.sfedu.studyProject.enums.TaskTypes;
 
 import java.util.Date;
+import java.util.List;
+
 
 /**
  * Class Task
  */
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
 @EqualsAndHashCode(doNotUseGetters = true)
 public class Task {
 
@@ -24,7 +28,13 @@ public class Task {
   private Date created;
   private String name;
   private Date lastUpdated;
-  private EventStatuses status;
+  private TaskStatuses status;
   private TaskTypes taskType;
+  private List<ModificationRecord> historyList;
+
+
+  //
+  // Methods
+  //
 
 }

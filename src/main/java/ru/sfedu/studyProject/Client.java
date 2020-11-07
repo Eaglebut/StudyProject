@@ -3,8 +3,6 @@ package ru.sfedu.studyProject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
-
 /**
  * The type Main.
  */
@@ -17,7 +15,6 @@ public class Client {
    *
    * @param args the input arguments
    */
-  public static void main(String[] args) throws IOException {
-
+  public static void main(String[] args) {
   }
 }

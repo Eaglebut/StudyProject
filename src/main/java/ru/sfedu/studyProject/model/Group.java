@@ -1,18 +1,24 @@
 package ru.sfedu.studyProject.model;
 
-import lombok.*;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.sfedu.studyProject.enums.GroupTypes;
+import ru.sfedu.studyProject.enums.TaskState;
+import ru.sfedu.studyProject.enums.UserRole;
 
 import java.util.Date;
 import java.util.List;
-
+import java.util.Map;
 
 /**
  * Class Group
  */
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
 @EqualsAndHashCode(doNotUseGetters = true)
 public class Group {
 
@@ -23,11 +29,14 @@ public class Group {
   private Long id;
   private String name;
   private Date created;
-  private List<Task> taskList;
-  private List<User> memberList;
-  private List<User> administratorList;
-  private User creator;
+  private Map<Task, TaskState> taskList;
+  private Map<User, UserRole> memberList;
   private GroupTypes groupType;
+  private List<ModificationRecord> historyList;
+
+  //
+  // Methods
+  //
 
 
 }

@@ -3,7 +3,6 @@ package ru.sfedu.studyProject.DataProviders;
 import lombok.NonNull;
 import ru.sfedu.studyProject.enums.*;
 import ru.sfedu.studyProject.model.Group;
-import ru.sfedu.studyProject.model.PrivateGroup;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
 
@@ -25,7 +24,7 @@ public interface DataProvider {
    * @param status   the status
    * @return the statuses
    */
-  Statuses createTask(@NonNull User user, @NonNull String taskName, @NonNull EventStatuses status);
+  Statuses createTask(@NonNull User user, @NonNull String taskName, @NonNull TaskStatuses status);
 
   /**
    * Create users extended task.
@@ -42,7 +41,7 @@ public interface DataProvider {
    */
   Statuses createTask(@NonNull User user,
                       @NonNull String taskName,
-                      @NonNull EventStatuses status,
+                      @NonNull TaskStatuses status,
                       @NonNull RepetitionTypes repetitionType,
                       @NonNull RemindTypes remindType,
                       @NonNull Importances importance,
@@ -202,7 +201,7 @@ public interface DataProvider {
    * @param group the group
    * @return the private group tasks
    */
-  List<Task> getPrivateGroupTasks(@NonNull User user, @NonNull Group group);
+  List<Task> getGroupTasks(@NonNull User user, @NonNull Group group);
 
   /**
    * Gets private group profile.
@@ -211,7 +210,7 @@ public interface DataProvider {
    * @param groupId the group id
    * @return the private group profile
    */
-  PrivateGroup getPrivateGroupProfile(@NonNull User user, @NonNull Long groupId);
+  Group getGroupProfile(@NonNull User user, @NonNull Long groupId);
 
   /**
    * Gets private group member list.
@@ -220,7 +219,7 @@ public interface DataProvider {
    * @param group the group
    * @return the private group member list
    */
-  List<User> getPrivateGroupMemberList(@NonNull User user, @NonNull PrivateGroup group);
+  List<User> getGroupMemberList(@NonNull User user, @NonNull Group group);
 
   /**
    * Offer own task to group .
@@ -230,7 +229,7 @@ public interface DataProvider {
    * @param task  the task
    * @return the statuses
    */
-  Statuses offerTaskToGroup(@NonNull User user, @NonNull PrivateGroup group, @NonNull Task task);
+  Statuses offerTaskToGroup(@NonNull User user, @NonNull Group group, @NonNull Task task);
 
   /**
    * Offer new basic task to group.
@@ -240,7 +239,7 @@ public interface DataProvider {
    * @param name  the name
    * @return the statuses
    */
-  Statuses offerTaskToGroup(@NonNull User user, @NonNull PrivateGroup group, @NonNull String name);
+  Statuses offerTaskToGroup(@NonNull User user, @NonNull Group group, @NonNull String name);
 
   /**
    * Offer extended task to group.
@@ -256,7 +255,7 @@ public interface DataProvider {
    * @return the statuses
    */
   Statuses offerTaskToGroup(@NonNull User user,
-                            @NonNull PrivateGroup group,
+                            @NonNull Group group,
                             @NonNull String name,
                             @NonNull RepetitionTypes repetitionType,
                             @NonNull RemindTypes remindType,
@@ -285,7 +284,7 @@ public interface DataProvider {
   Statuses createGroupTask(@NonNull User user,
                            @NonNull Group group,
                            @NonNull String taskName,
-                           @NonNull EventStatuses status);
+                           @NonNull TaskStatuses status);
 
   /**
    * Create extended group task.
@@ -304,7 +303,7 @@ public interface DataProvider {
   Statuses createGroupTask(@NonNull User user,
                            @NonNull Group group,
                            @NonNull String taskName,
-                           @NonNull EventStatuses status,
+                           @NonNull TaskStatuses status,
                            @NonNull RepetitionTypes repetitionType,
                            @NonNull RemindTypes remindType,
                            @NonNull Importances importance,

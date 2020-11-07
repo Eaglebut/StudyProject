@@ -1,20 +1,23 @@
 package ru.sfedu.studyProject.model;
 
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.sfedu.studyProject.enums.Importances;
 import ru.sfedu.studyProject.enums.RemindTypes;
 import ru.sfedu.studyProject.enums.RepetitionTypes;
 
 import java.util.Date;
 
+
 /**
  * Class ExtendedTask
- **/
-
+ */
 @NoArgsConstructor
-@Setter
 @Getter
+@Setter
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = true)
 public class ExtendedTask extends Task {
 
@@ -29,4 +32,7 @@ public class ExtendedTask extends Task {
   private Date time;
 
 
+  //
+  // Methods
+  //
 }
