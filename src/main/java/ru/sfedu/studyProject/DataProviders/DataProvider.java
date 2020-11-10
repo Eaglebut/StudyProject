@@ -8,6 +8,7 @@ import ru.sfedu.studyProject.model.User;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 
 /**
@@ -49,12 +50,13 @@ public interface DataProvider {
                       @NonNull Date time);
 
   /**
-   * Gets own tasks.
+   * Gets user's tasks.
    *
    * @param user the user
-   * @return the own tasks
+   * @return the users tasks
+   * @throws NoSuchElementException when user does not exist
    */
-  List<Task> getOwnTasks(@NonNull User user);
+  List<Task> getOwnTasks(@NonNull User user) throws NoSuchElementException;
 
   /**
    * Delete users task.
@@ -62,6 +64,7 @@ public interface DataProvider {
    * @param user the user
    * @param task the task
    * @return the statuses
+   * @throws NoSuchElementException when user does not exist
    */
   Statuses deleteTask(@NonNull User user, @NonNull Task task);
 
@@ -79,8 +82,9 @@ public interface DataProvider {
    *
    * @param userId the user id
    * @return the profile information
+   * @throws NoSuchElementException when user does not exists
    */
-  User getProfileInformation(@NonNull Long userId);
+  User getProfileInformation(@NonNull Long userId) throws NoSuchElementException;
 
   /**
    * Gets users profile information.
@@ -88,8 +92,9 @@ public interface DataProvider {
    * @param login    the login
    * @param password the password
    * @return the profile information
+   * @throws NoSuchElementException when user does not exists
    */
-  User getProfileInformation(@NonNull String login, @NonNull String password);
+  User getProfileInformation(@NonNull String login, @NonNull String password) throws NoSuchElementException;
 
   /**
    * Change users profile information.
@@ -151,8 +156,9 @@ public interface DataProvider {
    *
    * @param id the id
    * @return the group
+   * @throws NoSuchElementException when group not founded
    */
-  Group searchGroupById(@NonNull Long id);
+  Group searchGroupById(@NonNull Long id)  throws NoSuchElementException;
 
   /**
    * Gets full public group list.
@@ -166,24 +172,27 @@ public interface DataProvider {
    *
    * @param group the group
    * @return the public group tasks
+   * @throws NoSuchElementException when group does not exists
    */
-  List<Task> getGroupTasks(@NonNull Group group);
+  List<Task> getGroupTasks(@NonNull Group group) throws NoSuchElementException;
 
   /**
    * Gets group profile.
    *
    * @param groupId the group id
    * @return the group profile
+   * @throws NoSuchElementException when group does not exists
    */
-  Group getGroupProfile(@NonNull Long groupId);
+  Group getGroupProfile(@NonNull Long groupId) throws NoSuchElementException;
 
   /**
    * Gets group and own tasks.
    *
    * @param user the user
    * @return the group and own tasks
+   * @throws NoSuchElementException when group does not exists
    */
-  List<Task> getGroupAndOwnTasks(@NonNull User user);
+  List<Task> getGroupAndOwnTasks(@NonNull User user) throws NoSuchElementException;
 
   /**
    * Leave group.
@@ -200,8 +209,9 @@ public interface DataProvider {
    * @param user  the user
    * @param group the group
    * @return the private group tasks
+   * @throws NoSuchElementException when group does not exists
    */
-  List<Task> getGroupTasks(@NonNull User user, @NonNull Group group);
+  List<Task> getGroupTasks(@NonNull User user, @NonNull Group group) throws NoSuchElementException;
 
   /**
    * Gets private group profile.
@@ -209,8 +219,9 @@ public interface DataProvider {
    * @param user    the user
    * @param groupId the group id
    * @return the private group profile
+   * @throws NoSuchElementException when group does not exists
    */
-  Group getGroupProfile(@NonNull User user, @NonNull Long groupId);
+  Group getGroupProfile(@NonNull User user, @NonNull Long groupId) throws NoSuchElementException;
 
   /**
    * Gets private group member list.
@@ -218,8 +229,9 @@ public interface DataProvider {
    * @param user  the user
    * @param group the group
    * @return the private group member list
+   * @throws NoSuchElementException when group does not exists
    */
-  List<User> getGroupMemberList(@NonNull User user, @NonNull Group group);
+  List<User> getGroupMemberList(@NonNull User user, @NonNull Group group) throws NoSuchElementException;
 
   /**
    * Offer own task to group .
