@@ -2,6 +2,7 @@ package ru.sfedu.studyProject.model;
 
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
 import com.opencsv.bean.CsvDate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.sfedu.studyProject.Constants;
+import ru.sfedu.studyProject.converters.TaskConverter;
 import ru.sfedu.studyProject.enums.SignUpTypes;
 
 import java.io.Serializable;
@@ -46,6 +48,7 @@ public class User implements Serializable {
   private String token;
   @CsvBindByName(column = "SIGN_UP_TYPE")
   private SignUpTypes signUpType;
+  @CsvCustomBindByName(converter = TaskConverter.class)
   private List<Task> taskList;
   private List<ModificationRecord> historyList;
 

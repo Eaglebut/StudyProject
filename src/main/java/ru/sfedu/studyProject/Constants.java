@@ -17,4 +17,7 @@ public class Constants {
   public static final String TEST_USER_CORRECT_CREATED = "test.user.correct.created";
   public static final String TEST_USER_CORRECT_SIGN_UP_TYPE = "test.user.correct.signUpType";
   public static final String TEST_USER_CORRECT_TOKEN = "test.user.correct.token";
+  public static final String ARRAY_DELIMITER = "array.delimiter";
+  public static final String ARRAY_START_SYMBOL = "array.startSymbol";
+  public static final String ARRAY_END_SYMBOL = "array.endSymbol";
 }

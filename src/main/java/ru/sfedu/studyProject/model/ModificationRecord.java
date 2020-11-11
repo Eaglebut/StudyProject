@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -16,12 +17,13 @@ import java.util.Date;
 @Getter
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true)
+@ToString
 public class ModificationRecord<T> implements Serializable {
 
     //
     // Fields
     //
-
+    private long id;
     private String changedValueName;
     private Date changedDate;
     private T changedValue;

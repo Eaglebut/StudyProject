@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import ru.sfedu.studyProject.enums.GroupTypes;
 import ru.sfedu.studyProject.enums.TaskState;
 import ru.sfedu.studyProject.enums.UserRole;
@@ -21,6 +22,7 @@ import java.util.Map;
 @Getter
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true)
+@ToString
 public class Group implements Serializable {
 
     //

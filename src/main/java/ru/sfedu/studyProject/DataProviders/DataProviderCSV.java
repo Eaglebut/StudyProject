@@ -98,9 +98,10 @@ public class DataProviderCSV implements DataProvider {
     }
 
 
+
     //TODO Add parsing task list and history list
     @Override
-    public User getProfileInformation(@NonNull long userId) throws NoSuchElementException, IOException {
+    public User getProfileInformation(long userId) throws NoSuchElementException, IOException {
         try {
             List<User> userList = getFromCsv(User.class);
             Optional<User> matchUser = userList
@@ -237,7 +238,7 @@ public class DataProviderCSV implements DataProvider {
 
     //TODO
     @Override
-    public Group searchGroupById(@NonNull long id) throws NoSuchElementException {
+    public Group searchGroupById(long id) throws NoSuchElementException {
         return null;
     }
 
@@ -255,7 +256,7 @@ public class DataProviderCSV implements DataProvider {
 
     //TODO
     @Override
-    public Group getGroupProfile(@NonNull long groupId) throws NoSuchElementException {
+    public Group getGroupProfile(long groupId) throws NoSuchElementException {
         return null;
     }
 
@@ -282,7 +283,7 @@ public class DataProviderCSV implements DataProvider {
     //TODO
     @Override
     public Group getGroupProfile(@NonNull User user,
-                                 @NonNull long groupId) throws NoSuchElementException {
+                                 long groupId) throws NoSuchElementException {
         return null;
     }
 

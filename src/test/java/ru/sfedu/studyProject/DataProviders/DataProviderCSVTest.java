@@ -10,12 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.SignUpTypes;
+import ru.sfedu.studyProject.enums.Statuses;
+import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
 import ru.sfedu.studyProject.utils.ConfigurationUtil;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -42,6 +45,13 @@ class DataProviderCSVTest {
         user.setSignUpType(SignUpTypes.valueOf(
                 ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_SIGN_UP_TYPE)));
         user.setToken(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_TOKEN));
+
+        Task task = new Task();
+        task.setId(1);
+        Task task1 = new Task();
+        task1.setId(2);
+        user.setTaskList(Arrays.asList(task, task1));
+
         try {
             user.setCreated(new SimpleDateFormat(Constants.DATE_FORMAT).parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_CREATED)));
         } catch (ParseException e) {
@@ -59,16 +69,8 @@ class DataProviderCSVTest {
         Assertions.assertEquals(correctUser, user);
     }
 
-
     @Test
-    void insertIntoUserList() throws IOException {
-        User user = getCorrectTestUser();
-        DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
-        dataProviderCSV.insertIntoUserList(user);
-    }
-
-    @Test
-    @Order(1)
+    @Order(2)
     void getProfileInformationByEmailAndPasswordCorrect() throws IOException {
         User correctUser = getCorrectTestUser();
         User user = dataProvider.getProfileInformation(
@@ -76,4 +78,14 @@ class DataProviderCSVTest {
                 ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_PASSWORD));
         Assertions.assertEquals(correctUser, user);
     }
+
+
+    @Test
+    void insertIntoUserList() throws IOException {
+        User user = getCorrectTestUser();
+        DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
+        Assertions.assertEquals(Statuses.INSERTED, dataProviderCSV.insertIntoUserList(user));
+    }
+
+
 }

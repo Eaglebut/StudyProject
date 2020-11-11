@@ -269,3 +269,17 @@
 2020-11-11 13:11:41 DEBUG DataProviderCSV:106 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=null, signUpType=null, taskList=null, historyList=null)
 2020-11-11 13:29:07 DEBUG DataProviderCSV:98 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=null, signUpType=null, taskList=null, historyList=null)
 2020-11-11 13:55:25 DEBUG DataProviderCSVTest:22 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=null, signUpType=null, taskList=null, historyList=null)
+2020-11-11 18:21:27 DEBUG DataProviderCSV:19 - [ru.sfedu.studyProject.model.Task@9ebb3246, ru.sfedu.studyProject.model.Task@423be210]
+2020-11-11 18:21:27 DEBUG DataProviderCSV:19 - [ru.sfedu.studyProject.model.Task@9ebb3246, ru.sfedu.studyProject.model.Task@423be210]
+2020-11-11 18:21:57 DEBUG DataProviderCSV:19 - Хуита
+2020-11-11 18:21:57 DEBUG DataProviderCSV:19 - Хуита
+2020-11-11 18:23:46 DEBUG DataProviderCSV:20 - [ru.sfedu.studyProject.model.Task@9ebb3246, ru.sfedu.studyProject.model.Task@423be210]
+2020-11-11 18:23:46 DEBUG DataProviderCSV:20 - [ru.sfedu.studyProject.model.Task@9ebb3246, ru.sfedu.studyProject.model.Task@423be210]
+2020-11-11 18:29:13 DEBUG DataProviderCSV:22 - [Task(id=1, created=null, name=test name, lastUpdated=null, status=null, taskType=null, historyList=null),Task(id=2, created=null, name=test name 1, lastUpdated=null, status=null, taskType=null, historyList=null),]
+2020-11-11 18:29:13 DEBUG DataProviderCSV:22 - [Task(id=1, created=null, name=test name, lastUpdated=null, status=null, taskType=null, historyList=null),Task(id=2, created=null, name=test name 1, lastUpdated=null, status=null, taskType=null, historyList=null),]
+2020-11-11 18:30:55 DEBUG DataProviderCSV:22 - [1,2,]
+2020-11-11 18:30:55 DEBUG DataProviderCSV:22 - [1,2,]
+2020-11-11 18:32:15 DEBUG DataProviderCSV:22 - [1,2]
+2020-11-11 18:32:15 DEBUG DataProviderCSV:22 - [1,2]
+2020-11-11 18:33:41 DEBUG DataProviderCSV:22 - [1,2]
+2020-11-11 18:33:41 DEBUG DataProviderCSV:22 - [1,2]

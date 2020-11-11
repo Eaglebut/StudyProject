@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import ru.sfedu.studyProject.enums.Importances;
 import ru.sfedu.studyProject.enums.RemindTypes;
 import ru.sfedu.studyProject.enums.RepetitionTypes;
@@ -19,6 +20,7 @@ import java.util.Date;
 @Getter
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = true)
+@ToString
 public class ExtendedTask extends Task {
 
   //
