@@ -1,11 +1,17 @@
 package ru.sfedu.studyProject.DataProviders;
 
 import lombok.NonNull;
-import ru.sfedu.studyProject.enums.*;
+import ru.sfedu.studyProject.enums.GroupTypes;
+import ru.sfedu.studyProject.enums.Importances;
+import ru.sfedu.studyProject.enums.RemindTypes;
+import ru.sfedu.studyProject.enums.RepetitionTypes;
+import ru.sfedu.studyProject.enums.Statuses;
+import ru.sfedu.studyProject.enums.TaskStatuses;
 import ru.sfedu.studyProject.model.Group;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -84,7 +90,7 @@ public interface DataProvider {
    * @return the profile information
    * @throws NoSuchElementException when user does not exists
    */
-  User getProfileInformation(@NonNull Long userId) throws NoSuchElementException;
+  User getProfileInformation(@NonNull long userId) throws NoSuchElementException, IOException;
 
   /**
    * Gets users profile information.
@@ -94,7 +100,7 @@ public interface DataProvider {
    * @return the profile information
    * @throws NoSuchElementException when user does not exists
    */
-  User getProfileInformation(@NonNull String login, @NonNull String password) throws NoSuchElementException;
+  User getProfileInformation(@NonNull String login, @NonNull String password) throws NoSuchElementException, IOException;
 
   /**
    * Change users profile information.
@@ -158,7 +164,7 @@ public interface DataProvider {
    * @return the group
    * @throws NoSuchElementException when group not founded
    */
-  Group searchGroupById(@NonNull Long id)  throws NoSuchElementException;
+  Group searchGroupById(@NonNull long id) throws NoSuchElementException;
 
   /**
    * Gets full public group list.
@@ -183,7 +189,7 @@ public interface DataProvider {
    * @return the group profile
    * @throws NoSuchElementException when group does not exists
    */
-  Group getGroupProfile(@NonNull Long groupId) throws NoSuchElementException;
+  Group getGroupProfile(@NonNull long groupId) throws NoSuchElementException;
 
   /**
    * Gets group and own tasks.
@@ -221,7 +227,7 @@ public interface DataProvider {
    * @return the private group profile
    * @throws NoSuchElementException when group does not exists
    */
-  Group getGroupProfile(@NonNull User user, @NonNull Long groupId) throws NoSuchElementException;
+  Group getGroupProfile(@NonNull User user, @NonNull long groupId) throws NoSuchElementException;
 
   /**
    * Gets private group member list.

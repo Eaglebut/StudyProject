@@ -7,6 +7,7 @@ import lombok.Setter;
 import ru.sfedu.studyProject.enums.TaskStatuses;
 import ru.sfedu.studyProject.enums.TaskTypes;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -18,17 +19,17 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true)
-public class Task {
+public class Task implements Serializable {
 
-  //
-  // Fields
-  //
+    //
+    // Fields
+    //
 
-  private Long id;
-  private Date created;
-  private String name;
-  private Date lastUpdated;
-  private TaskStatuses status;
+    private long id;
+    private Date created;
+    private String name;
+    private Date lastUpdated;
+    private TaskStatuses status;
   private TaskTypes taskType;
   private List<ModificationRecord> historyList;
 

@@ -9,6 +9,7 @@ import ru.sfedu.studyProject.enums.GroupTypes;
 import ru.sfedu.studyProject.enums.TaskState;
 import ru.sfedu.studyProject.enums.UserRole;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,17 +21,17 @@ import java.util.Map;
 @Getter
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true)
-public class Group {
+public class Group implements Serializable {
 
-  //
-  // Fields
-  //
+    //
+    // Fields
+    //
 
-  private Long id;
-  private String name;
-  private Date created;
-  private Map<Task, TaskState> taskList;
-  private Map<User, UserRole> memberList;
+    private long id;
+    private String name;
+    private Date created;
+    private Map<Task, TaskState> taskList;
+    private Map<User, UserRole> memberList;
   private GroupTypes groupType;
   private List<ModificationRecord> historyList;
 

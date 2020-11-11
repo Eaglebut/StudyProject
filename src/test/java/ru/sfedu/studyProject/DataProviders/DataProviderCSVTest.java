@@ -1,162 +1,79 @@
 package ru.sfedu.studyProject.DataProviders;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import ru.sfedu.studyProject.Constants;
+import ru.sfedu.studyProject.enums.SignUpTypes;
+import ru.sfedu.studyProject.model.User;
+import ru.sfedu.studyProject.utils.ConfigurationUtil;
 
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DataProviderCSVTest {
 
-    @Test
-    void createTask() {
+    private static final Logger log = LogManager.getLogger(DataProviderCSVTest.class);
+
+    DataProvider dataProvider = DataProviderCSV.getInstance();
+
+
+    @BeforeEach
+    void init() {
+
+    }
+
+    private User getCorrectTestUser() throws IOException {
+        User user = new User();
+        user.setId(Integer.parseInt(
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_ID)));
+        user.setName(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_NAME));
+        user.setSurname(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_SURNAME));
+        user.setEmail(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_EMAIL));
+        user.setPassword(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_PASSWORD));
+        user.setSignUpType(SignUpTypes.valueOf(
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_SIGN_UP_TYPE)));
+        user.setToken(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_TOKEN));
+        try {
+            user.setCreated(new SimpleDateFormat(Constants.DATE_FORMAT).parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_CREATED)));
+        } catch (ParseException e) {
+            log.error(e);
+        }
+        return user;
     }
 
     @Test
-    void testCreateTask() {
+    @Order(1)
+    void getProfileInformationByIdCorrect() throws IOException {
+        User correctUser = getCorrectTestUser();
+        User user = dataProvider.getProfileInformation(Integer.parseInt(
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_ID)));
+        Assertions.assertEquals(correctUser, user);
+    }
+
+
+    @Test
+    void insertIntoUserList() throws IOException {
+        User user = getCorrectTestUser();
+        DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
+        dataProviderCSV.insertIntoUserList(user);
     }
 
     @Test
-    void getOwnTasks() {
-    }
-
-    @Test
-    void deleteTask() {
-    }
-
-    @Test
-    void editTask() {
-    }
-
-    @Test
-    void getProfileInformation() {
-    }
-
-    @Test
-    void testGetProfileInformation() {
-    }
-
-    @Test
-    void changeProfileInformation() {
-    }
-
-    @Test
-    void joinTheGroup() {
-    }
-
-    @Test
-    void createGroup() {
-    }
-
-    @Test
-    void setGroupPrivate() {
-    }
-
-    @Test
-    void setGroupPasswordedWithConfirmation() {
-    }
-
-    @Test
-    void searchGroupByName() {
-    }
-
-    @Test
-    void searchGroupById() {
-    }
-
-    @Test
-    void getFullGroupList() {
-    }
-
-    @Test
-    void getGroupTasks() {
-    }
-
-    @Test
-    void getGroupProfile() {
-    }
-
-    @Test
-    void getGroupAndOwnTasks() {
-    }
-
-    @Test
-    void leaveGroup() {
-    }
-
-    @Test
-    void testGetGroupTasks() {
-    }
-
-    @Test
-    void testGetGroupProfile() {
-    }
-
-    @Test
-    void getGroupMemberList() {
-    }
-
-    @Test
-    void offerTaskToGroup() {
-    }
-
-    @Test
-    void testOfferTaskToGroup() {
-    }
-
-    @Test
-    void testOfferTaskToGroup1() {
-    }
-
-    @Test
-    void changeGroupProfile() {
-    }
-
-    @Test
-    void createGroupTask() {
-    }
-
-    @Test
-    void testCreateGroupTask() {
-    }
-
-    @Test
-    void editGroupTask() {
-    }
-
-    @Test
-    void deleteGroupTask() {
-    }
-
-    @Test
-    void banUser() {
-    }
-
-    @Test
-    void unbanUser() {
-    }
-
-    @Test
-    void acceptTask() {
-    }
-
-    @Test
-    void declineTask() {
-    }
-
-    @Test
-    void acceptUser() {
-    }
-
-    @Test
-    void declineUser() {
-    }
-
-    @Test
-    void giveAdministratorStatus() {
-    }
-
-    @Test
-    void takeAwayAdministratorStatus() {
-    }
-
-    @Test
-    void deleteGroup() {
+    @Order(1)
+    void getProfileInformationByEmailAndPasswordCorrect() throws IOException {
+        User correctUser = getCorrectTestUser();
+        User user = dataProvider.getProfileInformation(
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_EMAIL),
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_PASSWORD));
+        Assertions.assertEquals(correctUser, user);
     }
 }

@@ -234,3 +234,38 @@
 2020-10-19 09:55:23 INFO  Main:38 - First random number is 141 and second is 76
 2020-10-23 17:07:10 INFO  MainTest:15 - test
 2020-11-07 20:02:53 WARN  Client:24 - test
+2020-11-10 18:14:08 ERROR DataProviderCSV:51 - Больно в ноге
+2020-11-10 18:14:30 ERROR DataProviderCSV:51 - java.io.FileNotFoundException: csv\users.csv (Системе не удается найти указанный путь)
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - id
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - created
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - email
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - password
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - name
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - surname
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - token
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - 1
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - 11.09.1999T00:00:00.000
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - test@test.test
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - TestPass
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - TestName
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - TestSurname
+2020-11-10 18:16:36 DEBUG DataProviderCSV:52 - 0
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - d
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - created
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - email
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - password
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - name
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - surname
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - token
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - 1
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - 11.09.1999T00:00:00.000
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - test@test.test
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - TestPass
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - TestName
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - TestSurname
+2020-11-10 18:31:05 DEBUG DataProviderCSV:64 - 0
+2020-11-11 12:49:36 DEBUG DataProviderCSV:43 - Wed Nov 11 12:49:36 MSK 2020
+2020-11-11 13:11:07 DEBUG DataProviderCSV:106 - ru.sfedu.studyProject.model.User@b82c2044
+2020-11-11 13:11:41 DEBUG DataProviderCSV:106 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=null, signUpType=null, taskList=null, historyList=null)
+2020-11-11 13:29:07 DEBUG DataProviderCSV:98 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=null, signUpType=null, taskList=null, historyList=null)
+2020-11-11 13:55:25 DEBUG DataProviderCSVTest:22 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=null, signUpType=null, taskList=null, historyList=null)
