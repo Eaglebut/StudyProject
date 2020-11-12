@@ -20,4 +20,9 @@ public class Constants {
   public static final String ARRAY_DELIMITER = "array.delimiter";
   public static final String ARRAY_START_SYMBOL = "array.startSymbol";
   public static final String ARRAY_END_SYMBOL = "array.endSymbol";
+  public static final String SIGN_UP_TYPE = "SIGN_UP_TYPE";
+  public static final String TASK_LIST = "TASK_LIST";
+  public static final String HISTORY_LIST = "HISTORY_LIST";
+
+
 }

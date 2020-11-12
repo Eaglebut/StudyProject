@@ -11,6 +11,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.SignUpTypes;
 import ru.sfedu.studyProject.enums.Statuses;
+import ru.sfedu.studyProject.model.ModificationRecord;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
 import ru.sfedu.studyProject.utils.ConfigurationUtil;
@@ -52,6 +53,12 @@ class DataProviderCSVTest {
         task1.setId(2);
         user.setTaskList(Arrays.asList(task, task1));
 
+        ModificationRecord modificationRecord = new ModificationRecord();
+        modificationRecord.setId(1);
+        ModificationRecord modificationRecord1 = new ModificationRecord();
+        modificationRecord1.setId(2);
+
+        user.setHistoryList(Arrays.asList(modificationRecord, modificationRecord1));
         try {
             user.setCreated(new SimpleDateFormat(Constants.DATE_FORMAT).parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_CREATED)));
         } catch (ParseException e) {

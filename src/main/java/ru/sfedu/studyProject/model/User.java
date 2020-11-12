@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import ru.sfedu.studyProject.Constants;
+import ru.sfedu.studyProject.converters.ModificationRecordConverter;
 import ru.sfedu.studyProject.converters.TaskConverter;
 import ru.sfedu.studyProject.enums.SignUpTypes;
 
@@ -46,10 +47,11 @@ public class User implements Serializable {
   private String surname;
   @CsvBindByName
   private String token;
-  @CsvBindByName(column = "SIGN_UP_TYPE")
+  @CsvBindByName(column = Constants.SIGN_UP_TYPE)
   private SignUpTypes signUpType;
-  @CsvCustomBindByName(converter = TaskConverter.class)
+  @CsvCustomBindByName(converter = TaskConverter.class, column = Constants.TASK_LIST)
   private List<Task> taskList;
+  @CsvCustomBindByName(converter = ModificationRecordConverter.class, column = Constants.HISTORY_LIST)
   private List<ModificationRecord> historyList;
 
 
