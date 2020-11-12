@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 
 /**
@@ -62,7 +63,7 @@ public interface DataProvider {
    * @return the users tasks
    * @throws NoSuchElementException when user does not exist
    */
-  List<Task> getOwnTasks(@NonNull User user) throws NoSuchElementException;
+  List<Task> getTasks(@NonNull User user) throws NoSuchElementException;
 
   /**
    * Delete users task.
@@ -90,7 +91,7 @@ public interface DataProvider {
    * @return the profile information
    * @throws NoSuchElementException when user does not exists
    */
-  User getProfileInformation(@NonNull long userId) throws NoSuchElementException, IOException;
+  Optional<User> getUser(@NonNull long userId) throws NoSuchElementException, IOException;
 
   /**
    * Gets users profile information.
@@ -100,7 +101,7 @@ public interface DataProvider {
    * @return the profile information
    * @throws NoSuchElementException when user does not exists
    */
-  User getProfileInformation(@NonNull String login, @NonNull String password) throws NoSuchElementException, IOException;
+  Optional<User> getUser(@NonNull String login, @NonNull String password) throws NoSuchElementException, IOException;
 
   /**
    * Change users profile information.

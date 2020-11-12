@@ -4,7 +4,6 @@ import com.opencsv.bean.AbstractBeanField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.sfedu.studyProject.Constants;
-import ru.sfedu.studyProject.DataProviders.DataProviderCSV;
 import ru.sfedu.studyProject.model.ModificationRecord;
 import ru.sfedu.studyProject.utils.ConfigurationUtil;
 
@@ -14,19 +13,24 @@ import java.util.List;
 
 public class ModificationRecordConverter extends AbstractBeanField<ModificationRecord, Integer> {
 
-    private static final Logger log = LogManager.getLogger(DataProviderCSV.class);
+    private static final Logger log = LogManager.getLogger(ModificationRecordConverter.class);
 
     @Override
     protected Object convert(String s) {
+        if (s.isEmpty()) {
+            return null;
+        }
         try {
             String indexString = s.substring(1, s.length() - 1);
             String[] unparsedIndexList = indexString.split(
                     ConfigurationUtil.getConfigurationEntry(Constants.ARRAY_DELIMITER));
             List<ModificationRecord> indexModificationRecordList = new ArrayList<>();
             for (String sIndex : unparsedIndexList) {
-                ModificationRecord modificationRecord = new ModificationRecord();
-                modificationRecord.setId(Long.parseLong(sIndex));
-                indexModificationRecordList.add(modificationRecord);
+                if (!sIndex.isEmpty()) {
+                    ModificationRecord modificationRecord = new ModificationRecord();
+                    modificationRecord.setId(Long.parseLong(sIndex));
+                    indexModificationRecordList.add(modificationRecord);
+                }
             }
             return indexModificationRecordList;
         } catch (IOException e) {
@@ -40,12 +44,15 @@ public class ModificationRecordConverter extends AbstractBeanField<ModificationR
         try {
             List<ModificationRecord> modificationRecordList = (List<ModificationRecord>) value;
             StringBuilder builder = new StringBuilder(ConfigurationUtil.getConfigurationEntry(Constants.ARRAY_START_SYMBOL));
-            for (ModificationRecord modificationRecord : modificationRecordList) {
-                builder.append(modificationRecord.getId());
-                builder.append(ConfigurationUtil.getConfigurationEntry(Constants.ARRAY_DELIMITER));
+            if (modificationRecordList.size() != 0) {
+                for (ModificationRecord modificationRecord : modificationRecordList) {
+                    builder.append(modificationRecord.getId());
+                    builder.append(ConfigurationUtil.getConfigurationEntry(Constants.ARRAY_DELIMITER));
+                }
+                builder.delete(builder.length() - 1, builder.length());
             }
-            builder.delete(builder.length() - 1, builder.length());
             builder.append(ConfigurationUtil.getConfigurationEntry(Constants.ARRAY_END_SYMBOL));
+            log.debug(builder.toString());
             return builder.toString();
         } catch (IOException e) {
             log.error(e);

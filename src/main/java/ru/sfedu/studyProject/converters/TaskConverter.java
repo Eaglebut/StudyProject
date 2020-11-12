@@ -4,7 +4,6 @@ import com.opencsv.bean.AbstractBeanField;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.sfedu.studyProject.Constants;
-import ru.sfedu.studyProject.DataProviders.DataProviderCSV;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.utils.ConfigurationUtil;
 
@@ -15,7 +14,7 @@ import java.util.List;
 
 public class TaskConverter extends AbstractBeanField<Task, Integer> {
 
-    private static final Logger log = LogManager.getLogger(DataProviderCSV.class);
+    private static final Logger log = LogManager.getLogger(TaskConverter.class);
 
     @Override
     protected Object convert(String s) {
@@ -41,12 +40,16 @@ public class TaskConverter extends AbstractBeanField<Task, Integer> {
         try {
             List<Task> taskList = (List<Task>) value;
             StringBuilder builder = new StringBuilder(ConfigurationUtil.getConfigurationEntry(Constants.ARRAY_START_SYMBOL));
-            for (Task task : taskList) {
-                builder.append(task.getId());
-                builder.append(ConfigurationUtil.getConfigurationEntry(Constants.ARRAY_DELIMITER));
+            if (taskList.size() > 0) {
+                for (Task task : taskList) {
+                    builder.append(task.getId());
+                    builder.append(ConfigurationUtil.getConfigurationEntry(Constants.ARRAY_DELIMITER));
+                }
+
+                builder.delete(builder.length() - 1, builder.length());
             }
-            builder.delete(builder.length() - 1, builder.length());
             builder.append(ConfigurationUtil.getConfigurationEntry(Constants.ARRAY_END_SYMBOL));
+            log.debug(builder.toString());
             return builder.toString();
         } catch (IOException e) {
             log.error(e);

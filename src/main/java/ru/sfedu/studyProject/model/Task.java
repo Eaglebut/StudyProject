@@ -1,11 +1,15 @@
 package ru.sfedu.studyProject.model;
 
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
+import com.opencsv.bean.CsvDate;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.sfedu.studyProject.Constants;
+import ru.sfedu.studyProject.converters.ModificationRecordConverter;
 import ru.sfedu.studyProject.enums.TaskStatuses;
 import ru.sfedu.studyProject.enums.TaskTypes;
 
@@ -29,12 +33,16 @@ public class Task implements Serializable {
     //
     @CsvBindByName
     private long id;
+    @CsvBindByName
+    @CsvDate(value = Constants.DATE_FORMAT)
     private Date created;
     @CsvBindByName
     private String name;
-    private Date lastUpdated;
+    @CsvBindByName
     private TaskStatuses status;
+    @CsvBindByName
     private TaskTypes taskType;
+    @CsvCustomBindByName(converter = ModificationRecordConverter.class, column = Constants.HISTORY_LIST)
     private List<ModificationRecord> historyList;
 
 

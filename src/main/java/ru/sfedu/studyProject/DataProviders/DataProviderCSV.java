@@ -19,6 +19,7 @@ import ru.sfedu.studyProject.enums.RepetitionTypes;
 import ru.sfedu.studyProject.enums.Statuses;
 import ru.sfedu.studyProject.enums.TaskStatuses;
 import ru.sfedu.studyProject.model.Group;
+import ru.sfedu.studyProject.model.ModificationRecord;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
 import ru.sfedu.studyProject.utils.ConfigurationUtil;
@@ -28,10 +29,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DataProviderCSV implements DataProvider {
 
@@ -49,32 +52,40 @@ public class DataProviderCSV implements DataProvider {
         return INSTANCE;
     }
 
-    public Statuses insertIntoUserList(User user) throws IOException {
+    public <T> void insertIntoCsv(T object) throws IOException {
+        List<T> tList = (List<T>) getFromCsv(object.getClass());
+        tList.add(object);
         FileWriter writer;
         writer = new FileWriter(ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH) +
-                User.class.getSimpleName().toLowerCase() +
+                object.getClass().getSimpleName().toLowerCase() +
                 ConfigurationUtil.getConfigurationEntry(Constants.CSV_EXTENSION));
         CSVWriter csvWriter = new CSVWriter(writer);
-        StatefulBeanToCsv<User> beanToCsv = new StatefulBeanToCsvBuilder<User>(csvWriter)
+        StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(csvWriter)
                 .withApplyQuotesToAll(false)
                 .build();
-        try {
-            beanToCsv.write(user);
-        } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
-            log.error(e);
-            csvWriter.close();
-            writer.close();
-            return Statuses.FAILED;
-        }
+        tList.forEach(element -> {
+            try {
+                beanToCsv.write(element);
+            } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
+                log.error(e);
+            }
+        });
         csvWriter.close();
         writer.close();
-        return Statuses.INSERTED;
     }
 
     private <T> CsvToBean<T> getCsvToBean(Class<T> tClass) throws IOException {
         File file = new File(ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH) +
-                User.class.getSimpleName().toLowerCase() +
+                tClass.getSimpleName().toLowerCase() +
                 ConfigurationUtil.getConfigurationEntry(Constants.CSV_EXTENSION));
+
+        if (!file.exists()) {
+            if (!file.createNewFile())
+                throw new IOException(
+                        String.format(
+                                ConfigurationUtil.getConfigurationEntry(Constants.EXCEPTION_CANNOT_CREATE_FILE),
+                                file.getName()));
+        }
 
         FileReader fileReader = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
@@ -98,60 +109,120 @@ public class DataProviderCSV implements DataProvider {
     }
 
 
-
-    //TODO Add parsing task list and history list
-    @Override
-    public User getProfileInformation(long userId) throws NoSuchElementException, IOException {
+    private Optional<User> getUserProfile(long userId) {
         try {
             List<User> userList = getFromCsv(User.class);
-            Optional<User> matchUser = userList
+            return userList
                     .stream()
                     .findFirst()
                     .filter(user -> user.getId() == userId);
-            if (matchUser.isPresent()) {
-                return matchUser.get();
-            } else {
-                throw new NoSuchElementException(
-                        String.format(
-                                ConfigurationUtil.getConfigurationEntry(
-                                        Constants.EXCEPTION_NOT_FOUNDED_BY_ID_MESSAGE),
-                                User.class.getSimpleName(),
-                                userId
-                        ));
-            }
+
         } catch (IOException e) {
             log.error(e);
-            throw new IOException(e);
+            return Optional.empty();
         }
     }
 
-    //TODO Add parsing task list and history list
-    @Override
-    public User getProfileInformation(@NonNull String email,
-                                      @NonNull String password) throws NoSuchElementException, IOException {
+    private Optional<User> getUserProfile(String email,
+                                          String password) {
         try {
             List<User> userList = getFromCsv(User.class);
-            Optional<User> matchUser = userList
+            return userList
                     .stream()
                     .findFirst()
                     .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password));
-            if (matchUser.isPresent()) {
-                return matchUser.get();
-            } else {
-                throw new NoSuchElementException(
-                        String.format(
-                                ConfigurationUtil.getConfigurationEntry(
-                                        Constants.EXCEPTION_NOT_FOUNDED_BY_EMAIL_AND_PASSWORD_MESSAGE),
-                                User.class.getSimpleName(),
-                                email,
-                                password
-                        ));
-            }
         } catch (IOException e) {
             log.error(e);
-            throw new IOException(e);
+            return Optional.empty();
         }
     }
+
+    //TODO add parsing template
+    private List<ModificationRecord> getHistoryList(User user) {
+        try {
+            List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);
+            return historyList
+                    .stream()
+                    .filter(modificationRecord -> user
+                            .getHistoryList()
+                            .stream()
+                            .findFirst()
+                            .filter(userModificationRecord ->
+                                    userModificationRecord.getId() == modificationRecord.getId())
+                            .isPresent())
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error(e);
+            return null;
+        }
+    }
+
+    private List<ModificationRecord> getHistoryList(Task task) {
+        try {
+            List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);
+            return historyList
+                    .stream()
+                    .filter(modificationRecord -> task
+                            .getHistoryList()
+                            .stream()
+                            .findFirst()
+                            .filter(taskModificationRecord ->
+                                    taskModificationRecord.getId() == modificationRecord.getId())
+                            .isPresent())
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error(e);
+            return null;
+        }
+    }
+
+
+    @Override
+    public Optional<User> getUser(@NonNull long userId) {
+        Optional<User> optionalUser = getUserProfile(userId);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setTaskList(getTasks(user));
+            user.setHistoryList(getHistoryList(user));
+            return Optional.of(user);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<User> getUser(@NonNull String email,
+                                  @NonNull String password) {
+        Optional<User> optionalUser = getUserProfile(email, password);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            user.setTaskList(getTasks(user));
+            user.setHistoryList(getHistoryList(user));
+            return Optional.of(user);
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<Task> getTasks(@NonNull User user) throws NoSuchElementException {
+        try {
+            List<Task> taskList = getFromCsv(Task.class);
+            List<Task> usersTaskList = user.getTaskList();
+            List<Task> usersFilledTaskList = new ArrayList<>();
+            usersTaskList.forEach(usersTask -> taskList.forEach(task -> {
+                if (usersTask.getId() == task.getId()) {
+                    task.setHistoryList(getHistoryList(task));
+                    usersFilledTaskList.add(task);
+                }
+            }));
+            return usersFilledTaskList;
+        } catch (IOException e) {
+            log.error(e);
+            return null;
+        }
+    }
+
 
     //TODO
     @Override
@@ -174,11 +245,6 @@ public class DataProviderCSV implements DataProvider {
         return null;
     }
 
-    //TODO
-    @Override
-    public List<Task> getOwnTasks(@NonNull User user) throws NoSuchElementException {
-        return null;
-    }
 
     //TODO
     @Override

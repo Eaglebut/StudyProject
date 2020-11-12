@@ -34,12 +34,12 @@ public class Group implements Serializable {
     private Date created;
     private Map<Task, TaskState> taskList;
     private Map<User, UserRole> memberList;
-  private GroupTypes groupType;
-  private List<ModificationRecord> historyList;
+    private GroupTypes groupType;
+    private List<ModificationRecord> historyList;
 
-  //
-  // Methods
-  //
+    //
+    // Methods
+    //
 
 
 }

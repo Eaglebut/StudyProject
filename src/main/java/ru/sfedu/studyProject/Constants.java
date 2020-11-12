@@ -6,9 +6,7 @@ public class Constants {
   public static final String CONFIG_PATH = "config.path";
   public static final String CSV_PATH = "csv.path";
   public static final String CSV_EXTENSION = "csv.extension";
-  public static final String EXCEPTION_NOT_FOUNDED_BY_ID_MESSAGE = "exception.not.founded.byId.message";
-  public static final String EXCEPTION_NOT_FOUNDED_BY_EMAIL_AND_PASSWORD_MESSAGE
-          = "exception.not.founded.byEmailAndPassword.message";
+  public static final String EXCEPTION_CANNOT_CREATE_FILE = "exception.IOException.cannotCreateFile.message";
   public static final String TEST_USER_CORRECT_ID = "test.user.correct.id";
   public static final String TEST_USER_CORRECT_EMAIL = "test.user.correct.email";
   public static final String TEST_USER_CORRECT_PASSWORD = "test.user.correct.password";
@@ -17,6 +15,23 @@ public class Constants {
   public static final String TEST_USER_CORRECT_CREATED = "test.user.correct.created";
   public static final String TEST_USER_CORRECT_SIGN_UP_TYPE = "test.user.correct.signUpType";
   public static final String TEST_USER_CORRECT_TOKEN = "test.user.correct.token";
+  public static final String TEST_TASK1_CORRECT_ID = "test.task1.correct.id";
+  public static final String TEST_TASK1_CORRECT_NAME = "test.task1.correct.name";
+  public static final String TEST_TASK1_CORRECT_TASK_TYPE = "test.task1.correct.taskType";
+  public static final String TEST_TASK1_CORRECT_STATUS = "test.task1.correct.status";
+  public static final String TEST_TASK1_CORRECT_CREATED = "test.task1.correct.created";
+  public static final String TEST_TASK2_CORRECT_ID = "test.task2.correct.id";
+  public static final String TEST_TASK2_CORRECT_NAME = "test.task2.correct.name";
+  public static final String TEST_TASK2_CORRECT_TASK_TYPE = "test.task2.correct.taskType";
+  public static final String TEST_TASK2_CORRECT_STATUS = "test.task2.correct.status";
+  public static final String TEST_TASK2_CORRECT_CREATED = "test.task2.correct.created";
+  public static final String TEST_MODIFICATION_RECORD_CORRECT_ID = "test.modificationRecord.correct.id";
+  public static final String TEST_MODIFICATION_RECORD_CORRECT_CHANGED_DATE = "test.modificationRecord.correct.changedDate";
+  public static final String TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE_NAME = "test.modificationRecord.correct.changedValueName";
+  public static final String TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE = "test.modificationRecord.correct.changedValue";
+
+  public static final String MESSAGE_NULL_METHOD = "message.nullMethod";
+
   public static final String ARRAY_DELIMITER = "array.delimiter";
   public static final String ARRAY_START_SYMBOL = "array.startSymbol";
   public static final String ARRAY_END_SYMBOL = "array.endSymbol";

@@ -10,7 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.SignUpTypes;
-import ru.sfedu.studyProject.enums.Statuses;
+import ru.sfedu.studyProject.enums.TaskStatuses;
+import ru.sfedu.studyProject.enums.TaskTypes;
 import ru.sfedu.studyProject.model.ModificationRecord;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
@@ -19,7 +20,9 @@ import ru.sfedu.studyProject.utils.ConfigurationUtil;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -46,19 +49,8 @@ class DataProviderCSVTest {
         user.setSignUpType(SignUpTypes.valueOf(
                 ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_SIGN_UP_TYPE)));
         user.setToken(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_TOKEN));
-
-        Task task = new Task();
-        task.setId(1);
-        Task task1 = new Task();
-        task1.setId(2);
-        user.setTaskList(Arrays.asList(task, task1));
-
-        ModificationRecord modificationRecord = new ModificationRecord();
-        modificationRecord.setId(1);
-        ModificationRecord modificationRecord1 = new ModificationRecord();
-        modificationRecord1.setId(2);
-
-        user.setHistoryList(Arrays.asList(modificationRecord, modificationRecord1));
+        user.setTaskList(getCorrectTestTaskList());
+        user.setHistoryList(new ArrayList<>());
         try {
             user.setCreated(new SimpleDateFormat(Constants.DATE_FORMAT).parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_CREATED)));
         } catch (ParseException e) {
@@ -67,31 +59,125 @@ class DataProviderCSVTest {
         return user;
     }
 
+    private List<Task> getCorrectTestTaskList() throws IOException {
+        List<Task> taskList = new ArrayList<>();
+        Task correctTask = new Task();
+        correctTask.setId(Integer.parseInt(
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_ID)));
+        correctTask.setName(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_NAME));
+        correctTask.setStatus(TaskStatuses
+                .valueOf(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_STATUS)));
+        correctTask.setTaskType(TaskTypes
+                .valueOf(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_TASK_TYPE)));
+        correctTask.setHistoryList(getCorrectTestHistoryList());
+        try {
+            correctTask.setCreated(
+                    new SimpleDateFormat(Constants.DATE_FORMAT)
+                            .parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_CREATED)));
+        } catch (ParseException e) {
+            log.error(e);
+        }
+        taskList.add(correctTask);
+
+        Task correctTask1 = new Task();
+        correctTask1.setId(Integer.parseInt(
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_ID)));
+        correctTask1.setName(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_NAME));
+        correctTask1.setStatus(TaskStatuses
+                .valueOf(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_STATUS)));
+        correctTask1.setTaskType(TaskTypes
+                .valueOf(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_TASK_TYPE)));
+        correctTask1.setHistoryList(new ArrayList<>());
+        try {
+            correctTask1.setCreated(
+                    new SimpleDateFormat(Constants.DATE_FORMAT)
+                            .parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_CREATED)));
+        } catch (ParseException e) {
+            log.error(e);
+        }
+        taskList.add(correctTask1);
+        return taskList;
+    }
+
+    private List<ModificationRecord> getCorrectTestHistoryList() throws IOException {
+        List<ModificationRecord> historyList = new ArrayList<>();
+
+        ModificationRecord<String> modificationRecord = new ModificationRecord<>();
+        modificationRecord.setId(Long.parseLong(
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_ID)));
+        try {
+            modificationRecord.setChangedDate(
+                    new SimpleDateFormat(Constants.DATE_FORMAT)
+                            .parse(ConfigurationUtil
+                                    .getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_DATE)));
+        } catch (ParseException e) {
+            log.error(e);
+        }
+        modificationRecord.setChangedValueName(ConfigurationUtil.
+                getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE_NAME));
+        //modificationRecord.setChangedValue();
+        historyList.add(modificationRecord);
+        return historyList;
+    }
+
+    /*
+    @Order(0)
+    @Test
+    void setCsvFile() throws IOException {
+        User user = getCorrectTestUser();
+        DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
+        dataProviderCSV.insertIntoCsv(user);
+        user.getTaskList().forEach(task -> {
+            try {
+                dataProviderCSV.insertIntoCsv(task);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        user.getHistoryList().forEach(modificationRecord -> {
+            try {
+                dataProviderCSV.insertIntoCsv(modificationRecord);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        user.getTaskList().forEach(task -> task.getHistoryList().forEach(modificationRecord -> {
+            try {
+                dataProviderCSV.insertIntoCsv(modificationRecord);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+    }
+
+
+     */
     @Test
     @Order(1)
     void getProfileInformationByIdCorrect() throws IOException {
         User correctUser = getCorrectTestUser();
-        User user = dataProvider.getProfileInformation(Integer.parseInt(
+        Optional<User> user = dataProvider.getUser(Integer.parseInt(
                 ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_ID)));
-        Assertions.assertEquals(correctUser, user);
+        if (!user.isPresent()) {
+            Assertions.fail(ConfigurationUtil.getConfigurationEntry(Constants.MESSAGE_NULL_METHOD));
+        }
+        Assertions.assertEquals(correctUser, user.get());
     }
+
 
     @Test
     @Order(2)
     void getProfileInformationByEmailAndPasswordCorrect() throws IOException {
         User correctUser = getCorrectTestUser();
-        User user = dataProvider.getProfileInformation(
+        Optional<User> user = dataProvider.getUser(
                 ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_EMAIL),
                 ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_PASSWORD));
-        Assertions.assertEquals(correctUser, user);
-    }
-
-
-    @Test
-    void insertIntoUserList() throws IOException {
-        User user = getCorrectTestUser();
-        DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
-        Assertions.assertEquals(Statuses.INSERTED, dataProviderCSV.insertIntoUserList(user));
+        if (!user.isPresent()) {
+            Assertions.fail(ConfigurationUtil.getConfigurationEntry(Constants.MESSAGE_NULL_METHOD));
+        }
+        Assertions.assertEquals(correctUser, user.get());
     }
 
 
