@@ -30,6 +30,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -52,29 +53,49 @@ public class DataProviderCSV implements DataProvider {
         return INSTANCE;
     }
 
-    public <T> void insertIntoCsv(T object) throws IOException {
-        List<T> tList = (List<T>) getFromCsv(object.getClass());
-        tList.add(object);
-        FileWriter writer;
-        writer = new FileWriter(ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH) +
-                object.getClass().getSimpleName().toLowerCase() +
-                ConfigurationUtil.getConfigurationEntry(Constants.CSV_EXTENSION));
-        CSVWriter csvWriter = new CSVWriter(writer);
+    public <T> void insertIntoCsv(T object, boolean overwrite) throws IOException {
+        insertIntoCsv(Collections.singletonList(object), overwrite);
+    }
+
+    public <T> void insertIntoCsv(List<T> objectList, boolean overwrite) throws IOException {
+        Optional<T> tOptional = objectList.stream().findAny();
+        Class<?> tClass;
+        if (tOptional.isPresent()) {
+            tClass = tOptional.get().getClass();
+        } else {
+            return;
+        }
+        List<T> tList;
+        if (!overwrite) {
+            tList = (List<T>) getFromCsv(tClass);
+            tList.addAll(objectList);
+        } else {
+            tList = objectList;
+        }
+        CSVWriter csvWriter = getCsvWriter(tClass);
         StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(csvWriter)
                 .withApplyQuotesToAll(false)
                 .build();
-        tList.forEach(element -> {
-            try {
-                beanToCsv.write(element);
-            } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
-                log.error(e);
-            }
-        });
+        try {
+            beanToCsv.write(tList);
+        } catch (CsvDataTypeMismatchException | CsvRequiredFieldEmptyException e) {
+            log.error(e);
+        }
         csvWriter.close();
-        writer.close();
     }
 
-    private <T> CsvToBean<T> getCsvToBean(Class<T> tClass) throws IOException {
+    private <T> CSVWriter getCsvWriter(Class<T> tClass) throws IOException {
+        FileWriter writer;
+        String filename = ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH) +
+                tClass.getSimpleName().toLowerCase() +
+                ConfigurationUtil.getConfigurationEntry(Constants.CSV_EXTENSION);
+        log.debug(filename);
+        writer = new FileWriter(filename);
+        return new CSVWriter(writer);
+    }
+
+
+    private <T> CSVReader getCsvReader(Class<T> tClass) throws IOException {
         File file = new File(ConfigurationUtil.getConfigurationEntry(Constants.CSV_PATH) +
                 tClass.getSimpleName().toLowerCase() +
                 ConfigurationUtil.getConfigurationEntry(Constants.CSV_EXTENSION));
@@ -89,18 +110,19 @@ public class DataProviderCSV implements DataProvider {
 
         FileReader fileReader = new FileReader(file);
         BufferedReader bufferedReader = new BufferedReader(fileReader);
-        CSVReader csvReader = new CSVReader(bufferedReader);
-        return new CsvToBeanBuilder<T>(csvReader)
-                .withType(tClass)
-                .withIgnoreLeadingWhiteSpace(true)
-                .build();
+        return new CSVReader(bufferedReader);
     }
 
     private <T> List<T> getFromCsv(Class<T> tClass) throws IOException {
         List<T> tList;
         try {
-            CsvToBean<T> csvToBean = getCsvToBean(tClass);
+            CSVReader csvReader = getCsvReader(tClass);
+            CsvToBean<T> csvToBean = new CsvToBeanBuilder<T>(csvReader)
+                    .withType(tClass)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .build();
             tList = csvToBean.parse();
+            csvReader.close();
         } catch (IOException e) {
             log.error(e);
             throw e;
@@ -157,6 +179,7 @@ public class DataProviderCSV implements DataProvider {
         }
     }
 
+    //TODO add parsing template
     private List<ModificationRecord> getHistoryList(Task task) {
         try {
             List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);

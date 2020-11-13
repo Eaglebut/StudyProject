@@ -120,40 +120,31 @@ class DataProviderCSVTest {
         return historyList;
     }
 
-    /*
+
     @Order(0)
     @Test
-    void setCsvFile() throws IOException {
-        User user = getCorrectTestUser();
-        DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
-        dataProviderCSV.insertIntoCsv(user);
-        user.getTaskList().forEach(task -> {
-            try {
-                dataProviderCSV.insertIntoCsv(task);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+    void setCsvFile() {
+        try {
+            boolean overwrite = true;
 
-        user.getHistoryList().forEach(modificationRecord -> {
-            try {
-                dataProviderCSV.insertIntoCsv(modificationRecord);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        user.getTaskList().forEach(task -> task.getHistoryList().forEach(modificationRecord -> {
-            try {
-                dataProviderCSV.insertIntoCsv(modificationRecord);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
+            User user = getCorrectTestUser();
+            DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
+            dataProviderCSV.insertIntoCsv(user, overwrite);
+            dataProviderCSV.insertIntoCsv(user.getTaskList(), overwrite);
+            dataProviderCSV.insertIntoCsv(user.getHistoryList(), overwrite);
+            user.getTaskList().forEach(task -> {
+                try {
+                    dataProviderCSV.insertIntoCsv(task.getHistoryList(), overwrite);
+                } catch (IOException e) {
+                    log.error(e);
+                }
+            });
+        } catch (IOException e) {
+            log.error(e);
+        }
     }
 
 
-     */
     @Test
     @Order(1)
     void getProfileInformationByIdCorrect() throws IOException {
