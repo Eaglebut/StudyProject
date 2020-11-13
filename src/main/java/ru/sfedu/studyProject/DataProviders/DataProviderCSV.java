@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -159,39 +160,24 @@ public class DataProviderCSV implements DataProvider {
         }
     }
 
-    private List<ModificationRecord> getHistoryList(User user) {
+    public <T> List<ModificationRecord> getHistoryList(T object) {
+        Class<?> tClass = object.getClass();
         try {
+            List<ModificationRecord> objectHistoryList = (List<ModificationRecord>) tClass.
+                    getDeclaredMethod(
+                            ConfigurationUtil.getConfigurationEntry(
+                                    Constants.MODIFICATION_RECORD_GET_HISTORY)).invoke(object);
             List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);
             return historyList
                     .stream()
-                    .filter(modificationRecord -> user
-                            .getHistoryList()
+                    .filter(modificationRecord -> objectHistoryList
                             .stream()
                             .findFirst()
                             .filter(userModificationRecord ->
                                     userModificationRecord.getId() == modificationRecord.getId())
                             .isPresent())
                     .collect(Collectors.toList());
-        } catch (IOException e) {
-            log.error(e);
-            return null;
-        }
-    }
-
-    private List<ModificationRecord> getHistoryList(Task task) {
-        try {
-            List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);
-            return historyList
-                    .stream()
-                    .filter(modificationRecord -> task
-                            .getHistoryList()
-                            .stream()
-                            .findFirst()
-                            .filter(taskModificationRecord ->
-                                    taskModificationRecord.getId() == modificationRecord.getId())
-                            .isPresent())
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | IOException e) {
             log.error(e);
             return null;
         }

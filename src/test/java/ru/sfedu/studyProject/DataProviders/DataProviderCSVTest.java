@@ -173,5 +173,13 @@ class DataProviderCSVTest {
         Assertions.assertEquals(correctUser, user.get());
     }
 
+    @Test
+    @Order(3)
+    void testGenericGetHistory() throws IOException {
+        List<Task> taskList = getCorrectTestTaskList();
+        Task task = taskList.get(0);
+        DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
+        dataProviderCSV.getHistoryList(task);
+    }
 
 }

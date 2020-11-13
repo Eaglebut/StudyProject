@@ -38,6 +38,7 @@ public class Constants {
   public static final String SIGN_UP_TYPE = "SIGN_UP_TYPE";
   public static final String TASK_LIST = "TASK_LIST";
   public static final String HISTORY_LIST = "HISTORY_LIST";
+  public static final String MODIFICATION_RECORD_GET_HISTORY = "modificationRecord.getHistory";
 
 
 }
