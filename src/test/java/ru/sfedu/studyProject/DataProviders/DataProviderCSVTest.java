@@ -102,7 +102,7 @@ class DataProviderCSVTest {
     private List<ModificationRecord> getCorrectTestHistoryList() throws IOException {
         List<ModificationRecord> historyList = new ArrayList<>();
 
-        ModificationRecord<String> modificationRecord = new ModificationRecord<>();
+        ModificationRecord modificationRecord = new ModificationRecord();
         modificationRecord.setId(Long.parseLong(
                 ConfigurationUtil.getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_ID)));
         try {
@@ -115,7 +115,7 @@ class DataProviderCSVTest {
         }
         modificationRecord.setChangedValueName(ConfigurationUtil.
                 getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE_NAME));
-        //modificationRecord.setChangedValue();
+        modificationRecord.setChangedValue(ConfigurationUtil.getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE));
         historyList.add(modificationRecord);
         return historyList;
     }
@@ -154,6 +154,7 @@ class DataProviderCSVTest {
         if (!user.isPresent()) {
             Assertions.fail(ConfigurationUtil.getConfigurationEntry(Constants.MESSAGE_NULL_METHOD));
         }
+        log.debug(user.get());
         Assertions.assertEquals(correctUser, user.get());
     }
 
@@ -168,6 +169,7 @@ class DataProviderCSVTest {
         if (!user.isPresent()) {
             Assertions.fail(ConfigurationUtil.getConfigurationEntry(Constants.MESSAGE_NULL_METHOD));
         }
+        log.debug(user.get());
         Assertions.assertEquals(correctUser, user.get());
     }
 

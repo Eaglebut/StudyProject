@@ -159,7 +159,6 @@ public class DataProviderCSV implements DataProvider {
         }
     }
 
-    //TODO add parsing template
     private List<ModificationRecord> getHistoryList(User user) {
         try {
             List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);
@@ -179,7 +178,6 @@ public class DataProviderCSV implements DataProvider {
         }
     }
 
-    //TODO add parsing template
     private List<ModificationRecord> getHistoryList(Task task) {
         try {
             List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);

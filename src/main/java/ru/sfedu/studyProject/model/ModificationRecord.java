@@ -21,7 +21,7 @@ import java.util.Date;
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true)
 @ToString
-public class ModificationRecord<T> implements Serializable {
+public class ModificationRecord implements Serializable {
 
     //
     // Fields
@@ -33,7 +33,8 @@ public class ModificationRecord<T> implements Serializable {
     @CsvBindByName
     @CsvDate(value = Constants.DATE_FORMAT)
     private Date changedDate;
-    private T changedValue;
+    @CsvBindByName
+    private String changedValue;
 
     //
     // Methods
