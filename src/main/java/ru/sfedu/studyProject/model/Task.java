@@ -28,26 +28,26 @@ import java.util.List;
 @ToString
 public class Task implements Serializable {
 
-    //
-    // Fields
-    //
-    @CsvBindByName
-    private long id;
-    @CsvBindByName
-    @CsvDate(value = Constants.DATE_FORMAT)
-    private Date created;
-    @CsvBindByName
-    private String name;
-    @CsvBindByName
-    private TaskStatuses status;
-    @CsvBindByName
-    private TaskTypes taskType;
-    @CsvCustomBindByName(converter = ModificationRecordConverter.class, column = Constants.HISTORY_LIST)
-    private List<ModificationRecord> historyList;
+  //
+  // Fields
+  //
+  @CsvBindByName
+  private long id;
+  @CsvBindByName
+  @CsvDate(value = Constants.DATE_FORMAT)
+  private Date created;
+  @CsvBindByName
+  private String name;
+  @CsvBindByName
+  private TaskStatuses status;
+  @CsvBindByName
+  private TaskTypes taskType;
+  @CsvCustomBindByName(converter = ModificationRecordConverter.class, column = Constants.HISTORY_LIST)
+  private List<ModificationRecord> historyList;
 
 
-    //
-    // Methods
-    //
+  //
+  // Methods
+  //
 
 }

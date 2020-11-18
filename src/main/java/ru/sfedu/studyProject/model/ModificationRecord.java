@@ -23,22 +23,22 @@ import java.util.Date;
 @ToString
 public class ModificationRecord implements Serializable {
 
-    //
-    // Fields
-    //
-    @CsvBindByName
-    private long id;
-    @CsvBindByName
-    private String changedValueName;
-    @CsvBindByName
-    @CsvDate(value = Constants.DATE_FORMAT)
-    private Date changedDate;
-    @CsvBindByName
-    private String changedValue;
+  //
+  // Fields
+  //
+  @CsvBindByName
+  private long id;
+  @CsvBindByName
+  private String changedValueName;
+  @CsvBindByName
+  @CsvDate(value = Constants.DATE_FORMAT)
+  private Date changedDate;
+  @CsvBindByName
+  private String changedValue;
 
-    //
-    // Methods
-    //
+  //
+  // Methods
+  //
 
 
 }

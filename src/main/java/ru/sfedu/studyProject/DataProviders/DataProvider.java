@@ -184,6 +184,16 @@ public interface DataProvider {
   List<Task> getGroupTasks(@NonNull Group group) throws NoSuchElementException;
 
   /**
+   * Gets private group tasks.
+   *
+   * @param user  the user
+   * @param group the group
+   * @return the private group tasks
+   * @throws NoSuchElementException when group does not exists
+   */
+  List<Task> getGroupTasks(@NonNull User user, @NonNull Group group) throws NoSuchElementException;
+
+  /**
    * Gets group profile.
    *
    * @param groupId the group id
@@ -191,6 +201,16 @@ public interface DataProvider {
    * @throws NoSuchElementException when group does not exists
    */
   Group getGroupProfile(@NonNull long groupId) throws NoSuchElementException;
+
+  /**
+   * Gets private group profile.
+   *
+   * @param user    the user
+   * @param groupId the group id
+   * @return the private group profile
+   * @throws NoSuchElementException when group does not exists
+   */
+  Group getGroupProfile(@NonNull User user, @NonNull long groupId) throws NoSuchElementException;
 
   /**
    * Gets group and own tasks.
@@ -210,25 +230,6 @@ public interface DataProvider {
    */
   Statuses leaveGroup(@NonNull User user, @NonNull Group group);
 
-  /**
-   * Gets private group tasks.
-   *
-   * @param user  the user
-   * @param group the group
-   * @return the private group tasks
-   * @throws NoSuchElementException when group does not exists
-   */
-  List<Task> getGroupTasks(@NonNull User user, @NonNull Group group) throws NoSuchElementException;
-
-  /**
-   * Gets private group profile.
-   *
-   * @param user    the user
-   * @param groupId the group id
-   * @return the private group profile
-   * @throws NoSuchElementException when group does not exists
-   */
-  Group getGroupProfile(@NonNull User user, @NonNull long groupId) throws NoSuchElementException;
 
   /**
    * Gets private group member list.

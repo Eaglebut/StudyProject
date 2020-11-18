@@ -15,7 +15,7 @@ import java.util.Properties;
  *
  * @author Boris Jmailov
  */
-public class ConfigurationUtil {
+public class PropertyLoader {
 
   private static final String DEFAULT_CONFIG_PATH = "./src/main/resources/enviroment.properties";
   private static final Properties configuration = new Properties();
@@ -24,7 +24,7 @@ public class ConfigurationUtil {
   /**
    * Hides default constructor
    */
-  private ConfigurationUtil() {
+  private PropertyLoader() {
   }
 
   private static Properties getConfiguration() throws IOException {
@@ -36,7 +36,9 @@ public class ConfigurationUtil {
 
   /**
    * Loads configuration from <code>DEFAULT_CONFIG_PATH</code>
+   *
    * @throws IOException In case of the configuration file read failure
+   *
    */
   private static void loadConfiguration() throws IOException {
     File nf;
@@ -55,11 +57,13 @@ public class ConfigurationUtil {
 
   /**
    *  * Gets configuration entry value
+   *
    * @param key Entry key
+   *
    * @return Entry value by key
    * @throws IOException In case of the configuration file read failure
    */
-  public static String getConfigurationEntry(String key) throws IOException {
+  public static String getProperty(String key) throws IOException {
     return getConfiguration().getProperty(key);
   }
 

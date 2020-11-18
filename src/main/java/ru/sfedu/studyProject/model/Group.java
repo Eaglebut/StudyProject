@@ -25,21 +25,21 @@ import java.util.Map;
 @ToString
 public class Group implements Serializable {
 
-    //
-    // Fields
-    //
+  //
+  // Fields
+  //
 
-    private long id;
-    private String name;
-    private Date created;
-    private Map<Task, TaskState> taskList;
-    private Map<User, UserRole> memberList;
-    private GroupTypes groupType;
-    private List<ModificationRecord> historyList;
+  private long id;
+  private String name;
+  private Date created;
+  private Map<Task, TaskState> taskList;
+  private Map<User, UserRole> memberList;
+  private GroupTypes groupType;
+  private List<ModificationRecord> historyList;
 
-    //
-    // Methods
-    //
+  //
+  // Methods
+  //
 
 
 }

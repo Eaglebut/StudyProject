@@ -16,7 +16,7 @@ import ru.sfedu.studyProject.enums.TaskTypes;
 import ru.sfedu.studyProject.model.ModificationRecord;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
-import ru.sfedu.studyProject.utils.ConfigurationUtil;
+import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -27,11 +27,11 @@ import java.util.Optional;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class DataProviderCSVTest {
+class DataProviderCsvTest {
 
-    private static final Logger log = LogManager.getLogger(DataProviderCSVTest.class);
+    private static final Logger log = LogManager.getLogger(DataProviderCsvTest.class);
 
-    DataProvider dataProvider = DataProviderCSV.getInstance();
+    DataProvider dataProvider = DataProviderCsv.getInstance();
 
 
     @BeforeEach
@@ -43,19 +43,19 @@ class DataProviderCSVTest {
     private User getCorrectTestUser() throws IOException {
         User user = new User();
         user.setId(Integer.parseInt(
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_ID)));
-        user.setName(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_NAME));
-        user.setSurname(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_SURNAME));
-        user.setEmail(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_EMAIL));
-        user.setPassword(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_PASSWORD));
+                PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID)));
+        user.setName(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_NAME));
+        user.setSurname(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_SURNAME));
+        user.setEmail(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_EMAIL));
+        user.setPassword(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_PASSWORD));
         user.setSignUpType(SignUpTypes.valueOf(
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_SIGN_UP_TYPE)));
-        user.setToken(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_TOKEN));
+                PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_SIGN_UP_TYPE)));
+        user.setToken(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_TOKEN));
         user.setTaskList(getCorrectTestTaskList());
         user.setHistoryList(new ArrayList<>());
         try {
             user.setCreated(new SimpleDateFormat(Constants.DATE_FORMAT)
-                    .parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_CREATED)));
+                    .parse(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_CREATED)));
         } catch (ParseException e) {
             log.error(e);
         }
@@ -67,17 +67,17 @@ class DataProviderCSVTest {
         List<Task> taskList = new ArrayList<>();
         Task correctTask = new Task();
         correctTask.setId(Integer.parseInt(
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_ID)));
-        correctTask.setName(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_NAME));
+                PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_ID)));
+        correctTask.setName(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_NAME));
         correctTask.setStatus(TaskStatuses
-                .valueOf(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_STATUS)));
+                .valueOf(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_STATUS)));
         correctTask.setTaskType(TaskTypes
-                .valueOf(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_TASK_TYPE)));
+                .valueOf(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_TASK_TYPE)));
         correctTask.setHistoryList(getCorrectTestHistoryList());
         try {
             correctTask.setCreated(
                     new SimpleDateFormat(Constants.DATE_FORMAT)
-                            .parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK1_CORRECT_CREATED)));
+                            .parse(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_CREATED)));
         } catch (ParseException e) {
             log.error(e);
         }
@@ -85,17 +85,17 @@ class DataProviderCSVTest {
 
         Task correctTask1 = new Task();
         correctTask1.setId(Integer.parseInt(
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_ID)));
-        correctTask1.setName(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_NAME));
+                PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_ID)));
+        correctTask1.setName(PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_NAME));
         correctTask1.setStatus(TaskStatuses
-                .valueOf(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_STATUS)));
+                .valueOf(PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_STATUS)));
         correctTask1.setTaskType(TaskTypes
-                .valueOf(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_TASK_TYPE)));
+                .valueOf(PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_TASK_TYPE)));
         correctTask1.setHistoryList(new ArrayList<>());
         try {
             correctTask1.setCreated(
                     new SimpleDateFormat(Constants.DATE_FORMAT)
-                            .parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_TASK2_CORRECT_CREATED)));
+                            .parse(PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_CREATED)));
         } catch (ParseException e) {
             log.error(e);
         }
@@ -109,19 +109,19 @@ class DataProviderCSVTest {
 
         ModificationRecord modificationRecord = new ModificationRecord();
         modificationRecord.setId(Long.parseLong(
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_ID)));
+                PropertyLoader.getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_ID)));
         try {
             modificationRecord.setChangedDate(
                     new SimpleDateFormat(Constants.DATE_FORMAT)
-                            .parse(ConfigurationUtil
-                                    .getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_DATE)));
+                            .parse(PropertyLoader
+                                    .getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_DATE)));
         } catch (ParseException e) {
             log.error(e);
         }
-        modificationRecord.setChangedValueName(ConfigurationUtil.
-                getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE_NAME));
+        modificationRecord.setChangedValueName(PropertyLoader.
+                getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE_NAME));
         modificationRecord.setChangedValue(
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE));
+                PropertyLoader.getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE));
         historyList.add(modificationRecord);
         return historyList;
     }
@@ -134,7 +134,7 @@ class DataProviderCSVTest {
             boolean overwrite = true;
 
             User user = getCorrectTestUser();
-            DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
+            DataProviderCsv dataProviderCSV = (DataProviderCsv) dataProvider;
             dataProviderCSV.insertIntoCsv(user, overwrite);
             dataProviderCSV.insertIntoCsv(user.getTaskList(), overwrite);
             dataProviderCSV.insertIntoCsv(user.getHistoryList(), overwrite);
@@ -156,9 +156,9 @@ class DataProviderCSVTest {
     void getProfileInformationByIdCorrect() throws IOException {
         User correctUser = getCorrectTestUser();
         Optional<User> user = dataProvider.getUser(Integer.parseInt(
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_ID)));
+                PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID)));
         if (!user.isPresent()) {
-            Assertions.fail(ConfigurationUtil.getConfigurationEntry(Constants.MESSAGE_NULL_METHOD));
+            Assertions.fail(PropertyLoader.getProperty(Constants.MESSAGE_NULL_METHOD));
         }
         log.debug(user.get());
         Assertions.assertEquals(correctUser, user.get());
@@ -167,7 +167,7 @@ class DataProviderCSVTest {
     @Test
     @Order(1)
     void getProfileInformationByIdIncorrect() throws IOException {
-        var user = dataProvider.getUser(Long.parseLong(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_INCORRECT_ID)));
+        var user = dataProvider.getUser(Long.parseLong(PropertyLoader.getProperty(Constants.TEST_USER_INCORRECT_ID)));
         Assertions.assertFalse(user.isPresent());
     }
 
@@ -177,10 +177,10 @@ class DataProviderCSVTest {
     void getProfileInformationByEmailAndPasswordCorrect() throws IOException {
         User correctUser = getCorrectTestUser();
         Optional<User> user = dataProvider.getUser(
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_EMAIL),
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_PASSWORD));
+                PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_EMAIL),
+                PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_PASSWORD));
         if (!user.isPresent()) {
-            Assertions.fail(ConfigurationUtil.getConfigurationEntry(Constants.MESSAGE_NULL_METHOD));
+            Assertions.fail(PropertyLoader.getProperty(Constants.MESSAGE_NULL_METHOD));
         }
         log.debug(user.get());
         Assertions.assertEquals(correctUser, user.get());
@@ -189,9 +189,9 @@ class DataProviderCSVTest {
     @Test
     @Order(1)
     void getProfileInformationByEmailAndPasswordIncorrect() throws IOException {
-        var user = dataProvider.getUser(ConfigurationUtil.getConfigurationEntry(
+        var user = dataProvider.getUser(PropertyLoader.getProperty(
                 Constants.TEST_USER_INCORRECT_EMAIL),
-                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_INCORRECT_PASSWORD)
+                PropertyLoader.getProperty(Constants.TEST_USER_INCORRECT_PASSWORD)
         );
         Assertions.assertFalse(user.isPresent());
     }
