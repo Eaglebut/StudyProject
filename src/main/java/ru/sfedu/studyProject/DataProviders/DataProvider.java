@@ -31,9 +31,9 @@ public interface DataProvider {
 
   Statuses editTask(@NonNull User user, @NonNull Task editedTask);
 
-  Optional<User> getUser(@NonNull long userId) throws NoSuchElementException, IOException;
+  Optional<User> getUser(@NonNull long userId) throws NoSuchElementException;
 
-  Optional<User> getUser(@NonNull String login, @NonNull String password) throws NoSuchElementException, IOException;
+  Optional<User> getUser(@NonNull String login, @NonNull String password) throws NoSuchElementException;
 
   Statuses editUser(@NonNull User editedUser);
 
@@ -42,8 +42,6 @@ public interface DataProvider {
   Statuses createGroup(@NonNull String groupName,
                        @NonNull User creator,
                        @NonNull GroupTypes groupType);
-
-  Statuses setGroupPrivate(@NonNull User user, @NonNull Group group);
 
   Statuses changeGroupType(@NonNull User user, @NonNull Group group, @NonNull GroupTypes groupType);
 

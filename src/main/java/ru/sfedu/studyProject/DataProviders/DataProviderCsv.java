@@ -352,12 +352,6 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO
   @Override
-  public Statuses setGroupPrivate(@NonNull User user, @NonNull Group group) {
-    return null;
-  }
-
-  //TODO
-  @Override
   public Statuses changeGroupType(@NonNull User user, @NonNull Group group, @NonNull GroupTypes groupType) {
     return null;
   }
@@ -412,7 +406,14 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO
   @Override
-  public Statuses createTask(@NonNull User user, @NonNull Group group, @NonNull String name, @NonNull RepetitionTypes repetitionType, @NonNull RemindTypes remindType, @NonNull Importances importance, @NonNull String description, @NonNull Date time) {
+  public Statuses createTask(@NonNull User user,
+                             @NonNull Group group,
+                             @NonNull String name,
+                             @NonNull RepetitionTypes repetitionType,
+                             @NonNull RemindTypes remindType,
+                             @NonNull Importances importance,
+                             @NonNull String description,
+                             @NonNull Date time) {
     return null;
   }
 
