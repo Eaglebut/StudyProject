@@ -111,15 +111,15 @@ public class DataProviderCsv implements DataProvider {
 
   private <T> CSVWriter getCsvWriter(Class<T> tClass) throws IOException {
     FileWriter writer;
-    String filename = PropertyLoader.getProperty(Constants.CSV_PATH)
+    File path = new File(PropertyLoader.getProperty(Constants.CSV_PATH));
+    File file = new File(PropertyLoader.getProperty(Constants.CSV_PATH)
             + tClass.getSimpleName().toLowerCase()
-            + PropertyLoader.getProperty(Constants.CSV_EXTENSION);
-    log.debug(filename);
-    File file = new File(path.getAbsolutePath() + filename);
+            + PropertyLoader.getProperty(Constants.CSV_EXTENSION));
+    log.debug(file.getPath());
     if (!file.exists()) {
       if (path.mkdirs()) {
         if (!file.createNewFile()) {
-          throw new IOException(String.format(ConfigurationUtil.getConfigurationEntry(Constants.EXCEPTION_CANNOT_CREATE_FILE), filename));
+          throw new IOException(String.format(PropertyLoader.getProperty(Constants.EXCEPTION_CANNOT_CREATE_FILE), file.getName()));
         }
       }
     }

@@ -872,3 +872,19 @@
 2020-11-18 14:23:21 DEBUG ModificationRecordConverter:55 - [1]
 2020-11-18 14:23:21 DEBUG ModificationRecordConverter:55 - []
 2020-11-18 14:23:21 DEBUG DataProviderCsv:94 - modificationrecord.csv
+2020-11-18 14:47:04 DEBUG DataProviderCsv:118 - Z:\projects\oldServer\StudyProject\src\main\resources\data\csvuser.csv
+2020-11-18 14:47:04 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:47:04 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 14:47:04 DEBUG DataProviderCsv:118 - Z:\projects\oldServer\StudyProject\src\main\resources\data\csvtask.csv
+2020-11-18 14:47:04 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 14:47:04 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:47:04 DEBUG DataProviderCsv:118 - Z:\projects\oldServer\StudyProject\src\main\resources\data\csvmodificationrecord.csv
+2020-11-18 14:48:51 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\user.csv
+2020-11-18 14:48:51 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:48:51 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 14:48:51 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\task.csv
+2020-11-18 14:48:51 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:48:51 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 14:48:51 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 14:48:51 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 14:48:52 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
