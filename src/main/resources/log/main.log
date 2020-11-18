@@ -806,3 +806,69 @@
 2020-11-17 16:34:54 DEBUG DataProviderCSV:93 - src/main/resources/data/csv/modificationrecord.csv
 2020-11-17 16:34:55 DEBUG DataProviderCSVTest:165 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
 2020-11-17 16:34:55 DEBUG DataProviderCSVTest:187 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 14:06:33 DEBUG DataProviderCsv:93 - src/main/resources/data/csv/user.csv
+2020-11-18 14:06:33 ERROR DataProviderCsvTest:149 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Системе не удается найти указанный путь)
+2020-11-18 14:06:33 ERROR DataProviderCsv:128 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:06:33 ERROR DataProviderCsv:144 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:06:33 ERROR DataProviderCsv:128 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:06:33 ERROR DataProviderCsv:158 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:06:33 ERROR DataProviderCsv:128 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:06:33 ERROR DataProviderCsv:144 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:06:33 ERROR DataProviderCsv:128 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:06:33 ERROR DataProviderCsv:158 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:07:01 DEBUG DataProviderCsv:93 - src/main/resources/data/csv/user.csv
+2020-11-18 14:07:01 ERROR DataProviderCsvTest:149 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Системе не удается найти указанный путь)
+2020-11-18 14:07:01 ERROR DataProviderCsv:128 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:07:01 ERROR DataProviderCsv:144 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:07:01 ERROR DataProviderCsv:128 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:07:01 ERROR DataProviderCsv:158 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:07:01 ERROR DataProviderCsv:128 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:07:01 ERROR DataProviderCsv:144 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:07:01 ERROR DataProviderCsv:128 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:07:01 ERROR DataProviderCsv:158 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:11:20 DEBUG DataProviderCsv:93 - src/main/resources/data/csv/user.csv
+2020-11-18 14:11:20 ERROR DataProviderCsv:136 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Отказано в доступе)
+2020-11-18 14:11:20 ERROR DataProviderCsv:152 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Отказано в доступе)
+2020-11-18 14:11:20 ERROR DataProviderCsv:136 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Отказано в доступе)
+2020-11-18 14:11:20 ERROR DataProviderCsv:166 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Отказано в доступе)
+2020-11-18 14:11:20 ERROR DataProviderCsv:136 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Отказано в доступе)
+2020-11-18 14:11:20 ERROR DataProviderCsv:152 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Отказано в доступе)
+2020-11-18 14:11:20 ERROR DataProviderCsv:136 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Отказано в доступе)
+2020-11-18 14:11:20 ERROR DataProviderCsv:166 - java.io.FileNotFoundException: src\main\resources\data\csv\user.csv (Отказано в доступе)
+2020-11-18 14:14:16 DEBUG DataProviderCsv:93 - src/main/resources/data/csv/user.csv
+2020-11-18 14:14:16 ERROR DataProviderCsv:136 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:14:16 ERROR DataProviderCsv:152 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:14:16 ERROR DataProviderCsv:136 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:14:16 ERROR DataProviderCsv:166 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:14:16 ERROR DataProviderCsv:136 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:14:16 ERROR DataProviderCsv:152 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:14:16 ERROR DataProviderCsv:136 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:14:16 ERROR DataProviderCsv:166 - java.io.IOException: Системе не удается найти указанный путь
+2020-11-18 14:20:21 DEBUG DataProviderCsv:94 - user.csv
+2020-11-18 14:20:21 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:20:21 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 14:20:21 DEBUG DataProviderCsv:94 - task.csv
+2020-11-18 14:20:21 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:20:21 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 14:20:21 DEBUG DataProviderCsv:94 - modificationrecord.csv
+2020-11-18 14:20:58 DEBUG DataProviderCsv:94 - user.csv
+2020-11-18 14:20:58 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:20:58 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 14:20:58 DEBUG DataProviderCsv:94 - task.csv
+2020-11-18 14:20:58 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 14:20:58 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:20:58 DEBUG DataProviderCsv:94 - modificationrecord.csv
+2020-11-18 14:22:24 DEBUG DataProviderCsv:94 - user.csv
+2020-11-18 14:22:24 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:22:24 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 14:22:24 DEBUG DataProviderCsv:94 - task.csv
+2020-11-18 14:22:24 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:22:24 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 14:22:24 DEBUG DataProviderCsv:94 - modificationrecord.csv
+2020-11-18 14:23:21 DEBUG DataProviderCsv:94 - user.csv
+2020-11-18 14:23:21 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:23:21 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 14:23:21 DEBUG DataProviderCsv:94 - task.csv
+2020-11-18 14:23:21 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 14:23:21 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 14:23:21 DEBUG DataProviderCsv:94 - modificationrecord.csv

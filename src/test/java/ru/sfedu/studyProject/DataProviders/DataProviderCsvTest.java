@@ -119,25 +119,21 @@ class DataProviderCsvTest {
 
     @Order(0)
     @Test
-    void setCsvFile() {
-        try {
-            boolean overwrite = true;
-
-            User user = getCorrectTestUser();
-            DataProviderCsv dataProviderCSV = (DataProviderCsv) dataProvider;
-            dataProviderCSV.insertIntoCsv(user, overwrite);
-            dataProviderCSV.insertIntoCsv(user.getTaskList(), overwrite);
-            dataProviderCSV.insertIntoCsv(user.getHistoryList(), overwrite);
-            user.getTaskList().forEach(task -> {
-                try {
-                    dataProviderCSV.insertIntoCsv(task.getHistoryList(), overwrite);
-                } catch (IOException e) {
+    void setCsvFile() throws IOException {
+        boolean overwrite = true;
+        User user = getCorrectTestUser();
+        DataProviderCsv dataProviderCSV = (DataProviderCsv) dataProvider;
+        dataProviderCSV.insertIntoCsv(user, overwrite);
+        dataProviderCSV.insertIntoCsv(user.getTaskList(), overwrite);
+        dataProviderCSV.insertIntoCsv(user.getHistoryList(), overwrite);
+        user.getTaskList().forEach(task -> {
+            try {
+                dataProviderCSV.insertIntoCsv(task.getHistoryList(), overwrite);
+            } catch (IOException e) {
                     log.error(e);
                 }
             });
-        } catch (IOException e) {
-            log.error(e);
-        }
+
     }
 
 

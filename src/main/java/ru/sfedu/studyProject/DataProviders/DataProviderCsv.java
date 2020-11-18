@@ -38,6 +38,9 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * The type Data provider csv.
+ */
 public class DataProviderCsv implements DataProvider {
 
   private static final Logger log = LogManager.getLogger(DataProviderCsv.class);
@@ -47,6 +50,11 @@ public class DataProviderCsv implements DataProvider {
   private DataProviderCsv() {
   }
 
+  /**
+   * Gets instance.
+   *
+   * @return the instance
+   */
   public static DataProvider getInstance() {
     if (INSTANCE == null) {
       INSTANCE = new DataProviderCsv();
@@ -54,10 +62,26 @@ public class DataProviderCsv implements DataProvider {
     return INSTANCE;
   }
 
+  /**
+   * Insert into csv.
+   *
+   * @param <T>       the type parameter
+   * @param object    the object
+   * @param overwrite the overwrite
+   * @throws IOException the io exception
+   */
   public <T> void insertIntoCsv(T object, boolean overwrite) throws IOException {
     insertIntoCsv(Collections.singletonList(object), overwrite);
   }
 
+  /**
+   * Insert into csv.
+   *
+   * @param <T>        the type parameter
+   * @param objectList the object list
+   * @param overwrite  the overwrite
+   * @throws IOException the io exception
+   */
   public <T> void insertIntoCsv(List<T> objectList, boolean overwrite) throws IOException {
     Optional<T> tOptional = objectList.stream().findAny();
     Class<?> tClass;
@@ -91,7 +115,15 @@ public class DataProviderCsv implements DataProvider {
             + tClass.getSimpleName().toLowerCase()
             + PropertyLoader.getProperty(Constants.CSV_EXTENSION);
     log.debug(filename);
-    writer = new FileWriter(filename);
+    File file = new File(path.getAbsolutePath() + filename);
+    if (!file.exists()) {
+      if (path.mkdirs()) {
+        if (!file.createNewFile()) {
+          throw new IOException(String.format(ConfigurationUtil.getConfigurationEntry(Constants.EXCEPTION_CANNOT_CREATE_FILE), filename));
+        }
+      }
+    }
+    writer = new FileWriter(file);
     return new CSVWriter(writer);
   }
 
@@ -329,7 +361,21 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO
   @Override
+  public List<Task> getGroupTasks(@NonNull User user,
+                                  @NonNull Group group) throws NoSuchElementException {
+    return null;
+  }
+
+  //TODO
+  @Override
   public Group getGroupProfile(long groupId) throws NoSuchElementException {
+    return null;
+  }
+
+  //TODO
+  @Override
+  public Group getGroupProfile(@NonNull User user,
+                               long groupId) throws NoSuchElementException {
     return null;
   }
 
@@ -346,19 +392,6 @@ public class DataProviderCsv implements DataProvider {
     return null;
   }
 
-  //TODO
-  @Override
-  public List<Task> getGroupTasks(@NonNull User user,
-                                  @NonNull Group group) throws NoSuchElementException {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Group getGroupProfile(@NonNull User user,
-                               long groupId) throws NoSuchElementException {
-    return null;
-  }
 
   //TODO
   @Override
