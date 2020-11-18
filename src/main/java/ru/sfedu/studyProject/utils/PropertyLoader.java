@@ -15,30 +15,31 @@ import java.util.Properties;
  *
  * @author Boris Jmailov
  */
-public class ConfigurationUtil {
+public class PropertyLoader {
 
   private static final String DEFAULT_CONFIG_PATH = "./src/main/resources/enviroment.properties";
-  private static final Properties configuration = new Properties();
+  private static final Properties PROPERTIES = new Properties();
 
 
   /**
    * Hides default constructor
    */
-  private ConfigurationUtil() {
+  private PropertyLoader() {
   }
 
-  private static Properties getConfiguration() throws IOException {
-    if (configuration.isEmpty()) {
-      loadConfiguration();
+  private static Properties getProperties() throws IOException {
+    if (PROPERTIES.isEmpty()) {
+      loadProperty();
     }
-    return configuration;
+    return PROPERTIES;
   }
 
   /**
    * Loads configuration from <code>DEFAULT_CONFIG_PATH</code>
+   *
    * @throws IOException In case of the configuration file read failure
    */
-  private static void loadConfiguration() throws IOException {
+  private static void loadProperty() throws IOException {
     File nf;
     if (System.getProperty(Constants.CONFIG_PATH) != null) {
       nf = new File(System.getProperty(Constants.CONFIG_PATH));
@@ -47,7 +48,7 @@ public class ConfigurationUtil {
     }
     // DEFAULT_CONFIG_PATH.getClass().getResourceAsStream(DEFAULT_CONFIG_PATH);
     try (InputStream in = new FileInputStream(nf)) {
-      configuration.load(in);
+      PROPERTIES.load(in);
     } catch (IOException ex) {
       throw new IOException(ex);
     }
@@ -55,12 +56,14 @@ public class ConfigurationUtil {
 
   /**
    *  * Gets configuration entry value
+   *
    * @param key Entry key
+   *
    * @return Entry value by key
    * @throws IOException In case of the configuration file read failure
    */
-  public static String getConfigurationEntry(String key) throws IOException {
-    return getConfiguration().getProperty(key);
+  public static String getProperty(String key) throws IOException {
+    return getProperties().getProperty(key);
   }
 
 }
