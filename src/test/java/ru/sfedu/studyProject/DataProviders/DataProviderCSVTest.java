@@ -1,5 +1,6 @@
 package ru.sfedu.studyProject.DataProviders;
 
+import lombok.var;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
@@ -38,6 +39,7 @@ class DataProviderCSVTest {
 
     }
 
+
     private User getCorrectTestUser() throws IOException {
         User user = new User();
         user.setId(Integer.parseInt(
@@ -52,12 +54,14 @@ class DataProviderCSVTest {
         user.setTaskList(getCorrectTestTaskList());
         user.setHistoryList(new ArrayList<>());
         try {
-            user.setCreated(new SimpleDateFormat(Constants.DATE_FORMAT).parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_CREATED)));
+            user.setCreated(new SimpleDateFormat(Constants.DATE_FORMAT)
+                    .parse(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_CORRECT_CREATED)));
         } catch (ParseException e) {
             log.error(e);
         }
         return user;
     }
+
 
     private List<Task> getCorrectTestTaskList() throws IOException {
         List<Task> taskList = new ArrayList<>();
@@ -99,6 +103,7 @@ class DataProviderCSVTest {
         return taskList;
     }
 
+
     private List<ModificationRecord> getCorrectTestHistoryList() throws IOException {
         List<ModificationRecord> historyList = new ArrayList<>();
 
@@ -115,7 +120,8 @@ class DataProviderCSVTest {
         }
         modificationRecord.setChangedValueName(ConfigurationUtil.
                 getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE_NAME));
-        modificationRecord.setChangedValue(ConfigurationUtil.getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE));
+        modificationRecord.setChangedValue(
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE));
         historyList.add(modificationRecord);
         return historyList;
     }
@@ -158,9 +164,16 @@ class DataProviderCSVTest {
         Assertions.assertEquals(correctUser, user.get());
     }
 
+    @Test
+    @Order(1)
+    void getProfileInformationByIdIncorrect() throws IOException {
+        var user = dataProvider.getUser(Long.parseLong(ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_INCORRECT_ID)));
+        Assertions.assertFalse(user.isPresent());
+    }
+
 
     @Test
-    @Order(2)
+    @Order(1)
     void getProfileInformationByEmailAndPasswordCorrect() throws IOException {
         User correctUser = getCorrectTestUser();
         Optional<User> user = dataProvider.getUser(
@@ -174,12 +187,14 @@ class DataProviderCSVTest {
     }
 
     @Test
-    @Order(3)
-    void testGenericGetHistory() throws IOException {
-        List<Task> taskList = getCorrectTestTaskList();
-        Task task = taskList.get(0);
-        DataProviderCSV dataProviderCSV = (DataProviderCSV) dataProvider;
-        dataProviderCSV.getHistoryList(task);
+    @Order(1)
+    void getProfileInformationByEmailAndPasswordIncorrect() throws IOException {
+        var user = dataProvider.getUser(ConfigurationUtil.getConfigurationEntry(
+                Constants.TEST_USER_INCORRECT_EMAIL),
+                ConfigurationUtil.getConfigurationEntry(Constants.TEST_USER_INCORRECT_PASSWORD)
+        );
+        Assertions.assertFalse(user.isPresent());
     }
+
 
 }

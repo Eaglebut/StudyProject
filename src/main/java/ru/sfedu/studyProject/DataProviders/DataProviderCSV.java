@@ -160,7 +160,7 @@ public class DataProviderCSV implements DataProvider {
         }
     }
 
-    public <T> List<ModificationRecord> getHistoryList(T object) {
+    private <T> List<ModificationRecord> getHistoryList(T object) {
         Class<?> tClass = object.getClass();
         try {
             List<ModificationRecord> objectHistoryList = (List<ModificationRecord>) tClass.
