@@ -9,15 +9,11 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.NonNull;
+import lombok.var;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.sfedu.studyProject.Constants;
-import ru.sfedu.studyProject.enums.GroupTypes;
-import ru.sfedu.studyProject.enums.Importances;
-import ru.sfedu.studyProject.enums.RemindTypes;
-import ru.sfedu.studyProject.enums.RepetitionTypes;
-import ru.sfedu.studyProject.enums.Statuses;
-import ru.sfedu.studyProject.enums.TaskStatuses;
+import ru.sfedu.studyProject.enums.*;
 import ru.sfedu.studyProject.model.Group;
 import ru.sfedu.studyProject.model.ModificationRecord;
 import ru.sfedu.studyProject.model.Task;
@@ -38,9 +34,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * The type Data provider csv.
- */
 public class DataProviderCsv implements DataProvider {
 
   private static final Logger log = LogManager.getLogger(DataProviderCsv.class);
@@ -50,11 +43,6 @@ public class DataProviderCsv implements DataProvider {
   private DataProviderCsv() {
   }
 
-  /**
-   * Gets instance.
-   *
-   * @return the instance
-   */
   public static DataProvider getInstance() {
     if (INSTANCE == null) {
       INSTANCE = new DataProviderCsv();
@@ -62,26 +50,17 @@ public class DataProviderCsv implements DataProvider {
     return INSTANCE;
   }
 
-  /**
-   * Insert into csv.
-   *
-   * @param <T>       the type parameter
-   * @param object    the object
-   * @param overwrite the overwrite
-   * @throws IOException the io exception
-   */
+  //TODO make private
+  public <T> void insertIntoCsv(T object) throws IOException {
+    insertIntoCsv(object, false);
+  }
+
+  //TODO make private
   public <T> void insertIntoCsv(T object, boolean overwrite) throws IOException {
     insertIntoCsv(Collections.singletonList(object), overwrite);
   }
 
-  /**
-   * Insert into csv.
-   *
-   * @param <T>        the type parameter
-   * @param objectList the object list
-   * @param overwrite  the overwrite
-   * @throws IOException the io exception
-   */
+  //TODO make private
   public <T> void insertIntoCsv(List<T> objectList, boolean overwrite) throws IOException {
     Optional<T> tOptional = objectList.stream().findAny();
     Class<?> tClass;
@@ -192,6 +171,8 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
+
   private <T> List<ModificationRecord> getHistoryList(T object) {
     Class<?> tClass = object.getClass();
     try {
@@ -211,13 +192,13 @@ public class DataProviderCsv implements DataProvider {
               .collect(Collectors.toList());
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | IOException e) {
       log.error(e);
-      return null;
+      return new ArrayList<>();
     }
   }
 
 
   @Override
-  public Optional<User> getUser(@NonNull long userId) {
+  public Optional<User> getUser(long userId) {
     Optional<User> optionalUser = getUserProfile(userId);
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
@@ -243,8 +224,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  @Override
-  public List<Task> getTasks(@NonNull User user) throws NoSuchElementException {
+  private List<Task> getTasks(@NonNull User user) throws NoSuchElementException {
     try {
       List<Task> taskList = getFromCsv(Task.class);
       List<Task> usersTaskList = user.getTaskList();
@@ -262,76 +242,123 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+  //TODO need metadata
+  private <T> long getNextId(Class<T> tClass) throws IOException {
+      return getFromCsv(tClass).size() + 1;
+  }
 
-  //TODO
   @Override
   public Statuses createTask(@NonNull User user,
                              @NonNull String taskName,
                              @NonNull TaskStatuses status) {
+    try {
+      Task createdTask = new Task();
+      createdTask.setId(getNextId(Task.class));
+      createdTask.setName(taskName);
+      createdTask.setTaskType(TaskTypes.BASIC);
+      createdTask.setCreated(new Date(System.currentTimeMillis()));
+      createdTask.setHistoryList(new ArrayList<>());
+      createdTask.setStatus(status);
+      log.debug(createdTask);
+      insertIntoCsv(createdTask, false);
+      user.getTaskList().add(createdTask);
+      updateUser(user);
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+    return Statuses.INSERTED;
+  }
+
+  //TODO
+  @Override
+  public Statuses createTask(@NonNull User user, @NonNull String taskName, @NonNull TaskStatuses status, @NonNull RepetitionTypes repetitionType, @NonNull RemindTypes remindType, @NonNull Importances importance, @NonNull String description, @NonNull Date time) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses createTask(@NonNull User user,
-                             @NonNull String taskName,
-                             @NonNull TaskStatuses status,
-                             @NonNull RepetitionTypes repetitionType,
-                             @NonNull RemindTypes remindType,
-                             @NonNull Importances importance,
-                             @NonNull String description,
-                             @NonNull Date time) {
-    return null;
-  }
-
-
-  //TODO
-  @Override
-  public Statuses deleteTask(@NonNull User user,
-                             @NonNull Task task) {
+  public Statuses deleteTask(@NonNull User user, @NonNull Task task) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses editTask(@NonNull User user,
-                           @NonNull Task editedTask) {
+  public Statuses editTask(@NonNull User user, @NonNull Task editedTask) {
     return null;
   }
 
+  private Statuses updateUser(@NonNull User editedUser){
+    try {
+      var userList = getFromCsv(User.class);
 
-  //TODO
-  @Override
-  public Statuses changeProfileInformation(@NonNull User editedUser) {
-    return null;
-  }
+      Optional<User> optionalUser = userList.stream()
+              .filter(user -> user.getId() == editedUser.getId())
+              .findFirst();
 
-  //TODO
-  @Override
-  public Statuses joinTheGroup(@NonNull User user,
-                               @NonNull Group group) {
-    return null;
-  }
+      if (!optionalUser.isPresent()) {
+        return Statuses.NOT_FOUNDED;
+      }
 
-  //TODO
-  @Override
-  public Statuses createGroup(@NonNull String groupName,
-                              @NonNull User creator,
-                              @NonNull GroupTypes groupType) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses setGroupPrivate(@NonNull User user,
-                                  @NonNull Group group) {
-    return null;
+      userList.remove(optionalUser.get());
+      userList.add(editedUser);
+      insertIntoCsv(userList, true);
+      return Statuses.UPDATED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
   //TODO
   @Override
-  public Statuses setGroupPasswordedWithConfirmation(@NonNull User user,
-                                                     @NonNull Group group) {
+  public Statuses editUser(@NonNull User editedUser) {
+    try {
+      var userList = getFromCsv(User.class);
+
+      Optional<User> optionalUser = userList.stream()
+              .filter(user -> user.getId() == editedUser.getId())
+              .findFirst();
+
+      if (!optionalUser.isPresent()) {
+        return Statuses.NOT_FOUNDED;
+      }
+
+      if (!optionalUser.get().getTaskList().equals(editedUser.getTaskList())){
+        return Statuses.FORBIDDEN;
+      }
+
+      userList.remove(optionalUser.get());
+      userList.add(editedUser);
+      insertIntoCsv(userList);
+      return Statuses.UPDATED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+  //TODO
+  @Override
+  public Statuses addUserToGroup(@NonNull User user, @NonNull Group group) {
+    return null;
+  }
+
+  //TODO
+  @Override
+  public Statuses createGroup(@NonNull String groupName, @NonNull User creator, @NonNull GroupTypes groupType) {
+    return null;
+  }
+
+  //TODO
+  @Override
+  public Statuses setGroupPrivate(@NonNull User user, @NonNull Group group) {
+    return null;
+  }
+
+  //TODO
+  @Override
+  public Statuses changeGroupType(@NonNull User user, @NonNull Group group, @NonNull GroupTypes groupType) {
     return null;
   }
 
@@ -343,7 +370,7 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO
   @Override
-  public Group searchGroupById(long id) throws NoSuchElementException {
+  public Group searchGroupById(@NonNull long id) throws NoSuchElementException {
     return null;
   }
 
@@ -355,194 +382,61 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO
   @Override
-  public List<Task> getGroupTasks(@NonNull Group group) throws NoSuchElementException {
+  public Optional<Group> getGroup(@NonNull long groupId) {
+    return Optional.empty();
+  }
+
+  //TODO
+  @Override
+  public Optional<Group> getGroup(@NonNull User user, @NonNull long groupId) {
+    return Optional.empty();
+  }
+
+  //TODO
+  @Override
+  public Statuses deleteUserFromGroup(@NonNull User user, @NonNull Group group) {
     return null;
   }
 
   //TODO
   @Override
-  public List<Task> getGroupTasks(@NonNull User user,
-                                  @NonNull Group group) throws NoSuchElementException {
+  public Statuses createTask(@NonNull User user, @NonNull Group group, @NonNull Task task) {
     return null;
   }
 
   //TODO
   @Override
-  public Group getGroupProfile(long groupId) throws NoSuchElementException {
+  public Statuses createTask(@NonNull User user, @NonNull Group group, @NonNull String name) {
     return null;
   }
 
   //TODO
   @Override
-  public Group getGroupProfile(@NonNull User user,
-                               long groupId) throws NoSuchElementException {
+  public Statuses createTask(@NonNull User user, @NonNull Group group, @NonNull String name, @NonNull RepetitionTypes repetitionType, @NonNull RemindTypes remindType, @NonNull Importances importance, @NonNull String description, @NonNull Date time) {
     return null;
   }
 
   //TODO
   @Override
-  public List<Task> getGroupAndOwnTasks(@NonNull User user) throws NoSuchElementException {
+  public Statuses updateGroup(@NonNull User user, @NonNull Group group) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses leaveGroup(@NonNull User user,
-                             @NonNull Group group) {
-    return null;
-  }
-
-
-  //TODO
-  @Override
-  public List<User> getGroupMemberList(@NonNull User user,
-                                       @NonNull Group group) throws NoSuchElementException {
+  public Statuses setUserRole(@NonNull User user, @NonNull Group group, @NonNull User userToSet, @NonNull UserRole role) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses offerTaskToGroup(@NonNull User user,
-                                   @NonNull Group group,
-                                   @NonNull Task task) {
+  public Statuses changeTaskState(@NonNull User user, @NonNull Group group, @NonNull Task task, @NonNull TaskState state) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses offerTaskToGroup(@NonNull User user,
-                                   @NonNull Group group,
-                                   @NonNull String name) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses offerTaskToGroup(@NonNull User user,
-                                   @NonNull Group group,
-                                   @NonNull String name,
-                                   @NonNull RepetitionTypes repetitionType,
-                                   @NonNull RemindTypes remindType,
-                                   @NonNull Importances importance,
-                                   @NonNull String description,
-                                   @NonNull Date time) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses changeGroupProfile(@NonNull User user,
-                                     @NonNull Group group) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses createGroupTask(@NonNull User user,
-                                  @NonNull Group group,
-                                  @NonNull String taskName,
-                                  @NonNull TaskStatuses status) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses createGroupTask(@NonNull User user,
-                                  @NonNull Group group,
-                                  @NonNull String taskName,
-                                  @NonNull TaskStatuses status,
-                                  @NonNull RepetitionTypes repetitionType,
-                                  @NonNull RemindTypes remindType,
-                                  @NonNull Importances importance,
-                                  @NonNull String description,
-                                  @NonNull Date time) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses editGroupTask(@NonNull User user,
-                                @NonNull Group group,
-                                @NonNull Task task) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses deleteGroupTask(@NonNull User user,
-                                  @NonNull Group group,
-                                  @NonNull Task task) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses banUser(@NonNull User user,
-                          @NonNull Group group,
-                          @NonNull User userToBan) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses unbanUser(@NonNull User user,
-                            @NonNull Group group,
-                            @NonNull User bannedUser) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses acceptTask(@NonNull User user,
-                             @NonNull Group group,
-                             @NonNull Task task) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses declineTask(@NonNull User user,
-                              @NonNull Group group,
-                              @NonNull Task task) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses acceptUser(@NonNull User user,
-                             @NonNull Group group,
-                             @NonNull User userToAccept) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses declineUser(@NonNull User user,
-                              @NonNull Group group,
-                              @NonNull User userToDecline) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses giveAdministratorStatus(@NonNull User user,
-                                          @NonNull Group group,
-                                          @NonNull User newAdministrator) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses takeAwayAdministratorStatus(@NonNull User user,
-                                              @NonNull Group group,
-                                              @NonNull User administrator) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses deleteGroup(@NonNull User user,
-                              @NonNull Group group) {
+  public Statuses deleteGroup(@NonNull User user, @NonNull Group group) {
     return null;
   }
 }

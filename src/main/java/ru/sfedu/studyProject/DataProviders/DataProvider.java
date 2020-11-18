@@ -1,12 +1,7 @@
 package ru.sfedu.studyProject.DataProviders;
 
 import lombok.NonNull;
-import ru.sfedu.studyProject.enums.GroupTypes;
-import ru.sfedu.studyProject.enums.Importances;
-import ru.sfedu.studyProject.enums.RemindTypes;
-import ru.sfedu.studyProject.enums.RepetitionTypes;
-import ru.sfedu.studyProject.enums.Statuses;
-import ru.sfedu.studyProject.enums.TaskStatuses;
+import ru.sfedu.studyProject.enums.*;
 import ru.sfedu.studyProject.model.Group;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
@@ -18,35 +13,11 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
-/**
- * The interface Data provider.
- */
 @NonNull
 public interface DataProvider {
 
-  /**
-   * Create users task.
-   *
-   * @param user     the user
-   * @param taskName the task name
-   * @param status   the status
-   * @return the statuses
-   */
   Statuses createTask(@NonNull User user, @NonNull String taskName, @NonNull TaskStatuses status);
 
-  /**
-   * Create users extended task.
-   *
-   * @param user           the user
-   * @param taskName       the task name
-   * @param status         the status
-   * @param repetitionType the repetition type
-   * @param remindType     the remind type
-   * @param importance     the importance
-   * @param description    the description
-   * @param time           the time
-   * @return the statuses
-   */
   Statuses createTask(@NonNull User user,
                       @NonNull String taskName,
                       @NonNull TaskStatuses status,
@@ -56,386 +27,60 @@ public interface DataProvider {
                       @NonNull String description,
                       @NonNull Date time);
 
-  /**
-   * Gets user's tasks.
-   *
-   * @param user the user
-   * @return the users tasks
-   * @throws NoSuchElementException when user does not exist
-   */
-  List<Task> getTasks(@NonNull User user) throws NoSuchElementException;
-
-  /**
-   * Delete users task.
-   *
-   * @param user the user
-   * @param task the task
-   * @return the statuses
-   * @throws NoSuchElementException when user does not exist
-   */
   Statuses deleteTask(@NonNull User user, @NonNull Task task);
 
-  /**
-   * Edit users task.
-   *
-   * @param user       the user
-   * @param editedTask the edited task
-   * @return the statuses
-   */
   Statuses editTask(@NonNull User user, @NonNull Task editedTask);
 
-  /**
-   * Gets users profile information.
-   *
-   * @param userId the user id
-   * @return the profile information
-   * @throws NoSuchElementException when user does not exists
-   */
   Optional<User> getUser(@NonNull long userId) throws NoSuchElementException, IOException;
 
-  /**
-   * Gets users profile information.
-   *
-   * @param login    the login
-   * @param password the password
-   * @return the profile information
-   * @throws NoSuchElementException when user does not exists
-   */
   Optional<User> getUser(@NonNull String login, @NonNull String password) throws NoSuchElementException, IOException;
 
-  /**
-   * Change users profile information.
-   *
-   * @param editedUser the edited user
-   * @return the statuses
-   */
-  Statuses changeProfileInformation(@NonNull User editedUser);
+  Statuses editUser(@NonNull User editedUser);
 
-  /**
-   * Join the group.
-   *
-   * @param user  the user
-   * @param group the group
-   * @return the statuses
-   */
-  Statuses joinTheGroup(@NonNull User user, @NonNull Group group);
+  Statuses addUserToGroup(@NonNull User user, @NonNull Group group);
 
-  /**
-   * Create group.
-   *
-   * @param groupName the group name
-   * @param creator   the creator
-   * @param groupType the group type
-   * @return the statuses
-   */
   Statuses createGroup(@NonNull String groupName,
                        @NonNull User creator,
                        @NonNull GroupTypes groupType);
 
-  /**
-   * Sets group private.
-   *
-   * @param user  the user
-   * @param group the group
-   * @return the group private
-   */
   Statuses setGroupPrivate(@NonNull User user, @NonNull Group group);
 
-  /**
-   * Sets group passworded with confirmation.
-   *
-   * @param user  the user
-   * @param group the group
-   * @return the group passworded with confirmation
-   */
-  Statuses setGroupPasswordedWithConfirmation(@NonNull User user, @NonNull Group group);
+  Statuses changeGroupType(@NonNull User user, @NonNull Group group, @NonNull GroupTypes groupType);
 
-  /**
-   * Search group by name.
-   *
-   * @param name the name
-   * @return public group list
-   */
   List<Group> searchGroupByName(@NonNull String name);
 
-  /**
-   * Search group by id.
-   *
-   * @param id the id
-   * @return the group
-   * @throws NoSuchElementException when group not founded
-   */
   Group searchGroupById(@NonNull long id) throws NoSuchElementException;
 
-  /**
-   * Gets full public group list.
-   *
-   * @return the full public group list
-   */
   List<Group> getFullGroupList();
 
-  /**
-   * Gets public group tasks.
-   *
-   * @param group the group
-   * @return the public group tasks
-   * @throws NoSuchElementException when group does not exists
-   */
-  List<Task> getGroupTasks(@NonNull Group group) throws NoSuchElementException;
+  Optional<Group> getGroup(@NonNull long groupId);
 
-  /**
-   * Gets private group tasks.
-   *
-   * @param user  the user
-   * @param group the group
-   * @return the private group tasks
-   * @throws NoSuchElementException when group does not exists
-   */
-  List<Task> getGroupTasks(@NonNull User user, @NonNull Group group) throws NoSuchElementException;
+  Optional<Group> getGroup(@NonNull User user, @NonNull long groupId);
 
-  /**
-   * Gets group profile.
-   *
-   * @param groupId the group id
-   * @return the group profile
-   * @throws NoSuchElementException when group does not exists
-   */
-  Group getGroupProfile(@NonNull long groupId) throws NoSuchElementException;
+  Statuses deleteUserFromGroup(@NonNull User user, @NonNull Group group);
 
-  /**
-   * Gets private group profile.
-   *
-   * @param user    the user
-   * @param groupId the group id
-   * @return the private group profile
-   * @throws NoSuchElementException when group does not exists
-   */
-  Group getGroupProfile(@NonNull User user, @NonNull long groupId) throws NoSuchElementException;
+  Statuses createTask(@NonNull User user, @NonNull Group group, @NonNull Task task);
 
-  /**
-   * Gets group and own tasks.
-   *
-   * @param user the user
-   * @return the group and own tasks
-   * @throws NoSuchElementException when group does not exists
-   */
-  List<Task> getGroupAndOwnTasks(@NonNull User user) throws NoSuchElementException;
+  Statuses createTask(@NonNull User user, @NonNull Group group, @NonNull String name);
 
-  /**
-   * Leave group.
-   *
-   * @param user  the user
-   * @param group the group
-   * @return the statuses
-   */
-  Statuses leaveGroup(@NonNull User user, @NonNull Group group);
+  Statuses createTask(@NonNull User user,
+                      @NonNull Group group,
+                      @NonNull String name,
+                      @NonNull RepetitionTypes repetitionType,
+                      @NonNull RemindTypes remindType,
+                      @NonNull Importances importance,
+                      @NonNull String description,
+                      @NonNull Date time);
+
+  Statuses updateGroup(@NonNull User user, @NonNull Group group);
 
 
-  /**
-   * Gets private group member list.
-   *
-   * @param user  the user
-   * @param group the group
-   * @return the private group member list
-   * @throws NoSuchElementException when group does not exists
-   */
-  List<User> getGroupMemberList(@NonNull User user, @NonNull Group group) throws NoSuchElementException;
+  Statuses setUserRole(@NonNull User user, @NonNull Group group, @NonNull User userToSet, @NonNull UserRole role);
 
-  /**
-   * Offer own task to group .
-   *
-   * @param user  the user
-   * @param group the group
-   * @param task  the task
-   * @return the statuses
-   */
-  Statuses offerTaskToGroup(@NonNull User user, @NonNull Group group, @NonNull Task task);
+  Statuses changeTaskState(@NonNull User user, @NonNull Group group, @NonNull Task task, @NonNull TaskState state);
 
-  /**
-   * Offer new basic task to group.
-   *
-   * @param user  the user
-   * @param group the group
-   * @param name  the name
-   * @return the statuses
-   */
-  Statuses offerTaskToGroup(@NonNull User user, @NonNull Group group, @NonNull String name);
-
-  /**
-   * Offer extended task to group.
-   *
-   * @param user           the user
-   * @param group          the group
-   * @param name           the name
-   * @param repetitionType the repetition type
-   * @param remindType     the remind type
-   * @param importance     the importance
-   * @param description    the description
-   * @param time           the time
-   * @return the statuses
-   */
-  Statuses offerTaskToGroup(@NonNull User user,
-                            @NonNull Group group,
-                            @NonNull String name,
-                            @NonNull RepetitionTypes repetitionType,
-                            @NonNull RemindTypes remindType,
-                            @NonNull Importances importance,
-                            @NonNull String description,
-                            @NonNull Date time);
-
-  /**
-   * Change group profile.
-   *
-   * @param user  the user
-   * @param group the group
-   * @return the statuses
-   */
-  Statuses changeGroupProfile(@NonNull User user, @NonNull Group group);
-
-  /**
-   * Create group task.
-   *
-   * @param user     the user
-   * @param group    the group
-   * @param taskName the task name
-   * @param status   the status
-   * @return the statuses
-   */
-  Statuses createGroupTask(@NonNull User user,
-                           @NonNull Group group,
-                           @NonNull String taskName,
-                           @NonNull TaskStatuses status);
-
-  /**
-   * Create extended group task.
-   *
-   * @param user           the user
-   * @param group          the group
-   * @param taskName       the task name
-   * @param status         the status
-   * @param repetitionType the repetition type
-   * @param remindType     the remind type
-   * @param importance     the importance
-   * @param description    the description
-   * @param time           the time
-   * @return the statuses
-   */
-  Statuses createGroupTask(@NonNull User user,
-                           @NonNull Group group,
-                           @NonNull String taskName,
-                           @NonNull TaskStatuses status,
-                           @NonNull RepetitionTypes repetitionType,
-                           @NonNull RemindTypes remindType,
-                           @NonNull Importances importance,
-                           @NonNull String description,
-                           @NonNull Date time);
-
-  /**
-   * Edit group task.
-   *
-   * @param user  the user
-   * @param group the group
-   * @param task  the task
-   * @return the statuses
-   */
-  Statuses editGroupTask(@NonNull User user, @NonNull Group group, @NonNull Task task);
-
-  /**
-   * Delete group task.
-   *
-   * @param user  the user
-   * @param group the group
-   * @param task  the task
-   * @return the statuses
-   */
-  Statuses deleteGroupTask(@NonNull User user, @NonNull Group group, @NonNull Task task);
-
-  /**
-   * Ban user.
-   *
-   * @param user      the user
-   * @param group     the group
-   * @param userToBan the user to ban
-   * @return the statuses
-   */
-  Statuses banUser(@NonNull User user, @NonNull Group group, @NonNull User userToBan);
-
-  /**
-   * Unban user.
-   *
-   * @param user       the user
-   * @param group      the group
-   * @param bannedUser the banned user
-   * @return the statuses
-   */
-  Statuses unbanUser(@NonNull User user, @NonNull Group group, @NonNull User bannedUser);
-
-  /**
-   * Accept task.
-   *
-   * @param user  the user
-   * @param group the group
-   * @param task  the task
-   * @return the statuses
-   */
-  Statuses acceptTask(@NonNull User user, @NonNull Group group, @NonNull Task task);
-
-  /**
-   * Decline task.
-   *
-   * @param user  the user
-   * @param group the group
-   * @param task  the task
-   * @return the statuses
-   */
-  Statuses declineTask(@NonNull User user, @NonNull Group group, @NonNull Task task);
-
-  /**
-   * Accept user.
-   *
-   * @param user         the user
-   * @param group        the group
-   * @param userToAccept the user to accept
-   * @return the statuses
-   */
-  Statuses acceptUser(@NonNull User user, @NonNull Group group, @NonNull User userToAccept);
-
-  /**
-   * Decline user.
-   *
-   * @param user          the user
-   * @param group         the group
-   * @param userToDecline the user to decline
-   * @return the statuses
-   */
-  Statuses declineUser(@NonNull User user, @NonNull Group group, @NonNull User userToDecline);
-
-  /**
-   * Give administrator status.
-   *
-   * @param user             the user
-   * @param group            the group
-   * @param newAdministrator the new administrator
-   * @return the statuses
-   */
-  Statuses giveAdministratorStatus(@NonNull User user, @NonNull Group group, @NonNull User newAdministrator);
-
-  /**
-   * Take away administrator status.
-   *
-   * @param user          the user
-   * @param group         the group
-   * @param administrator the administrator
-   * @return the statuses
-   */
-  Statuses takeAwayAdministratorStatus(@NonNull User user, @NonNull Group group, @NonNull User administrator);
-
-  /**
-   * Delete group.
-   *
-   * @param user  the user
-   * @param group the group
-   * @return the statuses
-   */
   Statuses deleteGroup(@NonNull User user, @NonNull Group group);
+
+
+
 }

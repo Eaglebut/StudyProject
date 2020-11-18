@@ -4,6 +4,8 @@ public enum Statuses {
     INSERTED,
     UPDATED,
     DELETED,
-    FAILED
+    FAILED,
+    NOT_FOUNDED,
+    FORBIDDEN
 
 }

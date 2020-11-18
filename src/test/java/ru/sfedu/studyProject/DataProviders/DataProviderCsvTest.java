@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.SignUpTypes;
+import ru.sfedu.studyProject.enums.Statuses;
 import ru.sfedu.studyProject.enums.TaskStatuses;
 import ru.sfedu.studyProject.enums.TaskTypes;
 import ru.sfedu.studyProject.model.ModificationRecord;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -182,5 +184,24 @@ class DataProviderCsvTest {
         Assertions.assertFalse(user.isPresent());
     }
 
+    @Test
+    @Order(2)
+    void createTaskCorrect() throws IOException {
+        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+        Assertions.assertTrue(serverUser.isPresent());
+        List<Task> taskList = serverUser.get().getTaskList();
+        Date taskName = new Date(System.currentTimeMillis());
+        Task correctTask = getCorrectTestTaskList().get(0);
+        Assertions.assertEquals(Statuses.INSERTED,
+                dataProvider.createTask(getCorrectTestUser(),
+                        taskName.toString(),
+                        correctTask.getStatus()));
+        Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
+        Assertions.assertTrue(updatedUser.isPresent());
+        Assertions.assertEquals(taskList.size() + 1,
+               updatedUser.get().getTaskList().size());
+        Assertions.assertTrue(updatedUser.get().getTaskList().stream()
+                .anyMatch(task -> task.getName().equals(taskName.toString())));
+    }
 
 }

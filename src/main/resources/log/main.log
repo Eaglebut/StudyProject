@@ -888,3 +888,326 @@
 2020-11-18 14:48:51 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\modificationrecord.csv
 2020-11-18 14:48:51 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
 2020-11-18 14:48:52 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:03:18 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\user.csv
+2020-11-18 15:03:18 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:03:18 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:03:18 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\task.csv
+2020-11-18 15:03:18 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:03:18 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:03:18 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:03:18 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:03:18 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:03:50 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\user.csv
+2020-11-18 15:03:51 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:03:51 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:03:51 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\task.csv
+2020-11-18 15:03:51 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:03:51 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:03:51 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:03:51 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:03:51 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:16:29 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\user.csv
+2020-11-18 15:16:29 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:16:29 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:16:29 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\task.csv
+2020-11-18 15:16:29 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:16:29 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:16:29 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:16:29 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:16:29 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:18:13 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\user.csv
+2020-11-18 15:18:13 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:18:13 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:18:13 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\task.csv
+2020-11-18 15:18:13 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:18:13 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:18:13 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:18:13 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:18:13 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:18:35 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\user.csv
+2020-11-18 15:18:35 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:18:35 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:18:35 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\task.csv
+2020-11-18 15:18:35 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:18:35 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:18:35 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:18:35 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:18:35 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:19:36 DEBUG ClientTest:28 - 1
+2020-11-18 15:19:37 DEBUG ClientTest:29 - 0
+2020-11-18 15:19:37 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\user.csv
+2020-11-18 15:19:37 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:19:37 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:19:37 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\task.csv
+2020-11-18 15:19:37 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:19:37 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:19:37 DEBUG DataProviderCsv:118 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:19:37 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:19:37 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:53:24 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\user.csv
+2020-11-18 15:53:24 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:53:24 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:53:24 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:53:24 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:53:24 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:53:24 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:53:24 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:53:24 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:53:24 DEBUG DataProviderCsv:290 - Task(id=2, created=Wed Nov 18 15:53:24 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 15:53:24 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:53:24 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:53:24 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:53:24 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:53:34 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\user.csv
+2020-11-18 15:53:34 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:53:34 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:53:34 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:53:34 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:53:34 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:53:34 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:53:34 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:53:34 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:53:34 DEBUG DataProviderCsv:290 - Task(id=2, created=Wed Nov 18 15:53:34 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 15:53:34 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:53:34 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:53:34 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:53:34 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:54:11 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\user.csv
+2020-11-18 15:54:11 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:54:11 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:54:11 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:54:11 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:54:11 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:54:11 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:54:11 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:54:11 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:54:11 DEBUG DataProviderCsv:290 - Task(id=3, created=Wed Nov 18 15:54:11 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 15:54:11 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:54:11 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:54:11 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:54:11 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:56:36 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\user.csv
+2020-11-18 15:56:36 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:56:36 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 15:56:36 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:56:36 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:56:36 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:56:36 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 15:56:36 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:56:36 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:56:36 DEBUG DataProviderCsv:292 - Task(id=3, created=Wed Nov 18 15:56:36 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 15:56:36 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:56:36 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:56:36 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:56:36 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:58:06 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:58:06 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:58:06 DEBUG DataProviderCsv:292 - Task(id=4, created=Wed Nov 18 15:58:06 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 15:58:06 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:58:06 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:58:06 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:58:06 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:58:06 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:58:25 DEBUG DataProviderCsvTest:149 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:58:25 DEBUG DataProviderCsvTest:171 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 15:58:25 DEBUG DataProviderCsv:292 - Task(id=5, created=Wed Nov 18 15:58:25 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 15:58:25 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 15:58:25 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:58:25 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:58:25 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 15:58:25 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 15:58:25 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:07:10 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:07:10 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:07:10 DEBUG DataProviderCsv:292 - Task(id=6, created=Wed Nov 18 16:07:10 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:07:10 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 16:07:10 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:07:10 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:07:10 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:07:10 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:07:10 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:07:10 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:07:30 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\user.csv
+2020-11-18 16:07:30 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:07:30 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:07:30 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 16:07:30 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:07:30 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:07:30 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:07:30 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:07:30 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:07:30 DEBUG DataProviderCsv:292 - Task(id=3, created=Wed Nov 18 16:07:30 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:07:30 DEBUG DataProviderCsv:126 - src\main\resources\data\csv\task.csv
+2020-11-18 16:07:30 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:07:30 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:07:30 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:18:28 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:18:28 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:18:28 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:18:28 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:18:28 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:18:28 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:18:28 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:18:28 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:18:28 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:18:28 DEBUG DataProviderCsv:293 - Task(id=3, created=Wed Nov 18 16:18:28 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:18:28 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:18:28 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:18:28 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:18:28 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:19:04 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:19:04 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:19:04 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:19:04 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:19:04 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:19:04 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:19:04 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:19:04 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:19:04 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:19:04 DEBUG DataProviderCsv:293 - Task(id=3, created=Wed Nov 18 16:19:04 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:19:04 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:19:04 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:19:04 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:19:04 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:20:12 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:20:12 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:20:12 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:20:12 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:20:12 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:20:12 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:20:12 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:20:12 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:20:12 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:20:12 DEBUG DataProviderCsv:293 - Task(id=3, created=Wed Nov 18 16:20:12 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:20:12 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:20:12 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:20:12 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:20:12 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:20:12 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\arraylist.csv
+2020-11-18 16:21:35 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:21:35 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:21:35 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:21:35 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:21:35 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:21:35 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:21:35 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:21:35 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:21:35 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:21:35 DEBUG DataProviderCsv:293 - Task(id=3, created=Wed Nov 18 16:21:35 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:21:35 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:21:35 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:21:35 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:21:35 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:22:13 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:22:13 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:22:13 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:22:13 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:22:13 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:22:13 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:22:13 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:22:13 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:22:13 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:22:13 DEBUG DataProviderCsv:293 - Task(id=3, created=Wed Nov 18 16:22:13 MSK 2020, name=added task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:22:13 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:22:13 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:22:13 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:22:13 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:23:34 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:23:34 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:23:34 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:23:34 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:23:34 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:23:34 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:23:34 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:23:34 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:23:34 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:23:34 DEBUG DataProviderCsv:293 - Task(id=3, created=Wed Nov 18 16:23:34 MSK 2020, name=added task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:23:34 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:23:34 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:23:34 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:23:34 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:24:32 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:24:32 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:24:32 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:24:32 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:24:32 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:24:32 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:24:32 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:24:32 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:24:32 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:24:32 DEBUG DataProviderCsv:293 - Task(id=3, created=Wed Nov 18 16:24:32 MSK 2020, name=added task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:24:32 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:24:32 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:24:32 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:24:32 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:24:32 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:24:32 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:24:32 DEBUG TaskConverter:52 - [1,2,3]
+2020-11-18 16:26:28 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:26:28 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:26:28 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:26:28 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:26:28 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:26:28 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:26:28 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:26:28 DEBUG DataProviderCsvTest:150 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:26:28 DEBUG DataProviderCsvTest:172 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:26:28 DEBUG DataProviderCsv:293 - Task(id=3, created=Wed Nov 18 16:26:28 MSK 2020, name=added task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:26:28 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:26:28 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:26:28 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:26:28 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:26:28 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:26:28 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:26:28 DEBUG TaskConverter:52 - [1,2,3]
+2020-11-18 16:30:46 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:30:46 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:30:46 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:30:46 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:30:46 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:30:46 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:30:46 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:30:46 DEBUG DataProviderCsvTest:151 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:30:46 DEBUG DataProviderCsvTest:173 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:30:46 DEBUG DataProviderCsv:293 - Task(id=3, created=Wed Nov 18 16:30:46 MSK 2020, name=Wed Nov 18 16:30:46 MSK 2020, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:30:46 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:30:46 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:30:46 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:30:46 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:30:46 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:30:46 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:30:46 DEBUG TaskConverter:52 - [1,2,3]
+2020-11-18 16:42:37 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:42:37 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:42:37 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:42:37 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:42:37 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:42:37 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:42:37 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:42:37 DEBUG DataProviderCsvTest:151 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:42:37 DEBUG DataProviderCsvTest:173 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:42:37 DEBUG DataProviderCsv:292 - Task(id=3, created=Wed Nov 18 16:42:37 MSK 2020, name=Wed Nov 18 16:42:37 MSK 2020, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:42:37 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\task.csv
+2020-11-18 16:42:37 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:42:37 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:42:37 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:42:37 DEBUG DataProviderCsv:127 - src\main\resources\data\csv\user.csv
+2020-11-18 16:42:37 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:42:37 DEBUG TaskConverter:52 - [1,2,3]
+2020-11-18 16:56:23 DEBUG DataProviderCsv:97 - src\main\resources\data\csv\user.csv
+2020-11-18 16:56:23 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:56:23 DEBUG TaskConverter:52 - [1,2]
+2020-11-18 16:56:23 DEBUG DataProviderCsv:97 - src\main\resources\data\csv\task.csv
+2020-11-18 16:56:23 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:56:23 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:56:23 DEBUG DataProviderCsv:97 - src\main\resources\data\csv\modificationrecord.csv
+2020-11-18 16:56:23 DEBUG DataProviderCsvTest:151 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:56:23 DEBUG DataProviderCsvTest:173 - User(id=1, created=Wed Nov 11 13:09:20 MSK 2020, email=test@test.test, password=testPass, name=testName, surname=testSurname, token=token, signUpType=SIMPLE, taskList=[Task(id=1, created=Wed Nov 11 13:09:20 MSK 2020, name=Test task, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[ModificationRecord(id=1, changedValueName=NAME, changedDate=Fri Nov 13 13:09:20 MSK 2020, changedValue=Test task 0)]), Task(id=2, created=Thu Nov 12 13:09:20 MSK 2020, name=Test task 1, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])], historyList=[])
+2020-11-18 16:56:23 DEBUG DataProviderCsv:262 - Task(id=3, created=Wed Nov 18 16:56:23 MSK 2020, name=Wed Nov 18 16:56:23 MSK 2020, status=TEST_TASK_STATUS, taskType=BASIC, historyList=[])
+2020-11-18 16:56:23 DEBUG DataProviderCsv:97 - src\main\resources\data\csv\task.csv
+2020-11-18 16:56:23 DEBUG ModificationRecordConverter:55 - [1]
+2020-11-18 16:56:23 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:56:23 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:56:23 DEBUG DataProviderCsv:97 - src\main\resources\data\csv\user.csv
+2020-11-18 16:56:23 DEBUG ModificationRecordConverter:55 - []
+2020-11-18 16:56:23 DEBUG TaskConverter:52 - [1,2,3]
