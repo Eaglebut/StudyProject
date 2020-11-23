@@ -13,10 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
-import ru.sfedu.studyProject.model.Group;
-import ru.sfedu.studyProject.model.ModificationRecord;
-import ru.sfedu.studyProject.model.Task;
-import ru.sfedu.studyProject.model.User;
+import ru.sfedu.studyProject.model.*;
 import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.*;
@@ -42,12 +39,7 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO make private
   public <T> void insertIntoCsv(T object) throws IOException {
-    insertIntoCsv(object, false);
-  }
-
-  //TODO make private
-  public <T> void insertIntoCsv(T object, boolean overwrite) throws IOException {
-    insertIntoCsv(Collections.singletonList(object), overwrite);
+    insertIntoCsv(Collections.singletonList(object), false);
   }
 
   //TODO make private
@@ -132,6 +124,24 @@ public class DataProviderCsv implements DataProvider {
     return tList;
   }
 
+  public void deleteAll() {
+    List<Class> classList = new ArrayList<>();
+    classList.add(ExtendedTask.class);
+    classList.add(Group.class);
+    classList.add(ModificationRecord.class);
+    classList.add(PasswordedGroup.class);
+    classList.add(Task.class);
+    classList.add(User.class);
+    classList.forEach(aClass -> {
+      try {
+        new File(PropertyLoader.getProperty(Constants.CSV_PATH)
+                + aClass.getSimpleName().toLowerCase()
+                + PropertyLoader.getProperty(Constants.CSV_EXTENSION)).delete();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
+  }
 
   private Optional<User> getUserProfile(long userId) {
     try {
@@ -217,14 +227,23 @@ public class DataProviderCsv implements DataProvider {
   private List<Task> getTasks(@NonNull User user) throws NoSuchElementException {
     try {
       List<Task> taskList = getFromCsv(Task.class);
+      List<ExtendedTask> extendedTasks = getFromCsv(ExtendedTask.class);
       List<Task> usersTaskList = user.getTaskList();
       List<Task> usersFilledTaskList = new ArrayList<>();
+      List<Long> extendedTaskIdList = new ArrayList<>();
       usersTaskList.forEach(usersTask -> taskList.forEach(task -> {
         if (usersTask.getId() == task.getId()) {
           task.setHistoryList(getHistoryList(task));
-          usersFilledTaskList.add(task);
+          if (task.getTaskType() == TaskTypes.EXTENDED) {
+            extendedTaskIdList.add(task.getId());
+          } else {
+            usersFilledTaskList.add(task);
+          }
         }
       }));
+      usersFilledTaskList.addAll(extendedTasks.stream()
+              .filter(extendedTask -> extendedTaskIdList.contains(extendedTask.getId()))
+              .collect(Collectors.toList()));
       return usersFilledTaskList;
     } catch (IOException e) {
       log.error(e);
@@ -234,24 +253,41 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO need metadata
   private <T> long getNextId(Class<T> tClass) throws IOException {
-      return getFromCsv(tClass).size() + 1;
+    return getFromCsv(tClass).size() + 1;
   }
 
-  @Override
-  public Statuses createTask(@NonNull User user,
-                             @NonNull String taskName,
-                             @NonNull TaskStatuses status) {
+  private ModificationRecord addHistoryRecord(String changedValueName, OperationType operationType, String changedValue) {
+    try {
+      ModificationRecord record = new ModificationRecord();
+      record.setId(getNextId(ModificationRecord.class));
+      record.setChangedValueName(changedValueName);
+      record.setOperationType(operationType);
+      record.setChangedDate(new Date(System.currentTimeMillis()));
+      record.setChangedValue(changedValue);
+      insertIntoCsv(record);
+      return record;
+    } catch (IOException e) {
+      log.error(e);
+      return null;
+    }
+  }
+
+  private Statuses createTask(User user, String taskName, TaskStatuses status, TaskTypes taskType) {
     try {
       Task createdTask = new Task();
       createdTask.setId(getNextId(Task.class));
       createdTask.setName(taskName);
-      createdTask.setTaskType(TaskTypes.BASIC);
+      createdTask.setTaskType(taskType);
       createdTask.setCreated(new Date(System.currentTimeMillis()));
       createdTask.setHistoryList(new ArrayList<>());
       createdTask.setStatus(status);
       log.debug(createdTask);
-      insertIntoCsv(createdTask, false);
+      insertIntoCsv(createdTask);
       user.getTaskList().add(createdTask);
+      user.getHistoryList()
+              .add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+                      OperationType.ADD,
+                      String.valueOf(createdTask.getId())));
       updateUser(user);
     } catch (IOException e) {
       log.error(e);
@@ -260,10 +296,48 @@ public class DataProviderCsv implements DataProvider {
     return Statuses.INSERTED;
   }
 
+
+  @Override
+  public Statuses createTask(@NonNull User user,
+                             @NonNull String taskName,
+                             @NonNull TaskStatuses status) {
+    return createTask(user, taskName, status, TaskTypes.BASIC);
+  }
+
   //TODO
   @Override
-  public Statuses createTask(@NonNull User user, @NonNull String taskName, @NonNull TaskStatuses status, @NonNull RepetitionTypes repetitionType, @NonNull RemindTypes remindType, @NonNull Importances importance, @NonNull String description, @NonNull Date time) {
-    return null;
+  public Statuses createTask(@NonNull User user,
+                             @NonNull String taskName,
+                             @NonNull TaskStatuses status,
+                             @NonNull RepetitionTypes repetitionType,
+                             @NonNull RemindTypes remindType,
+                             @NonNull Importances importance,
+                             @NonNull String description,
+                             @NonNull Date time) {
+    try {
+      ExtendedTask task = new ExtendedTask();
+      task.setId(getNextId(Task.class));
+      task.setName(taskName);
+      task.setTaskType(TaskTypes.EXTENDED);
+      task.setStatus(status);
+      task.setRepetitionType(repetitionType);
+      task.setRemindType(remindType);
+      task.setImportance(importance);
+      task.setDescription(description);
+      task.setTime(time);
+      task.setCreated(new Date(System.currentTimeMillis()));
+      task.setHistoryList(new ArrayList<>());
+      var insertionStatus = createTask(user, taskName, status, TaskTypes.EXTENDED);
+      if (insertionStatus != Statuses.INSERTED) {
+        return insertionStatus;
+      }
+      user.getTaskList().set(user.getTaskList().size() - 1, task);
+      insertIntoCsv(task);
+      return insertionStatus;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
   //TODO

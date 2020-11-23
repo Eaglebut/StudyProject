@@ -4,10 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
 import ru.sfedu.studyProject.Constants;
-import ru.sfedu.studyProject.enums.SignUpTypes;
-import ru.sfedu.studyProject.enums.Statuses;
-import ru.sfedu.studyProject.enums.TaskStatuses;
-import ru.sfedu.studyProject.enums.TaskTypes;
+import ru.sfedu.studyProject.enums.*;
 import ru.sfedu.studyProject.model.ModificationRecord;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
@@ -16,10 +13,7 @@ import ru.sfedu.studyProject.utils.PropertyLoader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -113,6 +107,7 @@ class DataProviderCsvTest {
                 getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE_NAME));
         modificationRecord.setChangedValue(
                 PropertyLoader.getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE));
+        modificationRecord.setOperationType(OperationType.ADD);
         historyList.add(modificationRecord);
         return historyList;
     }
@@ -124,7 +119,8 @@ class DataProviderCsvTest {
         boolean overwrite = true;
         User user = getCorrectTestUser();
         DataProviderCsv dataProviderCSV = (DataProviderCsv) dataProvider;
-        dataProviderCSV.insertIntoCsv(user, overwrite);
+        dataProviderCSV.deleteAll();
+        dataProviderCSV.insertIntoCsv(Collections.singletonList(user), overwrite);
         dataProviderCSV.insertIntoCsv(user.getTaskList(), overwrite);
         dataProviderCSV.insertIntoCsv(user.getHistoryList(), overwrite);
         user.getTaskList().forEach(task -> {
@@ -202,9 +198,30 @@ class DataProviderCsvTest {
         Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
         Assertions.assertTrue(updatedUser.isPresent());
         Assertions.assertEquals(taskList.size() + 1,
-               updatedUser.get().getTaskList().size());
+                updatedUser.get().getTaskList().size());
         Assertions.assertTrue(updatedUser.get().getTaskList().stream()
                 .anyMatch(task -> task.getName().equals(taskName.toString())));
+    }
+
+    @Test
+    void createExtendedTaskCorrect() throws IOException {
+        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+        Assertions.assertTrue(serverUser.isPresent());
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(serverUser.get(),
+                "test",
+                TaskStatuses.TEST_TASK_STATUS,
+                RepetitionTypes.DONT_REPEAT,
+                RemindTypes.DONT_REMIND,
+                Importances.ORDINAL,
+                "test",
+                new Date(System.currentTimeMillis())
+        ));
+        Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
+        Assertions.assertTrue(updatedUser.isPresent());
+        Assertions.assertEquals(serverUser.get().getTaskList().size(),
+                updatedUser.get().getTaskList().size());
+        Assertions.assertTrue(updatedUser.get().getTaskList().stream()
+                .anyMatch(task -> task.getName().equals("test")));
     }
 
 }

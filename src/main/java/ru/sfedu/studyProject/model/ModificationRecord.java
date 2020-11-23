@@ -3,12 +3,9 @@ package ru.sfedu.studyProject.model;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvDate;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ru.sfedu.studyProject.Constants;
+import ru.sfedu.studyProject.enums.OperationType;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -35,6 +32,8 @@ public class ModificationRecord implements Serializable {
   private Date changedDate;
   @CsvBindByName
   private String changedValue;
+  @CsvBindByName
+  private OperationType operationType;
 
   //
   // Methods

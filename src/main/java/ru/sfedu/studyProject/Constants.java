@@ -46,4 +46,5 @@ public class Constants {
   public static final String TEST_USER_INCORRECT_PASSWORD = "test.user.incorrect.password";
   public static final String CONVERTER_REGEXP_WITHOUT_QUOTES = "converter.regexp.withoutQuotes";
   public static final String CONVERTER_REGEXP_WITH_QUOTES = "converter.regexp.withQuotes";
+  public static final String FIELD_NAME_TASK = "field.name.task";
 }
