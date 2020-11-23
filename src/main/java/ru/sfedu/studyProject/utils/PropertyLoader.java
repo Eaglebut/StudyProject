@@ -17,7 +17,7 @@ import java.util.Properties;
  */
 public class PropertyLoader {
 
-  private static final String DEFAULT_CONFIG_PATH = "./src/main/resources/enviroment.properties";
+  private static final String DEFAULT_CONFIG_PATH = "./src/main/resources/environment.properties";
   private static final Properties PROPERTIES = new Properties();
 
 

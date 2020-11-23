@@ -1,6 +1,7 @@
 package ru.sfedu.studyProject.converters;
 
 import com.opencsv.bean.AbstractBeanField;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.sfedu.studyProject.Constants;
@@ -16,17 +17,27 @@ public class TaskConverter extends AbstractBeanField<Task, Integer> {
 
   private static final Logger log = LogManager.getLogger(TaskConverter.class);
 
+
   @Override
-  protected Object convert(String s) {
+  protected Object convert(String s) throws CsvDataTypeMismatchException {
     try {
-      String indexString = s.substring(1, s.length() - 1);
+      String indexString;
+      if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_WITHOUT_QUOTES))) {
+        indexString = s.substring(1, s.length() - 1);
+      } else if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_WITH_QUOTES))) {
+        indexString = s.substring(2, s.length() - 2);
+      } else {
+        throw new CsvDataTypeMismatchException();
+      }
       String[] unparsedIndexList = indexString.split(
               PropertyLoader.getProperty(Constants.ARRAY_DELIMITER));
       List<Task> indexTaskList = new ArrayList<>();
       for (String strIndex : unparsedIndexList) {
-        Task task = new Task();
-        task.setId(Long.parseLong(strIndex));
-        indexTaskList.add(task);
+        if (!strIndex.isEmpty()) {
+          Task task = new Task();
+          task.setId(Long.parseLong(strIndex));
+          indexTaskList.add(task);
+        }
       }
       return indexTaskList;
     } catch (IOException e) {
@@ -34,6 +45,7 @@ public class TaskConverter extends AbstractBeanField<Task, Integer> {
       return null;
     }
   }
+
 
   @Override
   protected String convertToWrite(Object value) {

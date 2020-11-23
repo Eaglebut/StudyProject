@@ -9,7 +9,6 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.NonNull;
-import lombok.var;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.sfedu.studyProject.Constants;
@@ -20,18 +19,9 @@ import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
 import ru.sfedu.studyProject.utils.PropertyLoader;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataProviderCsv implements DataProvider {
@@ -148,8 +138,8 @@ public class DataProviderCsv implements DataProvider {
       List<User> userList = getFromCsv(User.class);
       return userList
               .stream()
-              .findFirst()
-              .filter(user -> user.getId() == userId);
+              .filter(user -> user.getId() == userId)
+              .findFirst();
 
     } catch (IOException e) {
       log.error(e);
@@ -288,7 +278,22 @@ public class DataProviderCsv implements DataProvider {
     return null;
   }
 
-  private Statuses updateUser(@NonNull User editedUser){
+  public Statuses createUser(User user) {
+    try {
+      List<User> userList = getFromCsv(User.class);
+      if (userList.stream().anyMatch(listUser -> listUser.getEmail().equals(user.getEmail()))) {
+        return Statuses.FORBIDDEN;
+      }
+      user.setId(getNextId(User.class));
+      insertIntoCsv(user);
+      return Statuses.INSERTED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+  private Statuses updateUser(@NonNull User editedUser) {
     try {
       var userList = getFromCsv(User.class);
 
@@ -296,7 +301,7 @@ public class DataProviderCsv implements DataProvider {
               .filter(user -> user.getId() == editedUser.getId())
               .findFirst();
 
-      if (!optionalUser.isPresent()) {
+      if (optionalUser.isEmpty()) {
         return Statuses.NOT_FOUNDED;
       }
 
@@ -320,7 +325,7 @@ public class DataProviderCsv implements DataProvider {
               .filter(user -> user.getId() == editedUser.getId())
               .findFirst();
 
-      if (!optionalUser.isPresent()) {
+      if (optionalUser.isEmpty()) {
         return Statuses.NOT_FOUNDED;
       }
 

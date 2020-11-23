@@ -1,6 +1,5 @@
 package ru.sfedu.studyProject.DataProviders;
 
-import lombok.var;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
@@ -132,10 +131,14 @@ class DataProviderCsvTest {
             try {
                 dataProviderCSV.insertIntoCsv(task.getHistoryList(), overwrite);
             } catch (IOException e) {
-                    log.error(e);
-                }
-            });
+                log.error(e);
+            }
+        });
 
+        user.setTaskList(new ArrayList<>());
+        user.setHistoryList(new ArrayList<>());
+        user.setEmail("test");
+        Assertions.assertEquals(dataProviderCSV.createUser(user), Statuses.INSERTED);
     }
 
 
@@ -145,7 +148,7 @@ class DataProviderCsvTest {
         User correctUser = getCorrectTestUser();
         Optional<User> user = dataProvider.getUser(Integer.parseInt(
                 PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID)));
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             Assertions.fail(PropertyLoader.getProperty(Constants.MESSAGE_NULL_METHOD));
         }
         log.debug(user.get());
@@ -167,7 +170,7 @@ class DataProviderCsvTest {
         Optional<User> user = dataProvider.getUser(
                 PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_EMAIL),
                 PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_PASSWORD));
-        if (!user.isPresent()) {
+        if (user.isEmpty()) {
             Assertions.fail(PropertyLoader.getProperty(Constants.MESSAGE_NULL_METHOD));
         }
         log.debug(user.get());

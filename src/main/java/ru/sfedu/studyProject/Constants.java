@@ -44,4 +44,6 @@ public class Constants {
   public static final String TEST_USER_INCORRECT_ID = "test.user.incorrect.id";
   public static final String TEST_USER_INCORRECT_EMAIL = "test.user.incorrect.email";
   public static final String TEST_USER_INCORRECT_PASSWORD = "test.user.incorrect.password";
+  public static final String CONVERTER_REGEXP_WITHOUT_QUOTES = "converter.regexp.withoutQuotes";
+  public static final String CONVERTER_REGEXP_WITH_QUOTES = "converter.regexp.withQuotes";
 }
