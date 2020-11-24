@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
 import ru.sfedu.studyProject.model.*;
+import ru.sfedu.studyProject.utils.Metadata;
 import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.*;
@@ -37,26 +38,20 @@ public class DataProviderCsv implements DataProvider {
     return INSTANCE;
   }
 
-  //TODO make private
-  public <T> void insertIntoCsv(T object) throws IOException {
-    insertIntoCsv(Collections.singletonList(object), false);
+  private <T> void insertIntoCsv(T object) throws IOException {
+    insertIntoCsv(object.getClass(), Collections.singletonList(object), false);
   }
 
-  //TODO make private
-  public <T> void insertIntoCsv(List<T> objectList, boolean overwrite) throws IOException {
-    Optional<T> tOptional = objectList.stream().findAny();
-    Class<?> tClass;
-    if (tOptional.isPresent()) {
-      tClass = tOptional.get().getClass();
-    } else {
-      return;
-    }
+  private <T> void insertIntoCsv(Class<?> tClass, List<T> objectList, boolean overwrite) throws IOException {
     List<T> tList;
     if (!overwrite) {
       tList = (List<T>) getFromCsv(tClass);
       tList.addAll(objectList);
     } else {
       tList = objectList;
+    }
+    if (tList.isEmpty()) {
+      deleteFile(tClass);
     }
     CSVWriter csvWriter = getCsvWriter(tClass);
     StatefulBeanToCsv<T> beanToCsv = new StatefulBeanToCsvBuilder<T>(csvWriter)
@@ -132,15 +127,18 @@ public class DataProviderCsv implements DataProvider {
     classList.add(PasswordedGroup.class);
     classList.add(Task.class);
     classList.add(User.class);
-    classList.forEach(aClass -> {
-      try {
-        new File(PropertyLoader.getProperty(Constants.CSV_PATH)
-                + aClass.getSimpleName().toLowerCase()
-                + PropertyLoader.getProperty(Constants.CSV_EXTENSION)).delete();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
-    });
+    classList.add(Metadata.class);
+    classList.forEach(this::deleteFile);
+  }
+
+  private <T> void deleteFile(Class<T> tClass) {
+    try {
+      new File(PropertyLoader.getProperty(Constants.CSV_PATH)
+              + tClass.getSimpleName().toLowerCase()
+              + PropertyLoader.getProperty(Constants.CSV_EXTENSION)).delete();
+    } catch (IOException e) {
+      log.error(e);
+    }
   }
 
   private Optional<User> getUserProfile(long userId) {
@@ -170,7 +168,6 @@ public class DataProviderCsv implements DataProvider {
       return Optional.empty();
     }
   }
-
 
 
   private <T> List<ModificationRecord> getHistoryList(T object) {
@@ -251,9 +248,35 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO need metadata
   private <T> long getNextId(Class<T> tClass) throws IOException {
-    return getFromCsv(tClass).size() + 1;
+    List<Metadata> metadataList = getFromCsv(Metadata.class);
+    Optional<Metadata> optionalMetadata = metadataList.stream()
+            .filter(metadata -> metadata.getClassName().equals(tClass.getSimpleName().toLowerCase()))
+            .findAny();
+    if (optionalMetadata.isEmpty()) {
+      return 0;
+    }
+    return optionalMetadata.get().getLastId() + 1;
+  }
+
+  private <T> void nextId(Class<T> tClass) throws IOException {
+    List<Metadata> metadataList = getFromCsv(Metadata.class);
+    Optional<Metadata> optionalMetadata = metadataList.stream()
+            .filter(metadata -> metadata.getClassName().equals(tClass.getSimpleName().toLowerCase()))
+            .findAny();
+    Metadata metadata;
+    if (optionalMetadata.isEmpty()) {
+      metadata = new Metadata();
+      metadata.setClassName(tClass.getSimpleName().toLowerCase());
+      metadata.setLastId(1L);
+
+    } else {
+      metadata = optionalMetadata.get();
+      metadataList.remove(metadata);
+      metadata.setLastId(metadata.getLastId() + 1);
+    }
+    metadataList.add(metadata);
+    insertIntoCsv(Metadata.class, metadataList, true);
   }
 
   private ModificationRecord addHistoryRecord(String changedValueName, OperationType operationType, String changedValue) {
@@ -265,6 +288,7 @@ public class DataProviderCsv implements DataProvider {
       record.setChangedDate(new Date(System.currentTimeMillis()));
       record.setChangedValue(changedValue);
       insertIntoCsv(record);
+      nextId(ModificationRecord.class);
       return record;
     } catch (IOException e) {
       log.error(e);
@@ -272,7 +296,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  private Statuses createTask(User user, String taskName, TaskStatuses status, TaskTypes taskType) {
+  private Statuses createTask(long userId, String taskName, TaskStatuses status, TaskTypes taskType) {
     try {
       Task createdTask = new Task();
       createdTask.setId(getNextId(Task.class));
@@ -283,12 +307,20 @@ public class DataProviderCsv implements DataProvider {
       createdTask.setStatus(status);
       log.debug(createdTask);
       insertIntoCsv(createdTask);
-      user.getTaskList().add(createdTask);
-      user.getHistoryList()
-              .add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
-                      OperationType.ADD,
-                      String.valueOf(createdTask.getId())));
-      updateUser(user);
+      nextId(Task.class);
+      Optional<User> optionalUser = getUser(userId);
+      if (optionalUser.isEmpty()) {
+        return Statuses.FORBIDDEN;
+      } else {
+        User user = optionalUser.get();
+        user.getTaskList().add(createdTask);
+        user.getHistoryList()
+                .add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+                        OperationType.ADD,
+                        String.valueOf(createdTask.getId())));
+        updateUser(user);
+      }
+
     } catch (IOException e) {
       log.error(e);
       return Statuses.FAILED;
@@ -298,15 +330,15 @@ public class DataProviderCsv implements DataProvider {
 
 
   @Override
-  public Statuses createTask(@NonNull User user,
+  public Statuses createTask(long userId,
                              @NonNull String taskName,
                              @NonNull TaskStatuses status) {
-    return createTask(user, taskName, status, TaskTypes.BASIC);
+    return createTask(userId, taskName, status, TaskTypes.BASIC);
   }
 
-  //TODO
+
   @Override
-  public Statuses createTask(@NonNull User user,
+  public Statuses createTask(long userId,
                              @NonNull String taskName,
                              @NonNull TaskStatuses status,
                              @NonNull RepetitionTypes repetitionType,
@@ -315,6 +347,13 @@ public class DataProviderCsv implements DataProvider {
                              @NonNull String description,
                              @NonNull Date time) {
     try {
+
+      var optionalUser = getUser(userId);
+      if (optionalUser.isEmpty()) {
+        return Statuses.FORBIDDEN;
+      }
+      User user = optionalUser.get();
+
       ExtendedTask task = new ExtendedTask();
       task.setId(getNextId(Task.class));
       task.setName(taskName);
@@ -327,11 +366,12 @@ public class DataProviderCsv implements DataProvider {
       task.setTime(time);
       task.setCreated(new Date(System.currentTimeMillis()));
       task.setHistoryList(new ArrayList<>());
-      var insertionStatus = createTask(user, taskName, status, TaskTypes.EXTENDED);
+      var insertionStatus = createTask(user.getId(), taskName, status, TaskTypes.EXTENDED);
       if (insertionStatus != Statuses.INSERTED) {
         return insertionStatus;
       }
-      user.getTaskList().set(user.getTaskList().size() - 1, task);
+      user.getTaskList().add(task);
+      updateUser(user);
       insertIntoCsv(task);
       return insertionStatus;
     } catch (IOException e) {
@@ -340,26 +380,75 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
   @Override
-  public Statuses deleteTask(@NonNull User user, @NonNull Task task) {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Statuses editTask(@NonNull User user, @NonNull Task editedTask) {
-    return null;
-  }
-
-  public Statuses createUser(User user) {
+  public Statuses deleteTask(long userId, long taskId) {
     try {
-      List<User> userList = getFromCsv(User.class);
-      if (userList.stream().anyMatch(listUser -> listUser.getEmail().equals(user.getEmail()))) {
+      var optionalUser = getUser(userId);
+      if (optionalUser.isEmpty()) {
         return Statuses.FORBIDDEN;
       }
+      User user = optionalUser.get();
+
+      Optional<Task> optionalTaskToDelete = user.getTaskList().stream()
+              .filter(task -> task.getId() == taskId)
+              .findAny();
+      if (optionalTaskToDelete.isEmpty()) {
+        return Statuses.FORBIDDEN;
+      } else {
+        Task taskToDelete = optionalTaskToDelete.get();
+        user.getTaskList().remove(taskToDelete);
+
+        insertIntoCsv(Task.class, getFromCsv(Task.class)
+                .stream()
+                .filter(task -> taskId != task.getId())
+                .collect(Collectors.toList()), true);
+        if (taskToDelete.getTaskType() == TaskTypes.EXTENDED) {
+          insertIntoCsv(ExtendedTask.class, getFromCsv(ExtendedTask.class)
+                  .stream()
+                  .filter(task -> task.getId() != taskId)
+                  .collect(Collectors.toList()), true);
+        }
+        user.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+                OperationType.DELETE,
+                String.valueOf(taskId)));
+        updateUser(user);
+        return Statuses.DELETED;
+      }
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+  //TODO
+  @Override
+  public Statuses editTask(long userId, @NonNull Task editedTask) {
+    return null;
+  }
+
+  @Override
+  public Statuses createUser(@NonNull String email,
+                             @NonNull String password,
+                             @NonNull String name,
+                             @NonNull String surname,
+                             @NonNull SignUpTypes signUpType) {
+    try {
+      List<User> userList = getFromCsv(User.class);
+      if (userList.stream().anyMatch(listUser -> listUser.getEmail().equals(email))) {
+        return Statuses.FORBIDDEN;
+      }
+      User user = new User();
       user.setId(getNextId(User.class));
+      user.setEmail(email);
+      user.setPassword(password);
+      user.setName(name);
+      user.setSurname(surname);
+      user.setHistoryList(new ArrayList<>());
+      user.setTaskList(new ArrayList<>());
+      user.setSignUpType(signUpType);
+      user.setCreated(new Date(System.currentTimeMillis()));
       insertIntoCsv(user);
+      nextId(User.class);
       return Statuses.INSERTED;
     } catch (IOException e) {
       log.error(e);
@@ -381,7 +470,7 @@ public class DataProviderCsv implements DataProvider {
 
       userList.remove(optionalUser.get());
       userList.add(editedUser);
-      insertIntoCsv(userList, true);
+      insertIntoCsv(User.class, userList, true);
       return Statuses.UPDATED;
     } catch (IOException e) {
       log.error(e);
@@ -403,7 +492,7 @@ public class DataProviderCsv implements DataProvider {
         return Statuses.NOT_FOUNDED;
       }
 
-      if (!optionalUser.get().getTaskList().equals(editedUser.getTaskList())){
+      if (!optionalUser.get().getTaskList().equals(editedUser.getTaskList())) {
         return Statuses.FORBIDDEN;
       }
 
@@ -417,21 +506,22 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   //TODO
   @Override
-  public Statuses addUserToGroup(@NonNull User user, @NonNull Group group) {
+  public Statuses addUserToGroup(long userId, long groupId) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses createGroup(@NonNull String groupName, @NonNull User creator, @NonNull GroupTypes groupType) {
+  public Statuses createGroup(@NonNull String groupName, long creatorId, @NonNull GroupTypes groupType) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses changeGroupType(@NonNull User user, @NonNull Group group, @NonNull GroupTypes groupType) {
+  public Statuses changeGroupType(long userId, long groupId, @NonNull GroupTypes groupType) {
     return null;
   }
 
@@ -443,7 +533,7 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO
   @Override
-  public Group searchGroupById(@NonNull long id) throws NoSuchElementException {
+  public Group searchGroupById(long id) throws NoSuchElementException {
     return null;
   }
 
@@ -455,68 +545,61 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO
   @Override
-  public Optional<Group> getGroup(@NonNull long groupId) {
+  public Optional<Group> getGroup(long groupId) {
     return Optional.empty();
   }
 
   //TODO
   @Override
-  public Optional<Group> getGroup(@NonNull User user, @NonNull long groupId) {
+  public Optional<Group> getGroup(long userId, long groupId) {
     return Optional.empty();
   }
 
   //TODO
   @Override
-  public Statuses deleteUserFromGroup(@NonNull User user, @NonNull Group group) {
+  public Statuses deleteUserFromGroup(long userId, long groupId) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses createTask(@NonNull User user, @NonNull Group group, @NonNull Task task) {
+  public Statuses suggestTask(long userId, long groupId, long taskId) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses createTask(@NonNull User user, @NonNull Group group, @NonNull String name) {
+  public Statuses createTask(long userId, long groupId, @NonNull String name) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses createTask(@NonNull User user,
-                             @NonNull Group group,
-                             @NonNull String name,
-                             @NonNull RepetitionTypes repetitionType,
-                             @NonNull RemindTypes remindType,
-                             @NonNull Importances importance,
-                             @NonNull String description,
-                             @NonNull Date time) {
+  public Statuses createTask(long userId, long groupId, @NonNull String name, @NonNull RepetitionTypes repetitionType, @NonNull RemindTypes remindType, @NonNull Importances importance, @NonNull String description, @NonNull Date time) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses updateGroup(@NonNull User user, @NonNull Group group) {
+  public Statuses updateGroup(long userId, @NonNull Group editedGroup) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses setUserRole(@NonNull User user, @NonNull Group group, @NonNull User userToSet, @NonNull UserRole role) {
+  public Statuses setUserRole(long userId, long groupId, long userIdToSet, @NonNull UserRole role) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses changeTaskState(@NonNull User user, @NonNull Group group, @NonNull Task task, @NonNull TaskState state) {
+  public Statuses changeTaskState(long userId, long groupId, long taskId, @NonNull TaskState state) {
     return null;
   }
 
   //TODO
   @Override
-  public Statuses deleteGroup(@NonNull User user, @NonNull Group group) {
+  public Statuses deleteGroup(long userId, long groupId) {
     return null;
   }
 }

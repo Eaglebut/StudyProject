@@ -5,15 +5,15 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
-import ru.sfedu.studyProject.model.ModificationRecord;
+import ru.sfedu.studyProject.model.ExtendedTask;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
 import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -23,124 +23,57 @@ class DataProviderCsvTest {
 
     private static final DataProvider dataProvider = DataProviderCsv.getInstance();
 
-
-
     private User getCorrectTestUser() throws IOException {
         User user = new User();
-        user.setId(Integer.parseInt(
-                PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID)));
-        user.setName(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_NAME));
-        user.setSurname(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_SURNAME));
+        user.setId(Long.parseLong(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID)));
         user.setEmail(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_EMAIL));
         user.setPassword(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_PASSWORD));
-        user.setSignUpType(SignUpTypes.valueOf(
-                PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_SIGN_UP_TYPE)));
-        user.setToken(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_TOKEN));
-        user.setTaskList(getCorrectTestTaskList());
-        user.setHistoryList(new ArrayList<>());
-        try {
-            user.setCreated(new SimpleDateFormat(Constants.DATE_FORMAT)
-                    .parse(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_CREATED)));
-        } catch (ParseException e) {
-            log.error(e);
-        }
+        user.setName(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_NAME));
+        user.setSurname(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_SURNAME));
+        user.setSignUpType(SignUpTypes.valueOf(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_SIGN_UP_TYPE)));
         return user;
     }
 
-
-    private List<Task> getCorrectTestTaskList() throws IOException {
-        List<Task> taskList = new ArrayList<>();
-        Task correctTask = new Task();
-        correctTask.setId(Integer.parseInt(
-                PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_ID)));
-        correctTask.setName(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_NAME));
-        correctTask.setStatus(TaskStatuses
-                .valueOf(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_STATUS)));
-        correctTask.setTaskType(TaskTypes
-                .valueOf(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_TASK_TYPE)));
-        correctTask.setHistoryList(getCorrectTestHistoryList());
-        try {
-            correctTask.setCreated(
-                    new SimpleDateFormat(Constants.DATE_FORMAT)
-                            .parse(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_CREATED)));
-        } catch (ParseException e) {
-            log.error(e);
-        }
-        taskList.add(correctTask);
-
-        Task correctTask1 = new Task();
-        correctTask1.setId(Integer.parseInt(
-                PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_ID)));
-        correctTask1.setName(PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_NAME));
-        correctTask1.setStatus(TaskStatuses
-                .valueOf(PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_STATUS)));
-        correctTask1.setTaskType(TaskTypes
-                .valueOf(PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_TASK_TYPE)));
-        correctTask1.setHistoryList(new ArrayList<>());
-        try {
-            correctTask1.setCreated(
-                    new SimpleDateFormat(Constants.DATE_FORMAT)
-                            .parse(PropertyLoader.getProperty(Constants.TEST_TASK2_CORRECT_CREATED)));
-        } catch (ParseException e) {
-            log.error(e);
-        }
-        taskList.add(correctTask1);
-        return taskList;
+    private Task getCorrectTestTask() throws IOException {
+        Task task = new Task();
+        task.setId(Long.parseLong(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_ID)));
+        task.setName(new Date(System.currentTimeMillis()).toString());
+        task.setStatus(TaskStatuses.valueOf(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_STATUS)));
+        return task;
     }
 
-
-    private List<ModificationRecord> getCorrectTestHistoryList() throws IOException {
-        List<ModificationRecord> historyList = new ArrayList<>();
-
-        ModificationRecord modificationRecord = new ModificationRecord();
-        modificationRecord.setId(Long.parseLong(
-                PropertyLoader.getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_ID)));
-        try {
-            modificationRecord.setChangedDate(
-                    new SimpleDateFormat(Constants.DATE_FORMAT)
-                            .parse(PropertyLoader
-                                    .getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_DATE)));
-        } catch (ParseException e) {
-            log.error(e);
-        }
-        modificationRecord.setChangedValueName(PropertyLoader.
-                getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE_NAME));
-        modificationRecord.setChangedValue(
-                PropertyLoader.getProperty(Constants.TEST_MODIFICATION_RECORD_CORRECT_CHANGED_VALUE));
-        modificationRecord.setOperationType(OperationType.ADD);
-        historyList.add(modificationRecord);
-        return historyList;
+    private ExtendedTask getCorrectExtendedTestTask() throws IOException {
+        ExtendedTask task = new ExtendedTask();
+        task.setId(Long.parseLong(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_ID)));
+        task.setName(new Date(System.currentTimeMillis()).toString());
+        task.setStatus(TaskStatuses.valueOf(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_STATUS)));
+        task.setRepetitionType(RepetitionTypes.DONT_REPEAT);
+        task.setRemindType(RemindTypes.DONT_REMIND);
+        task.setImportance(Importances.ORDINAL);
+        task.setDescription("test");
+        task.setTime(new Date(System.currentTimeMillis()));
+        return task;
     }
 
 
     @Order(0)
     @Test
     void setCsvFile() throws IOException {
-        boolean overwrite = true;
-        User user = getCorrectTestUser();
         DataProviderCsv dataProviderCSV = (DataProviderCsv) dataProvider;
         dataProviderCSV.deleteAll();
-        dataProviderCSV.insertIntoCsv(Collections.singletonList(user), overwrite);
-        dataProviderCSV.insertIntoCsv(user.getTaskList(), overwrite);
-        dataProviderCSV.insertIntoCsv(user.getHistoryList(), overwrite);
-        user.getTaskList().forEach(task -> {
-            try {
-                dataProviderCSV.insertIntoCsv(task.getHistoryList(), overwrite);
-            } catch (IOException e) {
-                log.error(e);
-            }
-        });
+        User user = getCorrectTestUser();
 
-        user.setTaskList(new ArrayList<>());
-        user.setHistoryList(new ArrayList<>());
-        user.setEmail("test");
-        Assertions.assertEquals(dataProviderCSV.createUser(user), Statuses.INSERTED);
+        Assertions.assertEquals(Statuses.INSERTED, dataProviderCSV.createUser(user.getEmail(),
+                user.getPassword(),
+                user.getName(),
+                user.getSurname(),
+                user.getSignUpType()));
     }
 
 
     @Test
     @Order(1)
-    void getProfileInformationByIdCorrect() throws IOException {
+    void getUserByIdCorrect() throws IOException {
         User correctUser = getCorrectTestUser();
         Optional<User> user = dataProvider.getUser(Integer.parseInt(
                 PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID)));
@@ -148,12 +81,16 @@ class DataProviderCsvTest {
             Assertions.fail(PropertyLoader.getProperty(Constants.MESSAGE_NULL_METHOD));
         }
         log.debug(user.get());
-        Assertions.assertEquals(correctUser, user.get());
+        Assertions.assertEquals(correctUser.getEmail(), user.get().getEmail());
+        Assertions.assertEquals(correctUser.getPassword(), user.get().getPassword());
+        Assertions.assertEquals(correctUser.getName(), user.get().getName());
+        Assertions.assertEquals(correctUser.getSurname(), user.get().getSurname());
     }
+
 
     @Test
     @Order(1)
-    void getProfileInformationByIdIncorrect() throws IOException {
+    void getUserByIdIncorrect() throws IOException {
         var user = dataProvider.getUser(Long.parseLong(PropertyLoader.getProperty(Constants.TEST_USER_INCORRECT_ID)));
         Assertions.assertFalse(user.isPresent());
     }
@@ -161,7 +98,7 @@ class DataProviderCsvTest {
 
     @Test
     @Order(1)
-    void getProfileInformationByEmailAndPasswordCorrect() throws IOException {
+    void getUserByEmailAndPasswordCorrect() throws IOException {
         User correctUser = getCorrectTestUser();
         Optional<User> user = dataProvider.getUser(
                 PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_EMAIL),
@@ -170,12 +107,15 @@ class DataProviderCsvTest {
             Assertions.fail(PropertyLoader.getProperty(Constants.MESSAGE_NULL_METHOD));
         }
         log.debug(user.get());
-        Assertions.assertEquals(correctUser, user.get());
+        Assertions.assertEquals(correctUser.getEmail(), user.get().getEmail());
+        Assertions.assertEquals(correctUser.getPassword(), user.get().getPassword());
+        Assertions.assertEquals(correctUser.getName(), user.get().getName());
+        Assertions.assertEquals(correctUser.getSurname(), user.get().getSurname());
     }
 
     @Test
     @Order(1)
-    void getProfileInformationByEmailAndPasswordIncorrect() throws IOException {
+    void getUserByEmailAndPasswordIncorrect() throws IOException {
         var user = dataProvider.getUser(PropertyLoader.getProperty(
                 Constants.TEST_USER_INCORRECT_EMAIL),
                 PropertyLoader.getProperty(Constants.TEST_USER_INCORRECT_PASSWORD)
@@ -189,39 +129,54 @@ class DataProviderCsvTest {
         Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
         Assertions.assertTrue(serverUser.isPresent());
         List<Task> taskList = serverUser.get().getTaskList();
-        Date taskName = new Date(System.currentTimeMillis());
-        Task correctTask = getCorrectTestTaskList().get(0);
+
+        Task correctTask = getCorrectTestTask();
         Assertions.assertEquals(Statuses.INSERTED,
-                dataProvider.createTask(getCorrectTestUser(),
-                        taskName.toString(),
+                dataProvider.createTask(getCorrectTestUser().getId(),
+                        correctTask.getName(),
                         correctTask.getStatus()));
         Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
         Assertions.assertTrue(updatedUser.isPresent());
         Assertions.assertEquals(taskList.size() + 1,
                 updatedUser.get().getTaskList().size());
         Assertions.assertTrue(updatedUser.get().getTaskList().stream()
-                .anyMatch(task -> task.getName().equals(taskName.toString())));
+                .anyMatch(task -> task.getName().equals(correctTask.getName())));
     }
 
     @Test
+    @Order(2)
     void createExtendedTaskCorrect() throws IOException {
-        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
-        Assertions.assertTrue(serverUser.isPresent());
-        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(serverUser.get(),
-                "test",
-                TaskStatuses.TEST_TASK_STATUS,
-                RepetitionTypes.DONT_REPEAT,
-                RemindTypes.DONT_REMIND,
-                Importances.ORDINAL,
-                "test",
-                new Date(System.currentTimeMillis())
-        ));
-        Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
-        Assertions.assertTrue(updatedUser.isPresent());
-        Assertions.assertEquals(serverUser.get().getTaskList().size(),
-                updatedUser.get().getTaskList().size());
-        Assertions.assertTrue(updatedUser.get().getTaskList().stream()
-                .anyMatch(task -> task.getName().equals("test")));
+        for (int i = 0; i < 2; i++) {
+            Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+            ExtendedTask correctExtendedTestTask = getCorrectExtendedTestTask();
+            Assertions.assertTrue(serverUser.isPresent());
+            Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(serverUser.get().getId(),
+                    correctExtendedTestTask.getName(),
+                    correctExtendedTestTask.getStatus(),
+                    correctExtendedTestTask.getRepetitionType(),
+                    correctExtendedTestTask.getRemindType(),
+                    correctExtendedTestTask.getImportance(),
+                    correctExtendedTestTask.getDescription(),
+                    correctExtendedTestTask.getTime()
+            ));
+            Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
+            Assertions.assertTrue(updatedUser.isPresent());
+            Assertions.assertEquals(serverUser.get().getTaskList().size() + 1,
+                    updatedUser.get().getTaskList().size());
+            Assertions.assertTrue(updatedUser.get().getTaskList().stream()
+                    .anyMatch(task -> task.getName().equals(correctExtendedTestTask.getName())));
+        }
     }
 
+    @Test
+    @Order(3)
+    void deleteTaskCorrect() throws IOException {
+        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+        Assertions.assertTrue(serverUser.isPresent());
+        Assertions.assertEquals(Statuses.DELETED,
+                dataProvider.deleteTask(serverUser.get().getId(), serverUser.get().getTaskList().get(1).getId()));
+        Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
+        Assertions.assertTrue(updatedUser.isPresent());
+        Assertions.assertEquals(serverUser.get().getTaskList().size() - 1, updatedUser.get().getTaskList().size());
+    }
 }
