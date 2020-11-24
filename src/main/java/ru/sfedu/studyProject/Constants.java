@@ -29,4 +29,14 @@ public class Constants {
   public static final String CONVERTER_REGEXP_WITHOUT_QUOTES = "converter.regexp.withoutQuotes";
   public static final String CONVERTER_REGEXP_WITH_QUOTES = "converter.regexp.withQuotes";
   public static final String FIELD_NAME_TASK = "field.name.task";
+  public static final String FIELD_NAME_NAME = "field.name.name";
+  public static final String FIELD_NAME_STATUS = "field.name.status";
+  public static final String FIELD_NAME_DESCRIPTION = "field.name.description";
+  public static final String FIELD_NAME_IMPORTANCE = "field.name.importance";
+  public static final String FIELD_NAME_REMIND_TYPE = "field.name.remindType";
+  public static final String FIELD_NAME_REPETITION_TYPE = "field.name.repetitionType";
+  public static final String FIELD_NAME_TIME = "field.name.time";
+  public static final String FIELD_NAME_SURNAME = "field.name.surname";
+  public static final String FIELD_NAME_EMAIL = "field.name.email";
+  public static final String FIELD_NAME_PASSWORD = "field.name.password";
 }

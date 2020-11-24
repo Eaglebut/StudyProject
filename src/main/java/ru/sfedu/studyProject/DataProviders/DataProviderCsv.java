@@ -258,7 +258,7 @@ public class DataProviderCsv implements DataProvider {
     if (optionalMetadata.isEmpty()) {
       return 0;
     }
-    return optionalMetadata.get().getLastId() + 1;
+    return optionalMetadata.get().getLastId();
   }
 
   private <T> void nextId(Class<T> tClass) throws IOException {
@@ -432,51 +432,59 @@ public class DataProviderCsv implements DataProvider {
   }
 
   private void saveChangesHistory(Task task, Task editedTask) {
-    if (!task.getName().equals(editedTask.getName())) {
-      editedTask.getHistoryList().add(addHistoryRecord(
-              "name",
-              OperationType.EDIT,
-              task.getName()));
-    }
-    if (!task.getStatus().equals(editedTask.getStatus())) {
-      editedTask.getHistoryList().add(addHistoryRecord(
-              "status",
-              OperationType.EDIT,
-              task.getStatus().name()));
+    try {
+      if (!task.getName().equals(editedTask.getName())) {
+        editedTask.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_NAME),
+                OperationType.EDIT,
+                task.getName()));
+      }
+      if (!task.getStatus().equals(editedTask.getStatus())) {
+        editedTask.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_STATUS),
+                OperationType.EDIT,
+                task.getStatus().name()));
+      }
+    } catch (IOException e) {
+      log.error(e);
     }
   }
 
   private void saveChangesHistory(ExtendedTask task, ExtendedTask editedTask) {
-    saveChangesHistory((Task) task, editedTask);
-    if (!task.getDescription().equals(editedTask.getDescription())) {
-      editedTask.getHistoryList().add(addHistoryRecord(
-              "description",
-              OperationType.EDIT,
-              task.getDescription()));
-    }
-    if (!task.getImportance().equals(editedTask.getImportance())) {
-      editedTask.getHistoryList().add(addHistoryRecord(
-              "importance",
-              OperationType.EDIT,
-              task.getImportance().name()));
-    }
-    if (!task.getRemindType().equals(editedTask.getRemindType())) {
-      editedTask.getHistoryList().add(addHistoryRecord(
-              "remindType",
-              OperationType.EDIT,
-              task.getRemindType().name()));
-    }
-    if (!task.getRepetitionType().equals(editedTask.getRepetitionType())) {
-      editedTask.getHistoryList().add(addHistoryRecord(
-              "repetitionType",
-              OperationType.EDIT,
-              task.getRepetitionType().name()));
-    }
-    if (!task.getTime().equals(editedTask.getTime())) {
-      editedTask.getHistoryList().add(addHistoryRecord(
-              "time",
-              OperationType.EDIT,
-              task.getTime().toString()));
+    try {
+      saveChangesHistory((Task) task, editedTask);
+      if (!task.getDescription().equals(editedTask.getDescription())) {
+        editedTask.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_DESCRIPTION),
+                OperationType.EDIT,
+                task.getDescription()));
+      }
+      if (!task.getImportance().equals(editedTask.getImportance())) {
+        editedTask.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_IMPORTANCE),
+                OperationType.EDIT,
+                task.getImportance().name()));
+      }
+      if (!task.getRemindType().equals(editedTask.getRemindType())) {
+        editedTask.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_REMIND_TYPE),
+                OperationType.EDIT,
+                task.getRemindType().name()));
+      }
+      if (!task.getRepetitionType().equals(editedTask.getRepetitionType())) {
+        editedTask.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_REPETITION_TYPE),
+                OperationType.EDIT,
+                task.getRepetitionType().name()));
+      }
+      if (!task.getTime().equals(editedTask.getTime())) {
+        editedTask.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_TIME),
+                OperationType.EDIT,
+                task.getTime().toString()));
+      }
+    } catch (IOException e) {
+      log.error(e);
     }
   }
 
@@ -585,30 +593,35 @@ public class DataProviderCsv implements DataProvider {
   }
 
   private void saveChangesHistory(User user, User editedUser) {
-    if (!user.getName().equals(editedUser.getName())) {
-      editedUser.getHistoryList().add(addHistoryRecord(
-              "name",
-              OperationType.EDIT,
-              user.getName()));
+    try {
+      if (!user.getName().equals(editedUser.getName())) {
+        editedUser.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_NAME),
+                OperationType.EDIT,
+                user.getName()));
+      }
+      if (!user.getSurname().equals(editedUser.getSurname())) {
+        editedUser.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_SURNAME),
+                OperationType.EDIT,
+                user.getSurname()));
+      }
+      if (!user.getEmail().equals(editedUser.getEmail())) {
+        editedUser.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_EMAIL),
+                OperationType.EDIT,
+                user.getEmail()));
+      }
+      if (!user.getPassword().equals(editedUser.getPassword())) {
+        editedUser.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_PASSWORD),
+                OperationType.EDIT,
+                user.getPassword()));
+      }
+    } catch (IOException e) {
+      log.error(e);
     }
-    if (!user.getSurname().equals(editedUser.getSurname())) {
-      editedUser.getHistoryList().add(addHistoryRecord(
-              "surname",
-              OperationType.EDIT,
-              user.getSurname()));
-    }
-    if (!user.getEmail().equals(editedUser.getEmail())) {
-      editedUser.getHistoryList().add(addHistoryRecord(
-              "email",
-              OperationType.EDIT,
-              user.getEmail()));
-    }
-    if (!user.getPassword().equals(editedUser.getPassword())) {
-      editedUser.getHistoryList().add(addHistoryRecord(
-              "password",
-              OperationType.EDIT,
-              user.getPassword()));
-    }
+
   }
 
   private boolean isEditValid(User user, User editedUser) {
