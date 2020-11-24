@@ -484,7 +484,6 @@ public class DataProviderCsv implements DataProvider {
             && task.getTaskType().equals(editedTask.getTaskType());
   }
 
-  //TODO
   @Override
   public Statuses editTask(long userId, @NonNull Task editedTask) {
     try {
@@ -516,7 +515,7 @@ public class DataProviderCsv implements DataProvider {
           ExtendedTask userTask = (ExtendedTask) optionalUserTask.get();
           List<ExtendedTask> taskList = getFromCsv(ExtendedTask.class);
           taskList.remove(userTask);
-          saveChangesHistory(userTask, editedTask);
+          saveChangesHistory(userTask, (ExtendedTask) editedTask);
           taskList.add((ExtendedTask) editedTask);
           insertIntoCsv(ExtendedTask.class, taskList, true);
           return Statuses.UPDATED;
@@ -560,6 +559,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   private Statuses updateUser(@NonNull User editedUser) {
     try {
       var userList = getFromCsv(User.class);
@@ -582,7 +582,40 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
+  private void saveChangesHistory(User user, User editedUser) {
+    if (!user.getName().equals(editedUser.getName())) {
+      editedUser.getHistoryList().add(addHistoryRecord(
+              "name",
+              OperationType.EDIT,
+              user.getName()));
+    }
+    if (!user.getSurname().equals(editedUser.getSurname())) {
+      editedUser.getHistoryList().add(addHistoryRecord(
+              "surname",
+              OperationType.EDIT,
+              user.getSurname()));
+    }
+    if (!user.getEmail().equals(editedUser.getEmail())) {
+      editedUser.getHistoryList().add(addHistoryRecord(
+              "email",
+              OperationType.EDIT,
+              user.getEmail()));
+    }
+    if (!user.getPassword().equals(editedUser.getPassword())) {
+      editedUser.getHistoryList().add(addHistoryRecord(
+              "password",
+              OperationType.EDIT,
+              user.getPassword()));
+    }
+  }
+
+  private boolean isEditValid(User user, User editedUser) {
+    return user.getHistoryList().equals(editedUser.getHistoryList())
+            && user.getCreated().getTime() == editedUser.getCreated().getTime()
+            && user.getTaskList().equals(editedUser.getTaskList())
+            && user.getSignUpType().equals(editedUser.getSignUpType());
+  }
+
   @Override
   public Statuses editUser(@NonNull User editedUser) {
     try {
@@ -596,13 +629,13 @@ public class DataProviderCsv implements DataProvider {
         return Statuses.NOT_FOUNDED;
       }
 
-      if (!optionalUser.get().getTaskList().equals(editedUser.getTaskList())) {
+      if (!isEditValid(editedUser, optionalUser.get())) {
         return Statuses.FORBIDDEN;
       }
-
       userList.remove(optionalUser.get());
+      saveChangesHistory(optionalUser.get(), editedUser);
       userList.add(editedUser);
-      insertIntoCsv(userList);
+      insertIntoCsv(User.class, userList, true);
       return Statuses.UPDATED;
     } catch (IOException e) {
       log.error(e);

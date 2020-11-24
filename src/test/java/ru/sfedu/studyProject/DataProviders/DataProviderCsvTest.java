@@ -130,6 +130,29 @@ class DataProviderCsvTest {
 
     @Test
     @Order(2)
+    void editUserCorrect() throws IOException {
+        User correctUser = getCorrectTestUser();
+        Optional<User> user = dataProvider.getUser(Integer.parseInt(
+                PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID)));
+        if (user.isEmpty()) {
+            Assertions.fail(PropertyLoader.getProperty(Constants.MESSAGE_NULL_METHOD));
+        }
+        log.debug(user.get());
+
+        user.get().setName(new Date(System.currentTimeMillis()).toString());
+
+        Assertions.assertEquals(Statuses.UPDATED, dataProvider.editUser(user.get()));
+        var editedUser = dataProvider.getUser((Integer.parseInt(
+                PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID))));
+
+        Assertions.assertTrue(editedUser.isPresent());
+        log.debug(editedUser.get());
+
+
+    }
+
+    @Test
+    @Order(2)
     void createTaskCorrect() throws IOException {
         for (int i = 0; i < 2; i++) {
             Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
@@ -208,4 +231,6 @@ class DataProviderCsvTest {
         log.debug(task);
         Assertions.assertEquals(Statuses.UPDATED, dataProvider.editTask(user.getId(), extendedTask));
     }
+
+
 }
