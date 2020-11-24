@@ -23,7 +23,10 @@ class DataProviderCsvTest {
 
     private static final DataProvider dataProvider = DataProviderCsv.getInstance();
 
-    private User getCorrectTestUser() throws IOException {
+    private User testUser;
+    private Task testTask;
+
+    private static User getCorrectTestUser() throws IOException {
         User user = new User();
         user.setId(Long.parseLong(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID)));
         user.setEmail(PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_EMAIL));
@@ -34,7 +37,7 @@ class DataProviderCsvTest {
         return user;
     }
 
-    private Task getCorrectTestTask() throws IOException {
+    private static Task getCorrectTestTask() throws IOException {
         Task task = new Task();
         task.setId(Long.parseLong(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_ID)));
         task.setName(new Date(System.currentTimeMillis()).toString());
@@ -42,7 +45,7 @@ class DataProviderCsvTest {
         return task;
     }
 
-    private ExtendedTask getCorrectExtendedTestTask() throws IOException {
+    private static ExtendedTask getCorrectExtendedTestTask() throws IOException {
         ExtendedTask task = new ExtendedTask();
         task.setId(Long.parseLong(PropertyLoader.getProperty(Constants.TEST_TASK1_CORRECT_ID)));
         task.setName(new Date(System.currentTimeMillis()).toString());
@@ -56,20 +59,22 @@ class DataProviderCsvTest {
     }
 
 
-    @Order(0)
-    @Test
-    void setCsvFile() throws IOException {
+    @BeforeAll
+    static void setCsvEnv() throws IOException {
         DataProviderCsv dataProviderCSV = (DataProviderCsv) dataProvider;
         dataProviderCSV.deleteAll();
-        User user = getCorrectTestUser();
+    }
 
-        Assertions.assertEquals(Statuses.INSERTED, dataProviderCSV.createUser(user.getEmail(),
+    @Test
+    @Order(0)
+    void createUserTest() throws IOException {
+        User user = getCorrectTestUser();
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(user.getEmail(),
                 user.getPassword(),
                 user.getName(),
                 user.getSurname(),
                 user.getSignUpType()));
     }
-
 
     @Test
     @Order(1)
@@ -126,22 +131,25 @@ class DataProviderCsvTest {
     @Test
     @Order(2)
     void createTaskCorrect() throws IOException {
-        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
-        Assertions.assertTrue(serverUser.isPresent());
-        List<Task> taskList = serverUser.get().getTaskList();
+        for (int i = 0; i < 2; i++) {
+            Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+            Assertions.assertTrue(serverUser.isPresent());
+            List<Task> taskList = serverUser.get().getTaskList();
 
-        Task correctTask = getCorrectTestTask();
-        Assertions.assertEquals(Statuses.INSERTED,
-                dataProvider.createTask(getCorrectTestUser().getId(),
-                        correctTask.getName(),
-                        correctTask.getStatus()));
-        Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
-        Assertions.assertTrue(updatedUser.isPresent());
-        Assertions.assertEquals(taskList.size() + 1,
-                updatedUser.get().getTaskList().size());
-        Assertions.assertTrue(updatedUser.get().getTaskList().stream()
-                .anyMatch(task -> task.getName().equals(correctTask.getName())));
+            Task correctTask = getCorrectTestTask();
+            Assertions.assertEquals(Statuses.INSERTED,
+                    dataProvider.createTask(getCorrectTestUser().getId(),
+                            correctTask.getName(),
+                            correctTask.getStatus()));
+            Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
+            Assertions.assertTrue(updatedUser.isPresent());
+            Assertions.assertEquals(taskList.size() + 1,
+                    updatedUser.get().getTaskList().size());
+            Assertions.assertTrue(updatedUser.get().getTaskList().stream()
+                    .anyMatch(task -> task.getName().equals(correctTask.getName())));
+        }
     }
+
 
     @Test
     @Order(2)
@@ -171,12 +179,33 @@ class DataProviderCsvTest {
     @Test
     @Order(3)
     void deleteTaskCorrect() throws IOException {
+        for (int i = 0; i < 2; i++) {
+            Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+            Assertions.assertTrue(serverUser.isPresent());
+            log.debug(serverUser.get().getTaskList().get(1));
+            Assertions.assertEquals(Statuses.DELETED,
+                    dataProvider.deleteTask(serverUser.get().getId(), serverUser.get().getTaskList().get(1).getId()));
+            Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
+            Assertions.assertTrue(updatedUser.isPresent());
+            Assertions.assertEquals(serverUser.get().getTaskList().size() - 1, updatedUser.get().getTaskList().size());
+        }
+    }
+
+
+    @Test
+    @Order(3)
+    void editTaskCorrect() throws IOException {
         Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
         Assertions.assertTrue(serverUser.isPresent());
-        Assertions.assertEquals(Statuses.DELETED,
-                dataProvider.deleteTask(serverUser.get().getId(), serverUser.get().getTaskList().get(1).getId()));
-        Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
-        Assertions.assertTrue(updatedUser.isPresent());
-        Assertions.assertEquals(serverUser.get().getTaskList().size() - 1, updatedUser.get().getTaskList().size());
+        User user = serverUser.get();
+        var task = user.getTaskList().get(0);
+        task.setName(new Date(System.currentTimeMillis()).toString() + " edit");
+        log.debug(task);
+        Assertions.assertEquals(Statuses.UPDATED, dataProvider.editTask(user.getId(), task));
+
+        var extendedTask = user.getTaskList().get(1);
+        extendedTask.setName(new Date(System.currentTimeMillis()).toString() + " edit");
+        log.debug(task);
+        Assertions.assertEquals(Statuses.UPDATED, dataProvider.editTask(user.getId(), extendedTask));
     }
 }

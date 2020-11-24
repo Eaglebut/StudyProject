@@ -318,7 +318,10 @@ public class DataProviderCsv implements DataProvider {
                 .add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
                         OperationType.ADD,
                         String.valueOf(createdTask.getId())));
-        updateUser(user);
+        var updateUserStatus = updateUser(user);
+        if (updateUserStatus != Statuses.UPDATED) {
+          return updateUserStatus;
+        }
       }
 
     } catch (IOException e) {
@@ -366,12 +369,15 @@ public class DataProviderCsv implements DataProvider {
       task.setTime(time);
       task.setCreated(new Date(System.currentTimeMillis()));
       task.setHistoryList(new ArrayList<>());
-      var insertionStatus = createTask(user.getId(), taskName, status, TaskTypes.EXTENDED);
+      var insertionStatus = createTask(user.getId(), null, null, TaskTypes.EXTENDED);
       if (insertionStatus != Statuses.INSERTED) {
         return insertionStatus;
       }
       user.getTaskList().add(task);
-      updateUser(user);
+      var updateUserStatus = updateUser(user);
+      if (updateUserStatus != Statuses.UPDATED) {
+        return updateUserStatus;
+      }
       insertIntoCsv(task);
       return insertionStatus;
     } catch (IOException e) {
@@ -411,7 +417,10 @@ public class DataProviderCsv implements DataProvider {
         user.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
                 OperationType.DELETE,
                 String.valueOf(taskId)));
-        updateUser(user);
+        var updateUserStatus = updateUser(user);
+        if (updateUserStatus != Statuses.UPDATED) {
+          return updateUserStatus;
+        }
         return Statuses.DELETED;
       }
     } catch (IOException e) {
@@ -420,10 +429,105 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+  private void saveChangesHistory(Task task, Task editedTask) {
+    if (!task.getName().equals(editedTask.getName())) {
+      editedTask.getHistoryList().add(addHistoryRecord(
+              "name",
+              OperationType.EDIT,
+              task.getName()));
+    }
+    if (!task.getStatus().equals(editedTask.getStatus())) {
+      editedTask.getHistoryList().add(addHistoryRecord(
+              "status",
+              OperationType.EDIT,
+              task.getStatus().name()));
+    }
+  }
+
+  private void saveChangesHistory(ExtendedTask task, ExtendedTask editedTask) {
+    saveChangesHistory((Task) task, editedTask);
+    if (!task.getDescription().equals(editedTask.getDescription())) {
+      editedTask.getHistoryList().add(addHistoryRecord(
+              "description",
+              OperationType.EDIT,
+              task.getDescription()));
+    }
+    if (!task.getImportance().equals(editedTask.getImportance())) {
+      editedTask.getHistoryList().add(addHistoryRecord(
+              "importance",
+              OperationType.EDIT,
+              task.getImportance().name()));
+    }
+    if (!task.getRemindType().equals(editedTask.getRemindType())) {
+      editedTask.getHistoryList().add(addHistoryRecord(
+              "remindType",
+              OperationType.EDIT,
+              task.getRemindType().name()));
+    }
+    if (!task.getRepetitionType().equals(editedTask.getRepetitionType())) {
+      editedTask.getHistoryList().add(addHistoryRecord(
+              "repetitionType",
+              OperationType.EDIT,
+              task.getRepetitionType().name()));
+    }
+    if (!task.getTime().equals(editedTask.getTime())) {
+      editedTask.getHistoryList().add(addHistoryRecord(
+              "time",
+              OperationType.EDIT,
+              task.getTime().toString()));
+    }
+  }
+
+  private boolean isEditValid(Task task, Task editedTask) {
+    return task.getHistoryList().equals(editedTask.getHistoryList())
+            && task.getCreated().getTime() == editedTask.getCreated().getTime()
+            && task.getTaskType().equals(editedTask.getTaskType());
+  }
+
   //TODO
   @Override
   public Statuses editTask(long userId, @NonNull Task editedTask) {
-    return null;
+    try {
+      var optionalUser = getUser(userId);
+      if (optionalUser.isEmpty()) {
+        return Statuses.FORBIDDEN;
+      }
+      User user = optionalUser.get();
+      var optionalUserTask = user.getTaskList().stream()
+              .filter(task -> task.getId() == editedTask.getId())
+              .findAny();
+      if (optionalUserTask.isEmpty()) {
+        return Statuses.FORBIDDEN;
+      }
+      if (!isEditValid(editedTask, optionalUserTask.get())) {
+        return Statuses.FORBIDDEN;
+      }
+      switch (optionalUserTask.get().getTaskType()) {
+        case BASIC -> {
+          Task userTask = optionalUserTask.get();
+          List<Task> taskList = getFromCsv(Task.class);
+          taskList.remove(userTask);
+          saveChangesHistory(userTask, editedTask);
+          taskList.add(editedTask);
+          insertIntoCsv(Task.class, taskList, true);
+          return Statuses.UPDATED;
+        }
+        case EXTENDED -> {
+          ExtendedTask userTask = (ExtendedTask) optionalUserTask.get();
+          List<ExtendedTask> taskList = getFromCsv(ExtendedTask.class);
+          taskList.remove(userTask);
+          saveChangesHistory(userTask, editedTask);
+          taskList.add((ExtendedTask) editedTask);
+          insertIntoCsv(ExtendedTask.class, taskList, true);
+          return Statuses.UPDATED;
+        }
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
+    } catch (IOException e) {
+      return Statuses.FAILED;
+    }
   }
 
   @Override
