@@ -60,7 +60,7 @@ class DataProviderCsvTest {
 
 
     @BeforeAll
-    static void setCsvEnv() throws IOException {
+    static void setCsvEnv() {
         DataProviderCsv dataProviderCSV = (DataProviderCsv) dataProvider;
         dataProviderCSV.deleteAll();
     }
@@ -232,5 +232,15 @@ class DataProviderCsvTest {
         Assertions.assertEquals(Statuses.UPDATED, dataProvider.editTask(user.getId(), extendedTask));
     }
 
+    @Test
+    @Order(4)
+    void createGroupCorrect() throws IOException {
+        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+        Assertions.assertTrue(serverUser.isPresent());
+        User user = serverUser.get();
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup("testGroup",
+                user.getId(),
+                GroupTypes.PUBLIC));
+    }
 
 }

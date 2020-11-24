@@ -128,6 +128,8 @@ public class DataProviderCsv implements DataProvider {
     classList.add(Task.class);
     classList.add(User.class);
     classList.add(Metadata.class);
+    classList.add(Group.class);
+    classList.add(ExtendedTask.class);
     classList.forEach(this::deleteFile);
   }
 
@@ -643,6 +645,30 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+  //TODO
+  @Override
+  public Statuses createGroup(@NonNull String groupName, long creatorId, @NonNull GroupTypes groupType) {
+    try {
+      var user = getUser(creatorId);
+      if (user.isEmpty()) {
+        return Statuses.FORBIDDEN;
+      }
+      Group group = new Group();
+      group.setCreated(new Date(System.currentTimeMillis()));
+      group.setGroupType(groupType);
+      group.setHistoryList(new ArrayList<>());
+      group.setId(getNextId(Group.class));
+      group.setMemberList(new HashMap<>());
+      group.getMemberList().put(user.get(), UserRole.CREATOR);
+      group.setTaskList(new HashMap<>());
+      group.setName(groupName);
+      insertIntoCsv(group);
+      return Statuses.INSERTED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
 
   //TODO
   @Override
@@ -650,11 +676,6 @@ public class DataProviderCsv implements DataProvider {
     return null;
   }
 
-  //TODO
-  @Override
-  public Statuses createGroup(@NonNull String groupName, long creatorId, @NonNull GroupTypes groupType) {
-    return null;
-  }
 
   //TODO
   @Override

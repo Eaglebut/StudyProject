@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class TaskConverter extends AbstractBeanField<Task, Integer> {
+public class TaskListConverter extends AbstractBeanField<Task, Integer> {
 
-  private static final Logger log = LogManager.getLogger(TaskConverter.class);
+  private static final Logger log = LogManager.getLogger(TaskListConverter.class);
 
 
   @Override

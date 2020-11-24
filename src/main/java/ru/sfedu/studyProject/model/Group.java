@@ -1,11 +1,12 @@
 package ru.sfedu.studyProject.model;
 
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
+import lombok.*;
+import ru.sfedu.studyProject.converters.ModificationRecordConverter;
+import ru.sfedu.studyProject.converters.TaskMapConverter;
+import ru.sfedu.studyProject.converters.UserMapConverter;
 import ru.sfedu.studyProject.enums.GroupTypes;
 import ru.sfedu.studyProject.enums.TaskState;
 import ru.sfedu.studyProject.enums.UserRole;
@@ -28,13 +29,19 @@ public class Group implements Serializable {
   //
   // Fields
   //
-
+  @CsvBindByName
   private long id;
+  @CsvBindByName
   private String name;
+  @CsvBindByName
   private Date created;
+  @CsvCustomBindByName(converter = TaskMapConverter.class)
   private Map<Task, TaskState> taskList;
+  @CsvCustomBindByName(converter = UserMapConverter.class)
   private Map<User, UserRole> memberList;
+  @CsvBindByName
   private GroupTypes groupType;
+  @CsvCustomBindByName(converter = ModificationRecordConverter.class)
   private List<ModificationRecord> historyList;
 
   //
