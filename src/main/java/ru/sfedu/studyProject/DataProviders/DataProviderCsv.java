@@ -150,7 +150,6 @@ public class DataProviderCsv implements DataProvider {
               .stream()
               .filter(user -> user.getId() == userId)
               .findFirst();
-
     } catch (IOException e) {
       log.error(e);
       return Optional.empty();
@@ -223,31 +222,27 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  private List<Task> getTasks(@NonNull User user) throws NoSuchElementException {
+  private Optional<Task> getTask(long id) {
     try {
       List<Task> taskList = getFromCsv(Task.class);
-      List<ExtendedTask> extendedTasks = getFromCsv(ExtendedTask.class);
-      List<Task> usersTaskList = user.getTaskList();
-      List<Task> usersFilledTaskList = new ArrayList<>();
-      List<Long> extendedTaskIdList = new ArrayList<>();
-      usersTaskList.forEach(usersTask -> taskList.forEach(task -> {
-        if (usersTask.getId() == task.getId()) {
-          task.setHistoryList(getHistoryList(task));
-          if (task.getTaskType() == TaskTypes.EXTENDED) {
-            extendedTaskIdList.add(task.getId());
-          } else {
-            usersFilledTaskList.add(task);
-          }
-        }
-      }));
-      usersFilledTaskList.addAll(extendedTasks.stream()
-              .filter(extendedTask -> extendedTaskIdList.contains(extendedTask.getId()))
-              .collect(Collectors.toList()));
-      return usersFilledTaskList;
+      taskList.addAll(getFromCsv(ExtendedTask.class));
+      return taskList.stream()
+              .filter(task -> task.getId() == id)
+              .findAny();
     } catch (IOException e) {
       log.error(e);
-      return null;
+      return Optional.empty();
     }
+  }
+
+  private List<Task> getTasks(@NonNull User user) throws NoSuchElementException {
+    List<Task> usersTaskIdList = user.getTaskList();
+    List<Task> taskList = new ArrayList<>();
+    usersTaskIdList.forEach(task -> {
+      var optionalTask = getTask(task.getId());
+      optionalTask.ifPresent(taskList::add);
+    });
+    return taskList;
   }
 
   private <T> long getNextId(Class<T> tClass) throws IOException {
@@ -271,7 +266,6 @@ public class DataProviderCsv implements DataProvider {
       metadata = new Metadata();
       metadata.setClassName(tClass.getSimpleName().toLowerCase());
       metadata.setLastId(1L);
-
     } else {
       metadata = optionalMetadata.get();
       metadataList.remove(metadata);
@@ -298,12 +292,15 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  private Statuses createTask(long userId, String taskName, TaskStatuses status, TaskTypes taskType) {
+  @Override
+  public Statuses createTask(long userId,
+                             @NonNull String taskName,
+                             @NonNull TaskStatuses status) {
     try {
       Task createdTask = new Task();
       createdTask.setId(getNextId(Task.class));
       createdTask.setName(taskName);
-      createdTask.setTaskType(taskType);
+      createdTask.setTaskType(TaskTypes.BASIC);
       createdTask.setCreated(new Date(System.currentTimeMillis()));
       createdTask.setHistoryList(new ArrayList<>());
       createdTask.setStatus(status);
@@ -337,14 +334,6 @@ public class DataProviderCsv implements DataProvider {
   @Override
   public Statuses createTask(long userId,
                              @NonNull String taskName,
-                             @NonNull TaskStatuses status) {
-    return createTask(userId, taskName, status, TaskTypes.BASIC);
-  }
-
-
-  @Override
-  public Statuses createTask(long userId,
-                             @NonNull String taskName,
                              @NonNull TaskStatuses status,
                              @NonNull RepetitionTypes repetitionType,
                              @NonNull RemindTypes remindType,
@@ -352,13 +341,11 @@ public class DataProviderCsv implements DataProvider {
                              @NonNull String description,
                              @NonNull Date time) {
     try {
-
       var optionalUser = getUser(userId);
       if (optionalUser.isEmpty()) {
         return Statuses.FORBIDDEN;
       }
       User user = optionalUser.get();
-
       ExtendedTask task = new ExtendedTask();
       task.setId(getNextId(Task.class));
       task.setName(taskName);
@@ -371,17 +358,14 @@ public class DataProviderCsv implements DataProvider {
       task.setTime(time);
       task.setCreated(new Date(System.currentTimeMillis()));
       task.setHistoryList(new ArrayList<>());
-      var insertionStatus = createTask(user.getId(), null, null, TaskTypes.EXTENDED);
-      if (insertionStatus != Statuses.INSERTED) {
-        return insertionStatus;
-      }
       user.getTaskList().add(task);
+      nextId(Task.class);
       var updateUserStatus = updateUser(user);
       if (updateUserStatus != Statuses.UPDATED) {
         return updateUserStatus;
       }
       insertIntoCsv(task);
-      return insertionStatus;
+      return Statuses.INSERTED;
     } catch (IOException e) {
       log.error(e);
       return Statuses.FAILED;
@@ -396,7 +380,6 @@ public class DataProviderCsv implements DataProvider {
         return Statuses.FORBIDDEN;
       }
       User user = optionalUser.get();
-
       Optional<Task> optionalTaskToDelete = user.getTaskList().stream()
               .filter(task -> task.getId() == taskId)
               .findAny();
@@ -406,16 +389,22 @@ public class DataProviderCsv implements DataProvider {
         Task taskToDelete = optionalTaskToDelete.get();
         user.getTaskList().remove(taskToDelete);
 
-        insertIntoCsv(Task.class, getFromCsv(Task.class)
-                .stream()
-                .filter(task -> taskId != task.getId())
-                .collect(Collectors.toList()), true);
-        if (taskToDelete.getTaskType() == TaskTypes.EXTENDED) {
-          insertIntoCsv(ExtendedTask.class, getFromCsv(ExtendedTask.class)
+        switch (taskToDelete.getTaskType()) {
+          case BASIC -> insertIntoCsv(Task.class, getFromCsv(Task.class)
+                  .stream()
+                  .filter(task -> taskId != task.getId())
+                  .collect(Collectors.toList()), true);
+
+          case EXTENDED -> insertIntoCsv(ExtendedTask.class, getFromCsv(ExtendedTask.class)
                   .stream()
                   .filter(task -> task.getId() != taskId)
                   .collect(Collectors.toList()), true);
+
+          default -> {
+            return Statuses.FAILED;
+          }
         }
+
         user.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
                 OperationType.DELETE,
                 String.valueOf(taskId)));
@@ -577,7 +566,6 @@ public class DataProviderCsv implements DataProvider {
       Optional<User> optionalUser = userList.stream()
               .filter(user -> user.getId() == editedUser.getId())
               .findFirst();
-
       if (optionalUser.isEmpty()) {
         return Statuses.NOT_FOUNDED;
       }
@@ -704,7 +692,7 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO
   @Override
-  public Group searchGroupById(long id) throws NoSuchElementException {
+  public Optional<Group> searchGroupById(long id) throws NoSuchElementException {
     return null;
   }
 

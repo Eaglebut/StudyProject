@@ -8,11 +8,9 @@ import ru.sfedu.studyProject.model.User;
 
 import java.util.Date;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 
-@NonNull
 public interface DataProvider {
 
   Statuses createUser(@NonNull String email,
@@ -36,9 +34,9 @@ public interface DataProvider {
 
   Statuses editTask(long userId, @NonNull Task editedTask);
 
-  Optional<User> getUser(long userId) throws NoSuchElementException;
+  Optional<User> getUser(long userId);
 
-  Optional<User> getUser(@NonNull String login, @NonNull String password) throws NoSuchElementException;
+  Optional<User> getUser(@NonNull String login, @NonNull String password);
 
   Statuses editUser(@NonNull User editedUser);
 
@@ -52,7 +50,7 @@ public interface DataProvider {
 
   List<Group> searchGroupByName(@NonNull String name);
 
-  Group searchGroupById(long id) throws NoSuchElementException;
+  Optional<Group> searchGroupById(long id);
 
   List<Group> getFullGroupList();
 
