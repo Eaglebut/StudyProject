@@ -646,7 +646,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
   @Override
   public Statuses createGroup(@NonNull String groupName, long creatorId, @NonNull GroupTypes groupType) {
     try {
@@ -690,29 +689,87 @@ public class DataProviderCsv implements DataProvider {
     return null;
   }
 
-  //TODO
-  @Override
-  public Optional<Group> searchGroupById(long id) throws NoSuchElementException {
-    return null;
-  }
-
-  //TODO
   @Override
   public List<Group> getFullGroupList() {
-    return null;
+    try {
+      var groupList = getFromCsv(Group.class);
+      groupList.addAll(getFromCsv(PasswordedGroup.class));
+
+      groupList.forEach(group -> {
+        group.setTaskList(getTaskMap(group.getId()));
+        group.setMemberList(getUserMap(group.getId()));
+        group.setHistoryList(getHistoryList(group));
+      });
+
+      return groupList;
+    } catch (IOException e) {
+      log.error(e);
+      return new ArrayList<>();
+    }
   }
 
-  //TODO
+  private Optional<Group> getUnfilledGroup(long groupId) {
+    try {
+      List<Group> groupList = getFromCsv(Group.class);
+      groupList.addAll(getFromCsv(PasswordedGroup.class));
+      return groupList.stream().filter(group -> group.getId() == groupId).findAny();
+    } catch (IOException e) {
+      log.error(e);
+      return Optional.empty();
+    }
+  }
+
+  private Map<User, UserRole> getUserMap(long groupId) {
+    var optionalGroup = getUnfilledGroup(groupId);
+    Map<User, UserRole> userMap = new HashMap<>();
+    if (optionalGroup.isEmpty()) {
+      return userMap;
+    }
+    var group = optionalGroup.get();
+    group.getMemberList().forEach((user, role) -> {
+      var optionalUser = getUser(user.getId());
+      optionalUser.ifPresent(value -> userMap.put(value, role));
+    });
+    return userMap;
+  }
+
+  private Map<Task, TaskState> getTaskMap(long groupId) {
+    var optionalGroup = getUnfilledGroup(groupId);
+    Map<Task, TaskState> taskMap = new HashMap<>();
+    if (optionalGroup.isEmpty()) {
+      return taskMap;
+    }
+    var group = optionalGroup.get();
+    group.getTaskList().forEach((task, state) -> {
+      var optionalTask = getTask(task.getId());
+      optionalTask.ifPresent(value -> taskMap.put(value, state));
+    });
+    return taskMap;
+  }
+
+
   @Override
   public Optional<Group> getGroup(long groupId) {
-    return Optional.empty();
+    try {
+      var groupList = getFromCsv(Group.class);
+      groupList.addAll(getFromCsv(PasswordedGroup.class));
+      var optionalGroup = groupList.stream()
+              .filter(group -> group.getId() == groupId)
+              .findAny();
+      if (optionalGroup.isEmpty()) {
+        return optionalGroup;
+      }
+      Group group = optionalGroup.get();
+      group.setHistoryList(getHistoryList(group));
+      group.setMemberList(getUserMap(groupId));
+      group.setTaskList(getTaskMap(groupId));
+      return Optional.of(group);
+    } catch (IOException e) {
+      log.error(e);
+      return Optional.empty();
+    }
   }
 
-  //TODO
-  @Override
-  public Optional<Group> getGroup(long userId, long groupId) {
-    return Optional.empty();
-  }
 
   //TODO
   @Override
@@ -759,6 +816,11 @@ public class DataProviderCsv implements DataProvider {
   //TODO
   @Override
   public Statuses deleteGroup(long userId, long groupId) {
+    return null;
+  }
+
+  @Override
+  public List<Group> getUsersGroups(long userId) {
     return null;
   }
 }

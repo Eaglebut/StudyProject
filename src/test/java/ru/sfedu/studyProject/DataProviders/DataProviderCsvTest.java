@@ -6,14 +6,13 @@ import org.junit.jupiter.api.*;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
 import ru.sfedu.studyProject.model.ExtendedTask;
+import ru.sfedu.studyProject.model.Group;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.model.User;
 import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -22,9 +21,6 @@ class DataProviderCsvTest {
     private static final Logger log = LogManager.getLogger(DataProviderCsvTest.class);
 
     private static final DataProvider dataProvider = DataProviderCsv.getInstance();
-
-    private User testUser;
-    private Task testTask;
 
     private static User getCorrectTestUser() throws IOException {
         User user = new User();
@@ -58,6 +54,11 @@ class DataProviderCsvTest {
         return task;
     }
 
+    private User getUser() throws IOException {
+        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+        Assertions.assertTrue(serverUser.isPresent());
+        return serverUser.get();
+    }
 
     @BeforeAll
     static void setCsvEnv() {
@@ -131,7 +132,6 @@ class DataProviderCsvTest {
     @Test
     @Order(2)
     void editUserCorrect() throws IOException {
-        User correctUser = getCorrectTestUser();
         Optional<User> user = dataProvider.getUser(Integer.parseInt(
                 PropertyLoader.getProperty(Constants.TEST_USER_CORRECT_ID)));
         if (user.isEmpty()) {
@@ -155,9 +155,8 @@ class DataProviderCsvTest {
     @Order(2)
     void createTaskCorrect() throws IOException {
         for (int i = 0; i < 2; i++) {
-            Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
-            Assertions.assertTrue(serverUser.isPresent());
-            List<Task> taskList = serverUser.get().getTaskList();
+            var serverUser = getUser();
+            List<Task> taskList = serverUser.getTaskList();
 
             Task correctTask = getCorrectTestTask();
             Assertions.assertEquals(Statuses.INSERTED,
@@ -178,10 +177,9 @@ class DataProviderCsvTest {
     @Order(2)
     void createExtendedTaskCorrect() throws IOException {
         for (int i = 0; i < 2; i++) {
-            Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+            var serverUser = getUser();
             ExtendedTask correctExtendedTestTask = getCorrectExtendedTestTask();
-            Assertions.assertTrue(serverUser.isPresent());
-            Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(serverUser.get().getId(),
+            Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(serverUser.getId(),
                     correctExtendedTestTask.getName(),
                     correctExtendedTestTask.getStatus(),
                     correctExtendedTestTask.getRepetitionType(),
@@ -190,11 +188,10 @@ class DataProviderCsvTest {
                     correctExtendedTestTask.getDescription(),
                     correctExtendedTestTask.getTime()
             ));
-            Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
-            Assertions.assertTrue(updatedUser.isPresent());
-            Assertions.assertEquals(serverUser.get().getTaskList().size() + 1,
-                    updatedUser.get().getTaskList().size());
-            Assertions.assertTrue(updatedUser.get().getTaskList().stream()
+            User updatedUser = getUser();
+            Assertions.assertEquals(serverUser.getTaskList().size() + 1,
+                    updatedUser.getTaskList().size());
+            Assertions.assertTrue(updatedUser.getTaskList().stream()
                     .anyMatch(task -> task.getName().equals(correctExtendedTestTask.getName())));
         }
     }
@@ -203,14 +200,13 @@ class DataProviderCsvTest {
     @Order(3)
     void deleteTaskCorrect() throws IOException {
         for (int i = 0; i < 2; i++) {
-            Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
-            Assertions.assertTrue(serverUser.isPresent());
-            log.debug(serverUser.get().getTaskList().get(1));
+            var serverUser = getUser();
+            log.debug(serverUser.getTaskList().get(1));
             Assertions.assertEquals(Statuses.DELETED,
-                    dataProvider.deleteTask(serverUser.get().getId(), serverUser.get().getTaskList().get(1).getId()));
+                    dataProvider.deleteTask(serverUser.getId(), serverUser.getTaskList().get(1).getId()));
             Optional<User> updatedUser = dataProvider.getUser(getCorrectTestUser().getId());
             Assertions.assertTrue(updatedUser.isPresent());
-            Assertions.assertEquals(serverUser.get().getTaskList().size() - 1, updatedUser.get().getTaskList().size());
+            Assertions.assertEquals(serverUser.getTaskList().size() - 1, updatedUser.get().getTaskList().size());
         }
     }
 
@@ -218,9 +214,7 @@ class DataProviderCsvTest {
     @Test
     @Order(3)
     void editTaskCorrect() throws IOException {
-        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
-        Assertions.assertTrue(serverUser.isPresent());
-        User user = serverUser.get();
+        User user = getUser();
         var task = user.getTaskList().get(0);
         task.setName(new Date(System.currentTimeMillis()).toString() + " edit");
         log.debug(task);
@@ -235,12 +229,48 @@ class DataProviderCsvTest {
     @Test
     @Order(4)
     void createGroupCorrect() throws IOException {
-        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
-        Assertions.assertTrue(serverUser.isPresent());
-        User user = serverUser.get();
-        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup("testGroup",
+        User user = getUser();
+        Group group = getCorrectGroup();
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup(group.getName(),
                 user.getId(),
                 GroupTypes.PUBLIC));
+    }
+
+    private Group getCorrectGroup() throws IOException {
+        Group group = new Group();
+        group.setId(0);
+        group.setName("test Group");
+        group.setGroupType(GroupTypes.PUBLIC);
+        Map<User, UserRole> userMap = new HashMap<>();
+        userMap.put((getUser()), UserRole.CREATOR);
+        group.setMemberList(userMap);
+        return group;
+    }
+
+    @Test
+    @Order(5)
+    void getFullGroupList() throws IOException {
+        var groupList = dataProvider.getFullGroupList();
+        Assertions.assertEquals(1, groupList.size());
+        Group group = getCorrectGroup();
+        log.debug(groupList.get(0));
+        Assertions.assertEquals(group.getId(), groupList.get(0).getId());
+        Assertions.assertEquals(group.getName(), groupList.get(0).getName());
+        Assertions.assertEquals(group.getGroupType(), groupList.get(0).getGroupType());
+        Assertions.assertEquals(group.getMemberList(), groupList.get(0).getMemberList());
+    }
+
+    @Test
+    @Order(5)
+    void getGroupCorrect() throws IOException {
+        Group group = getCorrectGroup();
+        var optionalGroup = dataProvider.getGroup(group.getId());
+        Assertions.assertTrue(optionalGroup.isPresent());
+        log.debug(optionalGroup.get());
+        Assertions.assertEquals(group.getId(), optionalGroup.get().getId());
+        Assertions.assertEquals(group.getName(), optionalGroup.get().getName());
+        Assertions.assertEquals(group.getGroupType(), optionalGroup.get().getGroupType());
+        Assertions.assertEquals(group.getMemberList(), optionalGroup.get().getMemberList());
     }
 
 }

@@ -3,7 +3,9 @@ package ru.sfedu.studyProject.model;
 
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
+import com.opencsv.bean.CsvDate;
 import lombok.*;
+import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.converters.ModificationRecordConverter;
 import ru.sfedu.studyProject.converters.TaskMapConverter;
 import ru.sfedu.studyProject.converters.UserMapConverter;
@@ -34,6 +36,7 @@ public class Group implements Serializable {
   @CsvBindByName
   private String name;
   @CsvBindByName
+  @CsvDate(value = Constants.DATE_FORMAT)
   private Date created;
   @CsvCustomBindByName(converter = TaskMapConverter.class)
   private Map<Task, TaskState> taskList;

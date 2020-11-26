@@ -50,13 +50,9 @@ public interface DataProvider {
 
   List<Group> searchGroupByName(@NonNull String name);
 
-  Optional<Group> searchGroupById(long id);
-
   List<Group> getFullGroupList();
 
   Optional<Group> getGroup(long groupId);
-
-  Optional<Group> getGroup(long userId, long groupId);
 
   Statuses deleteUserFromGroup(long userId, long groupId);
 
@@ -75,13 +71,12 @@ public interface DataProvider {
 
   Statuses updateGroup(long userId, @NonNull Group editedGroup);
 
-
   Statuses setUserRole(long userId, long groupId, long userIdToSet, @NonNull UserRole role);
 
   Statuses changeTaskState(long userId, long groupId, long taskId, @NonNull TaskState state);
 
   Statuses deleteGroup(long userId, long groupId);
 
-
+  List<Group> getUsersGroups(long userId);
 
 }

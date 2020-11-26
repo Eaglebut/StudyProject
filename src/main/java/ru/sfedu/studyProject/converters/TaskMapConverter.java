@@ -2,19 +2,77 @@ package ru.sfedu.studyProject.converters;
 
 import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import ru.sfedu.studyProject.Constants;
+import ru.sfedu.studyProject.enums.TaskState;
 import ru.sfedu.studyProject.model.Task;
+import ru.sfedu.studyProject.utils.PropertyLoader;
 
-//TODO
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 public class TaskMapConverter extends AbstractBeanField<Task, Integer> {
+
+  private static final Logger log = LogManager.getLogger(TaskMapConverter.class);
+
+
   @Override
   protected Object convert(String s) throws CsvDataTypeMismatchException {
-    return null;
+    try {
+      String mapString;
+      if (s.matches("^((\\{(([0-9]+:[A-Za-z0-9]+)?)})|(\\{(([0-9]+:[A-Za-z0-9]+,)*([0-9]+:[A-Za-z0-9]+))}))$")) {
+        mapString = s.substring(1, s.length() - 1);
+      } else if (s.matches("^\"((\\{(([0-9]+:[A-Za-z0-9]+)?)})|(\\{(([0-9]+:[A-Za-z0-9]+,)*([0-9]+:[A-Za-z0-9]+))}))\"$")) {
+        mapString = s.substring(2, s.length() - 2);
+      } else {
+        throw new CsvDataTypeMismatchException();
+      }
+      String[] unparsedKeyValueList = mapString.split(
+              PropertyLoader.getProperty(Constants.ARRAY_DELIMITER));
+      Map<Task, TaskState> taskIdMap = new HashMap<>();
+      for (String strKeyValue : unparsedKeyValueList) {
+        if (!strKeyValue.isEmpty()) {
+          var splitKeyValueString = strKeyValue.split(":");
+          if (splitKeyValueString.length == 2) {
+            Task task = new Task();
+            task.setId(Long.parseLong(splitKeyValueString[0]));
+            taskIdMap.put(task, TaskState.valueOf(splitKeyValueString[1]));
+          }
+        }
+      }
+      return taskIdMap;
+    } catch (IOException e) {
+      log.error(e);
+      return null;
+    }
   }
 
   @Override
   protected String convertToWrite(Object value) {
-
-
-    return "";
+    try {
+      Map<Task, TaskState> taskMap = (Map<Task, TaskState>) value;
+      StringBuilder strTaskMap = new StringBuilder();
+      strTaskMap.append("{");
+      if (taskMap.size() > 0) {
+        taskMap.forEach((task, state) -> {
+          try {
+            strTaskMap.append(task.getId());
+            strTaskMap.append(":");
+            strTaskMap.append(state);
+            strTaskMap.append(PropertyLoader.getProperty(Constants.ARRAY_DELIMITER));
+          } catch (IOException e) {
+            log.error(e);
+          }
+        });
+        strTaskMap.delete(strTaskMap.length() - 1, strTaskMap.length());
+      }
+      strTaskMap.append("}");
+      return strTaskMap.toString();
+    } catch (Exception e) {
+      log.error(e);
+      return "";
+    }
   }
 }

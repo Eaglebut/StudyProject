@@ -1,11 +1,8 @@
 package ru.sfedu.studyProject.model;
 
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import com.opencsv.bean.CsvBindByName;
+import lombok.*;
 
 /**
  * Class PasswordedGroup
@@ -20,7 +17,7 @@ public class PasswordedGroup extends Group {
   //
   // Fields
   //
-
+  @CsvBindByName
   private String password;
 
   //
