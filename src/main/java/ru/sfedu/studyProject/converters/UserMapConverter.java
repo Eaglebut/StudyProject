@@ -21,9 +21,9 @@ public class UserMapConverter extends AbstractBeanField<User, Integer> {
   protected Object convert(String s) throws CsvDataTypeMismatchException {
     try {
       String mapString;
-      if (s.matches("^((\\{(([0-9]+:[A-Za-z0-9]+)?)})|(\\{(([0-9]+:[A-Za-z0-9]+,)*([0-9]+:[A-Za-z0-9]+))}))$")) {
+      if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_MAP_WITHOUT_QUOTES))) {
         mapString = s.substring(1, s.length() - 1);
-      } else if (s.matches("^\"((\\{(([0-9]+:[A-Za-z0-9]+)?)})|(\\{(([0-9]+:[A-Za-z0-9]+,)*([0-9]+:[A-Za-z0-9]+))}))\"$")) {
+      } else if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_MAP_WITH_QUOTES))) {
         mapString = s.substring(2, s.length() - 2);
       } else {
         throw new CsvDataTypeMismatchException();
@@ -33,7 +33,7 @@ public class UserMapConverter extends AbstractBeanField<User, Integer> {
       Map<User, UserRole> userIdMap = new HashMap<>();
       for (String strKeyValue : unparsedKeyValueList) {
         if (!strKeyValue.isEmpty()) {
-          var splitKeyValueString = strKeyValue.split(":");
+          var splitKeyValueString = strKeyValue.split(PropertyLoader.getProperty(Constants.MAP_DELIMITER));
           if (splitKeyValueString.length == 2) {
             User user = new User();
             user.setId(Long.parseLong(splitKeyValueString[0]));
@@ -53,12 +53,12 @@ public class UserMapConverter extends AbstractBeanField<User, Integer> {
     try {
       Map<User, UserRole> userMap = (Map<User, UserRole>) value;
       StringBuilder strUserMap = new StringBuilder();
-      strUserMap.append("{");
+      strUserMap.append(PropertyLoader.getProperty(Constants.MAP_START_SYMBOL));
       if (userMap.size() > 0) {
         userMap.forEach((user, role) -> {
           try {
             strUserMap.append(user.getId());
-            strUserMap.append(":");
+            strUserMap.append(PropertyLoader.getProperty(Constants.MAP_DELIMITER));
             strUserMap.append(role);
             strUserMap.append(PropertyLoader.getProperty(Constants.ARRAY_DELIMITER));
           } catch (IOException e) {
@@ -67,11 +67,11 @@ public class UserMapConverter extends AbstractBeanField<User, Integer> {
         });
         strUserMap.delete(strUserMap.length() - 1, strUserMap.length());
       }
-      strUserMap.append("}");
+      strUserMap.append(PropertyLoader.getProperty(Constants.MAP_END_SYMBOL));
       return strUserMap.toString();
     } catch (Exception e) {
       log.error(e);
-      return "";
+      return null;
     }
   }
 }

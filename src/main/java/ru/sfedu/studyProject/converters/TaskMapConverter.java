@@ -22,9 +22,9 @@ public class TaskMapConverter extends AbstractBeanField<Task, Integer> {
   protected Object convert(String s) throws CsvDataTypeMismatchException {
     try {
       String mapString;
-      if (s.matches("^((\\{(([0-9]+:[A-Za-z0-9]+)?)})|(\\{(([0-9]+:[A-Za-z0-9]+,)*([0-9]+:[A-Za-z0-9]+))}))$")) {
+      if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_MAP_WITHOUT_QUOTES))) {
         mapString = s.substring(1, s.length() - 1);
-      } else if (s.matches("^\"((\\{(([0-9]+:[A-Za-z0-9]+)?)})|(\\{(([0-9]+:[A-Za-z0-9]+,)*([0-9]+:[A-Za-z0-9]+))}))\"$")) {
+      } else if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_MAP_WITH_QUOTES))) {
         mapString = s.substring(2, s.length() - 2);
       } else {
         throw new CsvDataTypeMismatchException();
@@ -34,7 +34,7 @@ public class TaskMapConverter extends AbstractBeanField<Task, Integer> {
       Map<Task, TaskState> taskIdMap = new HashMap<>();
       for (String strKeyValue : unparsedKeyValueList) {
         if (!strKeyValue.isEmpty()) {
-          var splitKeyValueString = strKeyValue.split(":");
+          var splitKeyValueString = strKeyValue.split(PropertyLoader.getProperty(Constants.MAP_DELIMITER));
           if (splitKeyValueString.length == 2) {
             Task task = new Task();
             task.setId(Long.parseLong(splitKeyValueString[0]));
@@ -54,12 +54,12 @@ public class TaskMapConverter extends AbstractBeanField<Task, Integer> {
     try {
       Map<Task, TaskState> taskMap = (Map<Task, TaskState>) value;
       StringBuilder strTaskMap = new StringBuilder();
-      strTaskMap.append("{");
+      strTaskMap.append(PropertyLoader.getProperty(Constants.MAP_START_SYMBOL));
       if (taskMap.size() > 0) {
         taskMap.forEach((task, state) -> {
           try {
             strTaskMap.append(task.getId());
-            strTaskMap.append(":");
+            strTaskMap.append(PropertyLoader.getProperty(Constants.MAP_DELIMITER));
             strTaskMap.append(state);
             strTaskMap.append(PropertyLoader.getProperty(Constants.ARRAY_DELIMITER));
           } catch (IOException e) {
@@ -68,11 +68,11 @@ public class TaskMapConverter extends AbstractBeanField<Task, Integer> {
         });
         strTaskMap.delete(strTaskMap.length() - 1, strTaskMap.length());
       }
-      strTaskMap.append("}");
+      strTaskMap.append(PropertyLoader.getProperty(Constants.MAP_END_SYMBOL));
       return strTaskMap.toString();
     } catch (Exception e) {
       log.error(e);
-      return "";
+      return null;
     }
   }
 }

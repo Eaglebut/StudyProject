@@ -3,11 +3,7 @@ package ru.sfedu.studyProject.model;
 import com.opencsv.bean.CsvBindByName;
 import com.opencsv.bean.CsvCustomBindByName;
 import com.opencsv.bean.CsvDate;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.converters.ModificationRecordConverter;
 import ru.sfedu.studyProject.enums.TaskStatuses;
@@ -42,7 +38,7 @@ public class Task implements Serializable {
   private TaskStatuses status;
   @CsvBindByName
   private TaskTypes taskType;
-  @CsvCustomBindByName(converter = ModificationRecordConverter.class, column = Constants.HISTORY_LIST)
+  @CsvCustomBindByName(converter = ModificationRecordConverter.class)
   private List<ModificationRecord> historyList;
 
 

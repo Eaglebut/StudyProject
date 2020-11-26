@@ -22,9 +22,9 @@ public class TaskListConverter extends AbstractBeanField<Task, Integer> {
   protected Object convert(String s) throws CsvDataTypeMismatchException {
     try {
       String indexString;
-      if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_WITHOUT_QUOTES))) {
+      if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_LIST_WITHOUT_QUOTES))) {
         indexString = s.substring(1, s.length() - 1);
-      } else if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_WITH_QUOTES))) {
+      } else if (s.matches(PropertyLoader.getProperty(Constants.CONVERTER_REGEXP_LIST_WITH_QUOTES))) {
         indexString = s.substring(2, s.length() - 2);
       } else {
         throw new CsvDataTypeMismatchException();

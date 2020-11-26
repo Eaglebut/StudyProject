@@ -18,7 +18,6 @@ import ru.sfedu.studyProject.utils.Metadata;
 import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -135,9 +134,9 @@ public class DataProviderCsv implements DataProvider {
 
   private <T> void deleteFile(Class<T> tClass) {
     try {
-      new File(PropertyLoader.getProperty(Constants.CSV_PATH)
+      log.debug(new File(PropertyLoader.getProperty(Constants.CSV_PATH)
               + tClass.getSimpleName().toLowerCase()
-              + PropertyLoader.getProperty(Constants.CSV_EXTENSION)).delete();
+              + PropertyLoader.getProperty(Constants.CSV_EXTENSION)).delete());
     } catch (IOException e) {
       log.error(e);
     }
@@ -171,13 +170,28 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
-  private <T> List<ModificationRecord> getHistoryList(T object) {
-    Class<?> tClass = object.getClass();
+  private <T> List<ModificationRecord> getHistoryList(Class<T> tClass, T object) {
     try {
-      List<ModificationRecord> objectHistoryList = (List<ModificationRecord>) tClass
-              .getDeclaredMethod(
-                      PropertyLoader.getProperty(
-                              Constants.MODIFICATION_RECORD_GET_HISTORY)).invoke(object);
+      List<ModificationRecord> objectHistoryList;
+      if (tClass.equals(ExtendedTask.class)) {
+        ExtendedTask extendedTask = (ExtendedTask) object;
+        objectHistoryList = extendedTask.getHistoryList();
+      } else if (tClass.equals(Group.class)) {
+        Group group = (Group) object;
+        objectHistoryList = group.getHistoryList();
+      } else if (tClass.equals(PasswordedGroup.class)) {
+        PasswordedGroup passwordedGroup = (PasswordedGroup) object;
+        objectHistoryList = passwordedGroup.getHistoryList();
+      } else if (tClass.equals(Task.class)) {
+        Task task = (Task) object;
+        objectHistoryList = task.getHistoryList();
+      } else if (tClass.equals(User.class)) {
+        User user = (User) object;
+        objectHistoryList = user.getHistoryList();
+      } else {
+        return null;
+      }
+
       List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);
       return historyList
               .stream()
@@ -188,7 +202,7 @@ public class DataProviderCsv implements DataProvider {
                               userModificationRecord.getId() == modificationRecord.getId())
                       .isPresent())
               .collect(Collectors.toList());
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | IOException e) {
+    } catch (IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -201,7 +215,7 @@ public class DataProviderCsv implements DataProvider {
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
       user.setTaskList(getTasks(user));
-      user.setHistoryList(getHistoryList(user));
+      user.setHistoryList(getHistoryList(User.class, user));
       return Optional.of(user);
     } else {
       return Optional.empty();
@@ -215,7 +229,7 @@ public class DataProviderCsv implements DataProvider {
     if (optionalUser.isPresent()) {
       User user = optionalUser.get();
       user.setTaskList(getTasks(user));
-      user.setHistoryList(getHistoryList(user));
+      user.setHistoryList(getHistoryList(User.class, user));
       return Optional.of(user);
     } else {
       return Optional.empty();
@@ -226,9 +240,22 @@ public class DataProviderCsv implements DataProvider {
     try {
       List<Task> taskList = getFromCsv(Task.class);
       taskList.addAll(getFromCsv(ExtendedTask.class));
-      return taskList.stream()
+      var optionalTask = taskList.stream()
               .filter(task -> task.getId() == id)
               .findAny();
+      if (optionalTask.isEmpty()) {
+        return optionalTask;
+      }
+      var task = optionalTask.get();
+      switch (task.getTaskType()) {
+        case EXTENDED -> task.setHistoryList(getHistoryList(ExtendedTask.class, (ExtendedTask) task));
+        case BASIC -> task.setHistoryList(getHistoryList(Task.class, task));
+        default -> {
+          return Optional.empty();
+        }
+      }
+      return Optional.of(task);
+
     } catch (IOException e) {
       log.error(e);
       return Optional.empty();
@@ -698,7 +725,7 @@ public class DataProviderCsv implements DataProvider {
       groupList.forEach(group -> {
         group.setTaskList(getTaskMap(group.getId()));
         group.setMemberList(getUserMap(group.getId()));
-        group.setHistoryList(getHistoryList(group));
+        group.setHistoryList(getHistoryList(Group.class, group));
       });
 
       return groupList;
@@ -760,7 +787,7 @@ public class DataProviderCsv implements DataProvider {
         return optionalGroup;
       }
       Group group = optionalGroup.get();
-      group.setHistoryList(getHistoryList(group));
+      group.setHistoryList(getHistoryList(Group.class, group));
       group.setMemberList(getUserMap(groupId));
       group.setTaskList(getTaskMap(groupId));
       return Optional.of(group);

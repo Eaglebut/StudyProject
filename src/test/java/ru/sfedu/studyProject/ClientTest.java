@@ -12,7 +12,7 @@ class ClientTest {
   private static final Logger log = LogManager.getLogger(ClientTest.class);
 
   @Test
-  void test(){
+  void test() {
 
   }
 

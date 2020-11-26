@@ -57,6 +57,7 @@ class DataProviderCsvTest {
     private User getUser() throws IOException {
         Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
         Assertions.assertTrue(serverUser.isPresent());
+        log.debug(serverUser.get());
         return serverUser.get();
     }
 

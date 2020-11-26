@@ -19,7 +19,7 @@ import java.util.Date;
 @Getter
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = true)
-@ToString
+@ToString(callSuper = true)
 public class ExtendedTask extends Task {
 
   //

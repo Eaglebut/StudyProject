@@ -43,11 +43,11 @@ public class User implements Serializable {
   private String surname;
   @CsvBindByName
   private String token;
-  @CsvBindByName(column = Constants.SIGN_UP_TYPE)
+  @CsvBindByName()
   private SignUpTypes signUpType;
-  @CsvCustomBindByName(converter = TaskListConverter.class, column = Constants.TASK_LIST)
+  @CsvCustomBindByName(converter = TaskListConverter.class)
   private List<Task> taskList;
-  @CsvCustomBindByName(converter = ModificationRecordConverter.class, column = Constants.HISTORY_LIST)
+  @CsvCustomBindByName(converter = ModificationRecordConverter.class)
   private List<ModificationRecord> historyList;
 
 

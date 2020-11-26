@@ -11,7 +11,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = true)
-@ToString
+@ToString(callSuper = true)
 public class PasswordedGroup extends Group {
 
   //
