@@ -385,12 +385,29 @@ class DataProviderCsvTest {
     @Order(9)
     void createBasicGroupTaskCorrect() throws IOException {
         User user = getUser();
-        Task task = getCorrectTestTask();
         var groupList = dataProvider.getFullGroupList();
         var group = groupList.stream().findAny();
         Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(user.getId(),
                 group.get().getId(),
                 "group basic task test",
                 TaskStatuses.TEST_TASK_STATUS));
+    }
+
+    @Test
+    @Order(9)
+    void createExtendedGroupTaskCorrect() throws IOException {
+        User user = getUser();
+        ExtendedTask task = getCorrectExtendedTestTask();
+        var groupList = dataProvider.getFullGroupList();
+        var group = groupList.stream().findAny();
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(user.getId(),
+                group.get().getId(),
+                "group extended task test",
+                task.getStatus(),
+                task.getRepetitionType(),
+                task.getRemindType(),
+                task.getImportance(),
+                task.getDescription(),
+                task.getTime()));
     }
 }

@@ -32,7 +32,19 @@ public interface DataProvider {
 
   Statuses createTask(long userId, long groupId, @NonNull String name, @NonNull TaskStatuses taskStatus);
 
+  Statuses createTask(long userId,
+                      long groupId,
+                      @NonNull String name,
+                      @NonNull TaskStatuses taskStatus,
+                      @NonNull RepetitionTypes repetitionType,
+                      @NonNull RemindTypes remindType,
+                      @NonNull Importances importance,
+                      @NonNull String description,
+                      @NonNull Date time);
+
   Statuses deleteTask(long userId, long taskId);
+
+  Statuses deleteTask(long userId, long groupId, long taskId);
 
   Statuses editTask(long userId, @NonNull Task editedTask);
 
@@ -60,15 +72,6 @@ public interface DataProvider {
 
   Statuses suggestTask(long userId, long groupId, long taskId);
 
-
-  Statuses createTask(long userId,
-                      long groupId,
-                      @NonNull String name,
-                      @NonNull RepetitionTypes repetitionType,
-                      @NonNull RemindTypes remindType,
-                      @NonNull Importances importance,
-                      @NonNull String description,
-                      @NonNull Date time);
 
   Statuses updateGroup(long userId, @NonNull Group editedGroup);
 

@@ -11,6 +11,7 @@ import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.NonNull;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
 import ru.sfedu.studyProject.model.*;
@@ -507,6 +508,12 @@ public class DataProviderCsv implements DataProvider {
       log.error(e);
       return Statuses.FAILED;
     }
+  }
+
+  //TODO
+  @Override
+  public Statuses deleteTask(long userId, long groupId, long taskId) {
+    return null;
   }
 
 
@@ -1211,18 +1218,7 @@ public class DataProviderCsv implements DataProvider {
           if (optionalTask.isEmpty()) {
             return Statuses.FAILED;
           }
-          group.getTaskList().put(optionalTask.get(), TaskState.APPROVED);
-          group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
-                  OperationType.ADD,
-                  String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
-                          optionalTask.get().getId(),
-                          TaskState.APPROVED)));
-          var status = editGroup(group);
-          if (status.equals(Statuses.UPDATED)) {
-            return Statuses.INSERTED;
-          } else {
-            return status;
-          }
+          return saveGroup(group, optionalTask.get());
         }
         case MEMBER, REQUIRES_CONFIRMATION -> {
           return Statuses.FORBIDDEN;
@@ -1237,10 +1233,66 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
   @Override
-  public Statuses createTask(long userId, long groupId, @NonNull String name, @NonNull RepetitionTypes repetitionType, @NonNull RemindTypes remindType, @NonNull Importances importance, @NonNull String description, @NonNull Date time) {
-    return null;
+  public Statuses createTask(long userId,
+                             long groupId,
+                             @NonNull String name,
+                             @NonNull TaskStatuses taskStatus,
+                             @NonNull RepetitionTypes repetitionType,
+                             @NonNull RemindTypes remindType,
+                             @NonNull Importances importance,
+                             @NonNull String description,
+                             @NonNull Date time) {
+    try {
+      var optionalUser = getUser(userId);
+      var optionalGroup = getGroup(groupId);
+      if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        return Statuses.NOT_FOUNDED;
+      }
+      var group = optionalGroup.get();
+
+      switch (optionalGroup.get().getMemberList().get(optionalUser.get())) {
+
+        case CREATOR, ADMINISTRATOR -> {
+          var optionalTask = createTask(name,
+                  taskStatus,
+                  repetitionType,
+                  remindType,
+                  importance,
+                  description,
+                  time);
+          if (optionalTask.isEmpty()) {
+            return Statuses.FAILED;
+          }
+          return saveGroup(group, optionalTask.get());
+        }
+        case MEMBER, REQUIRES_CONFIRMATION -> {
+          return Statuses.FORBIDDEN;
+        }
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+  @NotNull
+  private Statuses saveGroup(Group group, Task task) throws IOException {
+    group.getTaskList().put(task, TaskState.APPROVED);
+    group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+            OperationType.ADD,
+            String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
+                    task.getId(),
+                    TaskState.APPROVED)));
+    var status = editGroup(group);
+    if (status.equals(Statuses.UPDATED)) {
+      return Statuses.INSERTED;
+    } else {
+      return status;
+    }
   }
 
   //TODO
