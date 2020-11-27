@@ -714,7 +714,14 @@ public class DataProviderCsv implements DataProvider {
       if (user.isEmpty()) {
         return Statuses.FORBIDDEN;
       }
-      Group group = new Group();
+      Group group;
+      switch (groupType) {
+        case PASSWORDED -> group = new PasswordedGroup();
+        case PUBLIC, WITH_CONFIRMATION -> group = new Group();
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
       group.setCreated(new Date(System.currentTimeMillis()));
       group.setGroupType(groupType);
       group.setHistoryList(new ArrayList<>());
@@ -724,6 +731,7 @@ public class DataProviderCsv implements DataProvider {
       group.setTaskList(new HashMap<>());
       group.setName(groupName);
       insertIntoCsv(group);
+      nextId(Group.class);
       return Statuses.INSERTED;
     } catch (IOException e) {
       log.error(e);
@@ -946,10 +954,18 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
-  //TODO
   @Override
   public List<Group> searchGroupByName(@NonNull String name) {
-    return null;
+    try {
+      var groupList = getFromCsv(Group.class);
+      groupList.addAll(getFromCsv(PasswordedGroup.class));
+      return groupList.stream()
+              .filter(group -> group.getName().toLowerCase().contains(name.toLowerCase()))
+              .collect(Collectors.toList());
+    } catch (IOException e) {
+      log.error(e);
+      return new ArrayList<>();
+    }
   }
 
 

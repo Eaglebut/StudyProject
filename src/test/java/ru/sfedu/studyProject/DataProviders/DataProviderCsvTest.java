@@ -5,10 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.*;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
-import ru.sfedu.studyProject.model.ExtendedTask;
-import ru.sfedu.studyProject.model.Group;
-import ru.sfedu.studyProject.model.Task;
-import ru.sfedu.studyProject.model.User;
+import ru.sfedu.studyProject.model.*;
 import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.IOException;
@@ -231,17 +228,49 @@ class DataProviderCsvTest {
     @Order(4)
     void createGroupCorrect() throws IOException {
         User user = getUser();
-        Group group = getCorrectGroup();
+        Group group = getCorrectPublicGroup();
         Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup(group.getName(),
                 user.getId(),
-                GroupTypes.PUBLIC));
+                group.getGroupType()));
+
+        group = getCorrectPasswordedGroup();
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup(group.getName(),
+                user.getId(),
+                group.getGroupType()));
+
+        group = getCorrectConfirmationGroup();
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup(group.getName(),
+                user.getId(),
+                group.getGroupType()));
     }
 
-    private Group getCorrectGroup() throws IOException {
+    private Group getCorrectPublicGroup() throws IOException {
         Group group = new Group();
         group.setId(0);
-        group.setName("test Group");
+        group.setName("test public Group");
         group.setGroupType(GroupTypes.PUBLIC);
+        Map<User, UserRole> userMap = new HashMap<>();
+        userMap.put((getUser()), UserRole.CREATOR);
+        group.setMemberList(userMap);
+        return group;
+    }
+
+    private Group getCorrectConfirmationGroup() throws IOException {
+        Group group = new Group();
+        group.setId(0);
+        group.setName("test Group with confirmation");
+        group.setGroupType(GroupTypes.WITH_CONFIRMATION);
+        Map<User, UserRole> userMap = new HashMap<>();
+        userMap.put((getUser()), UserRole.CREATOR);
+        group.setMemberList(userMap);
+        return group;
+    }
+
+    private PasswordedGroup getCorrectPasswordedGroup() throws IOException {
+        PasswordedGroup group = new PasswordedGroup();
+        group.setId(0);
+        group.setName("test passworded Group");
+        group.setGroupType(GroupTypes.PASSWORDED);
         Map<User, UserRole> userMap = new HashMap<>();
         userMap.put((getUser()), UserRole.CREATOR);
         group.setMemberList(userMap);
@@ -252,8 +281,8 @@ class DataProviderCsvTest {
     @Order(5)
     void getFullGroupList() throws IOException {
         var groupList = dataProvider.getFullGroupList();
-        Assertions.assertEquals(1, groupList.size());
-        Group group = getCorrectGroup();
+        Assertions.assertEquals(3, groupList.size());
+        Group group = getCorrectPublicGroup();
         log.debug(groupList.get(0));
         Assertions.assertEquals(group.getId(), groupList.get(0).getId());
         Assertions.assertEquals(group.getName(), groupList.get(0).getName());
@@ -264,7 +293,7 @@ class DataProviderCsvTest {
     @Test
     @Order(5)
     void getGroupCorrect() throws IOException {
-        Group group = getCorrectGroup();
+        Group group = getCorrectPublicGroup();
         var optionalGroup = dataProvider.getGroup(group.getId());
         Assertions.assertTrue(optionalGroup.isPresent());
         log.debug(optionalGroup.get());
@@ -277,7 +306,7 @@ class DataProviderCsvTest {
     @Test
     @Order(6)
     void addUserToGroupCorrect() throws IOException {
-        Group group = getCorrectGroup();
+        Group group = getCorrectPublicGroup();
         User user = new User();
         user.setEmail("test2");
         var correctUser = getCorrectTestUser();
@@ -298,7 +327,7 @@ class DataProviderCsvTest {
     @Test
     @Order(7)
     void removeUserFromGroupCorrect() throws IOException {
-        Group group = getCorrectGroup();
+        Group group = getCorrectPublicGroup();
         User user = new User();
         user.setEmail("test2");
         var correctUser = getCorrectTestUser();
@@ -313,7 +342,7 @@ class DataProviderCsvTest {
     @Test
     @Order(8)
     void changeGroupTypeCorrect() throws IOException {
-        Group group = getCorrectGroup();
+        Group group = getCorrectPublicGroup();
         User user = getUser();
 
         Assertions.assertEquals(Statuses.UPDATED, dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.PASSWORDED));
@@ -327,4 +356,11 @@ class DataProviderCsvTest {
         Assertions.assertEquals(GroupTypes.WITH_CONFIRMATION, serverGroup.get().getGroupType());
     }
 
+    @Test
+    @Order(8)
+    void searchGroupByName() {
+        Assertions.assertEquals(3, dataProvider.searchGroupByName("test").size());
+        Assertions.assertEquals(2, dataProvider.searchGroupByName("test p").size());
+        Assertions.assertEquals(1, dataProvider.searchGroupByName("test public").size());
+    }
 }
