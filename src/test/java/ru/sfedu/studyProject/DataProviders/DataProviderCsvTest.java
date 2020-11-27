@@ -257,7 +257,7 @@ class DataProviderCsvTest {
 
     private Group getCorrectConfirmationGroup() throws IOException {
         Group group = new Group();
-        group.setId(0);
+        group.setId(2);
         group.setName("test Group with confirmation");
         group.setGroupType(GroupTypes.WITH_CONFIRMATION);
         Map<User, UserRole> userMap = new HashMap<>();
@@ -268,7 +268,7 @@ class DataProviderCsvTest {
 
     private PasswordedGroup getCorrectPasswordedGroup() throws IOException {
         PasswordedGroup group = new PasswordedGroup();
-        group.setId(0);
+        group.setId(1);
         group.setName("test passworded Group");
         group.setGroupType(GroupTypes.PASSWORDED);
         Map<User, UserRole> userMap = new HashMap<>();
@@ -354,13 +354,30 @@ class DataProviderCsvTest {
         serverGroup = dataProvider.getGroup(group.getId());
         Assertions.assertTrue(serverGroup.isPresent());
         Assertions.assertEquals(GroupTypes.WITH_CONFIRMATION, serverGroup.get().getGroupType());
+
+        Assertions.assertEquals(Statuses.UPDATED, dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.PUBLIC));
+        serverGroup = dataProvider.getGroup(group.getId());
+        Assertions.assertTrue(serverGroup.isPresent());
+        Assertions.assertEquals(GroupTypes.PUBLIC, serverGroup.get().getGroupType());
     }
 
     @Test
     @Order(8)
-    void searchGroupByName() {
+    void searchGroupByNameCorrect() {
         Assertions.assertEquals(3, dataProvider.searchGroupByName("test").size());
         Assertions.assertEquals(2, dataProvider.searchGroupByName("test p").size());
         Assertions.assertEquals(1, dataProvider.searchGroupByName("test public").size());
+    }
+
+    @Test
+    @Order(9)
+    void suggestTaskToGroupCorrect() throws IOException {
+        Group group = getCorrectConfirmationGroup();
+        User user = getUser();
+
+        Assertions.assertEquals(Statuses.INSERTED,
+                dataProvider.suggestTask(user.getId(),
+                        group.getId(),
+                        user.getTaskList().stream().findAny().get().getId()));
     }
 }

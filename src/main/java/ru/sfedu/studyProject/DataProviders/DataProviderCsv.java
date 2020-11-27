@@ -343,10 +343,8 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
-  @Override
-  public Statuses createTask(long userId,
-                             @NonNull String taskName,
-                             @NonNull TaskStatuses status) {
+  private Optional<Task> createTask(@NonNull String taskName,
+                                    @NonNull TaskStatuses status) {
     try {
       Task createdTask = new Task();
       createdTask.setId(getNextId(Task.class));
@@ -358,6 +356,54 @@ public class DataProviderCsv implements DataProvider {
       log.debug(createdTask);
       insertIntoCsv(createdTask);
       nextId(Task.class);
+      return Optional.of(createdTask);
+    } catch (IOException e) {
+      log.error(e);
+      return Optional.empty();
+    }
+  }
+
+
+  private Optional<Task> createTask(@NonNull String taskName,
+                                    @NonNull TaskStatuses status,
+                                    @NonNull RepetitionTypes repetitionType,
+                                    @NonNull RemindTypes remindType,
+                                    @NonNull Importances importance,
+                                    @NonNull String description,
+                                    @NonNull Date time) {
+    try {
+      ExtendedTask task = new ExtendedTask();
+      task.setId(getNextId(Task.class));
+      task.setName(taskName);
+      task.setTaskType(TaskTypes.EXTENDED);
+      task.setStatus(status);
+      task.setRepetitionType(repetitionType);
+      task.setRemindType(remindType);
+      task.setImportance(importance);
+      task.setDescription(description);
+      task.setTime(time);
+      task.setCreated(new Date(System.currentTimeMillis()));
+      task.setHistoryList(new ArrayList<>());
+      nextId(Task.class);
+      insertIntoCsv(task);
+      return Optional.of(task);
+    } catch (IOException e) {
+      log.error(e);
+      return Optional.empty();
+    }
+  }
+
+
+  @Override
+  public Statuses createTask(long userId,
+                             @NonNull String taskName,
+                             @NonNull TaskStatuses status) {
+    try {
+      var optionalTask = createTask(taskName, status);
+      if (optionalTask.isEmpty()) {
+        return Statuses.FAILED;
+      }
+      var createdTask = optionalTask.get();
       Optional<User> optionalUser = getUser(userId);
       if (optionalUser.isEmpty()) {
         return Statuses.FORBIDDEN;
@@ -391,36 +437,27 @@ public class DataProviderCsv implements DataProvider {
                              @NonNull Importances importance,
                              @NonNull String description,
                              @NonNull Date time) {
-    try {
-      var optionalUser = getUser(userId);
-      if (optionalUser.isEmpty()) {
-        return Statuses.FORBIDDEN;
-      }
-      User user = optionalUser.get();
-      ExtendedTask task = new ExtendedTask();
-      task.setId(getNextId(Task.class));
-      task.setName(taskName);
-      task.setTaskType(TaskTypes.EXTENDED);
-      task.setStatus(status);
-      task.setRepetitionType(repetitionType);
-      task.setRemindType(remindType);
-      task.setImportance(importance);
-      task.setDescription(description);
-      task.setTime(time);
-      task.setCreated(new Date(System.currentTimeMillis()));
-      task.setHistoryList(new ArrayList<>());
-      user.getTaskList().add(task);
-      nextId(Task.class);
-      var updateUserStatus = updateUser(user);
-      if (updateUserStatus != Statuses.UPDATED) {
-        return updateUserStatus;
-      }
-      insertIntoCsv(task);
-      return Statuses.INSERTED;
-    } catch (IOException e) {
-      log.error(e);
+    var optionalUser = getUser(userId);
+    if (optionalUser.isEmpty()) {
+      return Statuses.FORBIDDEN;
+    }
+    User user = optionalUser.get();
+    var optionalTask = createTask(taskName,
+            status,
+            repetitionType,
+            remindType,
+            importance,
+            description,
+            time);
+    if (optionalTask.isEmpty()) {
       return Statuses.FAILED;
     }
+    user.getTaskList().add(optionalTask.get());
+    var updateUserStatus = updateUser(user);
+    if (updateUserStatus != Statuses.UPDATED) {
+      return updateUserStatus;
+    }
+    return Statuses.INSERTED;
   }
 
 
@@ -1087,11 +1124,74 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+  private Statuses suggestTask(User user, Group group, Task task) {
+    try {
+      var userRole = group.getMemberList().get(user);
+      if (userRole == UserRole.REQUIRES_CONFIRMATION) {
+        return Statuses.FORBIDDEN;
+      }
+      Optional<Task> optionalTask;
+      switch (task.getTaskType()) {
+        case BASIC -> optionalTask = createTask(task.getName(), task.getStatus());
+        case EXTENDED -> {
+          ExtendedTask extendedTask = (ExtendedTask) task;
+          optionalTask = createTask(extendedTask.getName(),
+                  extendedTask.getStatus(),
+                  extendedTask.getRepetitionType(),
+                  extendedTask.getRemindType(),
+                  extendedTask.getImportance(),
+                  extendedTask.getDescription(),
+                  extendedTask.getTime());
+        }
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
+      if (optionalTask.isEmpty()) {
+        return Statuses.FAILED;
+      }
+      switch (userRole) {
+        case CREATOR -> group.getTaskList().put(optionalTask.get(), TaskState.APPROVED);
+        case MEMBER -> group.getTaskList().put(optionalTask.get(), TaskState.SUGGESTED);
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
+      group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+              OperationType.ADD,
+              String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
+                      optionalTask.get().getId(),
+                      group.getTaskList().get(optionalTask.get()))));
+      editGroup(group);
+      return Statuses.INSERTED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
 
-  //TODO
+
   @Override
   public Statuses suggestTask(long userId, long groupId, long taskId) {
-    return null;
+    var optionalUser = getUser(userId);
+    var optionalGroup = getGroup(groupId);
+    var optionalTask = getTask(taskId);
+    if (optionalGroup.isEmpty() || optionalUser.isEmpty() || optionalTask.isEmpty()) {
+      return Statuses.NOT_FOUNDED;
+    }
+    var group = optionalGroup.get();
+
+    switch (group.getGroupType()) {
+      case PUBLIC -> {
+        return Statuses.FORBIDDEN;
+      }
+      case WITH_CONFIRMATION, PASSWORDED -> {
+        return suggestTask(optionalUser.get(), group, optionalTask.get());
+      }
+      default -> {
+        return Statuses.FAILED;
+      }
+    }
   }
 
   //TODO
@@ -1130,6 +1230,7 @@ public class DataProviderCsv implements DataProvider {
     return null;
   }
 
+  //TODO
   @Override
   public List<Group> getUsersGroups(long userId) {
     return null;
