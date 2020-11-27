@@ -310,4 +310,21 @@ class DataProviderCsvTest {
         Assertions.assertFalse(serverGroup.get().getMemberList().containsKey(serverUser.get()));
     }
 
+    @Test
+    @Order(8)
+    void changeGroupTypeCorrect() throws IOException {
+        Group group = getCorrectGroup();
+        User user = getUser();
+
+        Assertions.assertEquals(Statuses.UPDATED, dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.PASSWORDED));
+        var serverGroup = dataProvider.getGroup(group.getId());
+        Assertions.assertTrue(serverGroup.isPresent());
+        Assertions.assertEquals(GroupTypes.PASSWORDED, serverGroup.get().getGroupType());
+
+        Assertions.assertEquals(Statuses.UPDATED, dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.WITH_CONFIRMATION));
+        serverGroup = dataProvider.getGroup(group.getId());
+        Assertions.assertTrue(serverGroup.isPresent());
+        Assertions.assertEquals(GroupTypes.WITH_CONFIRMATION, serverGroup.get().getGroupType());
+    }
+
 }

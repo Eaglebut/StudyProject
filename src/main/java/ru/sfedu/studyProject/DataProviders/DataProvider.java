@@ -30,6 +30,8 @@ public interface DataProvider {
                       @NonNull String description,
                       @NonNull Date time);
 
+  Statuses createTask(long userId, long groupId, @NonNull String name);
+
   Statuses deleteTask(long userId, long taskId);
 
   Statuses editTask(long userId, @NonNull Task editedTask);
@@ -58,7 +60,6 @@ public interface DataProvider {
 
   Statuses suggestTask(long userId, long groupId, long taskId);
 
-  Statuses createTask(long userId, long groupId, @NonNull String name);
 
   Statuses createTask(long userId,
                       long groupId,

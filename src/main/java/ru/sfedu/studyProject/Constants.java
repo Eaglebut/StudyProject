@@ -41,5 +41,6 @@ public class Constants {
   public static final String FIELD_NAME_EMAIL = "field.name.email";
   public static final String FIELD_NAME_PASSWORD = "field.name.password";
   public static final String FIELD_NAME_MEMBER = "field.name.member";
+  public static final String FIELD_NAME_GROUP_TYPE = "field.name.groupType";
   public static final String MAP_FORMAT_STRING = "map.formatString";
 }

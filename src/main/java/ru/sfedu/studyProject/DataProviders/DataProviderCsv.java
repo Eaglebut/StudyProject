@@ -27,8 +27,10 @@ public class DataProviderCsv implements DataProvider {
   private static DataProvider INSTANCE = null;
 
 
+
   private DataProviderCsv() {
   }
+
 
   public static DataProvider getInstance() {
     if (INSTANCE == null) {
@@ -37,11 +39,15 @@ public class DataProviderCsv implements DataProvider {
     return INSTANCE;
   }
 
+
   private <T> void insertIntoCsv(T object) throws IOException {
     insertIntoCsv(object.getClass(), Collections.singletonList(object), false);
   }
 
-  private <T> void insertIntoCsv(Class<?> tClass, List<T> objectList, boolean overwrite) throws IOException {
+
+  private <T> void insertIntoCsv(Class<?> tClass,
+                                 List<T> objectList,
+                                 boolean overwrite) throws IOException {
     List<T> tList;
     if (!overwrite) {
       tList = (List<T>) getFromCsv(tClass);
@@ -64,6 +70,7 @@ public class DataProviderCsv implements DataProvider {
     csvWriter.close();
   }
 
+
   private <T> CSVWriter getCsvWriter(Class<T> tClass) throws IOException {
     FileWriter writer;
     File path = new File(PropertyLoader.getProperty(Constants.CSV_PATH));
@@ -74,7 +81,9 @@ public class DataProviderCsv implements DataProvider {
     if (!file.exists()) {
       if (path.mkdirs()) {
         if (!file.createNewFile()) {
-          throw new IOException(String.format(PropertyLoader.getProperty(Constants.EXCEPTION_CANNOT_CREATE_FILE), file.getName()));
+          throw new IOException(
+                  String.format(PropertyLoader.getProperty(Constants.EXCEPTION_CANNOT_CREATE_FILE),
+                          file.getName()));
         }
       }
     }
@@ -83,23 +92,26 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
+
   private <T> CSVReader getCsvReader(Class<T> tClass) throws IOException {
     File file = new File(PropertyLoader.getProperty(Constants.CSV_PATH)
             + tClass.getSimpleName().toLowerCase()
             + PropertyLoader.getProperty(Constants.CSV_EXTENSION));
 
     if (!file.exists()) {
-      if (!file.createNewFile())
+      if (!file.createNewFile()) {
         throw new IOException(
                 String.format(
                         PropertyLoader.getProperty(Constants.EXCEPTION_CANNOT_CREATE_FILE),
                         file.getName()));
+      }
     }
 
     FileReader fileReader = new FileReader(file);
     BufferedReader bufferedReader = new BufferedReader(fileReader);
     return new CSVReader(bufferedReader);
   }
+
 
   private <T> List<T> getFromCsv(Class<T> tClass) throws IOException {
     List<T> tList;
@@ -118,6 +130,7 @@ public class DataProviderCsv implements DataProvider {
     return tList;
   }
 
+
   public void deleteAll() {
     List<Class> classList = new ArrayList<>();
     classList.add(ExtendedTask.class);
@@ -132,6 +145,7 @@ public class DataProviderCsv implements DataProvider {
     classList.forEach(this::deleteFile);
   }
 
+
   private <T> void deleteFile(Class<T> tClass) {
     try {
       log.debug(new File(PropertyLoader.getProperty(Constants.CSV_PATH)
@@ -141,6 +155,7 @@ public class DataProviderCsv implements DataProvider {
       log.error(e);
     }
   }
+
 
   private Optional<User> getUserProfile(long userId) {
     try {
@@ -154,6 +169,7 @@ public class DataProviderCsv implements DataProvider {
       return Optional.empty();
     }
   }
+
 
   private Optional<User> getUserProfile(String email,
                                         String password) {
@@ -193,15 +209,14 @@ public class DataProviderCsv implements DataProvider {
         return null;
       }
 
+
       List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);
       return historyList
               .stream()
               .filter(modificationRecord -> objectHistoryList
                       .stream()
-                      .findFirst()
-                      .filter(userModificationRecord ->
-                              userModificationRecord.getId() == modificationRecord.getId())
-                      .isPresent())
+                      .anyMatch(userModificationRecord ->
+                              userModificationRecord.getId() == modificationRecord.getId()))
               .collect(Collectors.toList());
     } catch (IOException e) {
       log.error(e);
@@ -223,6 +238,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   @Override
   public Optional<User> getUser(@NonNull String email,
                                 @NonNull String password) {
@@ -237,6 +253,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   private Optional<Task> getTask(long id) {
     try {
       List<Task> taskList = getFromCsv(Task.class);
@@ -249,7 +266,8 @@ public class DataProviderCsv implements DataProvider {
       }
       var task = optionalTask.get();
       switch (task.getTaskType()) {
-        case EXTENDED -> task.setHistoryList(getHistoryList(ExtendedTask.class, (ExtendedTask) task));
+        case EXTENDED -> task.setHistoryList(
+                getHistoryList(ExtendedTask.class, (ExtendedTask) task));
         case BASIC -> task.setHistoryList(getHistoryList(Task.class, task));
         default -> {
           return Optional.empty();
@@ -263,6 +281,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   private List<Task> getTasks(@NonNull User user) throws NoSuchElementException {
     List<Task> usersTaskIdList = user.getTaskList();
     List<Task> taskList = new ArrayList<>();
@@ -272,6 +291,7 @@ public class DataProviderCsv implements DataProvider {
     });
     return taskList;
   }
+
 
   private <T> long getNextId(Class<T> tClass) throws IOException {
     List<Metadata> metadataList = getFromCsv(Metadata.class);
@@ -283,6 +303,7 @@ public class DataProviderCsv implements DataProvider {
     }
     return optionalMetadata.get().getLastId();
   }
+
 
   private <T> void nextId(Class<T> tClass) throws IOException {
     List<Metadata> metadataList = getFromCsv(Metadata.class);
@@ -303,6 +324,7 @@ public class DataProviderCsv implements DataProvider {
     insertIntoCsv(Metadata.class, metadataList, true);
   }
 
+
   private ModificationRecord addHistoryRecord(String changedValueName, OperationType operationType, String changedValue) {
     try {
       ModificationRecord record = new ModificationRecord();
@@ -319,6 +341,7 @@ public class DataProviderCsv implements DataProvider {
       return null;
     }
   }
+
 
   @Override
   public Statuses createTask(long userId,
@@ -400,6 +423,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   @Override
   public Statuses deleteTask(long userId, long taskId) {
     try {
@@ -448,6 +472,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   private void saveChangesHistory(Task task, Task editedTask) {
     try {
       if (!task.getName().equals(editedTask.getName())) {
@@ -466,6 +491,7 @@ public class DataProviderCsv implements DataProvider {
       log.error(e);
     }
   }
+
 
   private void saveChangesHistory(ExtendedTask task, ExtendedTask editedTask) {
     try {
@@ -505,11 +531,13 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   private boolean isEditValid(Task task, Task editedTask) {
     return task.getHistoryList().equals(editedTask.getHistoryList())
             && task.getCreated().getTime() == editedTask.getCreated().getTime()
             && task.getTaskType().equals(editedTask.getTaskType());
   }
+
 
   @Override
   public Statuses editTask(long userId, @NonNull Task editedTask) {
@@ -555,6 +583,7 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
+
 
   @Override
   public Statuses createUser(@NonNull String email,
@@ -608,6 +637,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   private void saveChangesHistory(User user, User editedUser) {
     try {
       if (!user.getName().equals(editedUser.getName())) {
@@ -640,12 +670,14 @@ public class DataProviderCsv implements DataProvider {
 
   }
 
+
   private boolean isEditValid(User user, User editedUser) {
     return user.getHistoryList().equals(editedUser.getHistoryList())
             && user.getCreated().getTime() == editedUser.getCreated().getTime()
             && user.getTaskList().equals(editedUser.getTaskList())
             && user.getSignUpType().equals(editedUser.getSignUpType());
   }
+
 
   @Override
   public Statuses editUser(@NonNull User editedUser) {
@@ -674,6 +706,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   @Override
   public Statuses createGroup(@NonNull String groupName, long creatorId, @NonNull GroupTypes groupType) {
     try {
@@ -697,6 +730,7 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
+
 
   @Override
   public Statuses addUserToGroup(long userId, long groupId) {
@@ -740,6 +774,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   private void saveChangesHistory(Group group, Group editedGroup) {
     try {
       if (!group.getName().equals(editedGroup.getName())) {
@@ -752,6 +787,7 @@ public class DataProviderCsv implements DataProvider {
       log.error(e);
     }
   }
+
 
   private void saveChangesHistory(PasswordedGroup group, PasswordedGroup editedGroup) {
     try {
@@ -766,6 +802,7 @@ public class DataProviderCsv implements DataProvider {
       log.error(e);
     }
   }
+
 
   private Statuses editGroup(Group editedGroup) {
     try {
@@ -815,17 +852,106 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
-  //TODO
+  private Statuses changeGroupTypeToPassworded(Group group) {
+    try {
+      PasswordedGroup passwordedGroup = new PasswordedGroup();
+      passwordedGroup.setId(group.getId());
+      passwordedGroup.setCreated(group.getCreated());
+      passwordedGroup.setGroupType(GroupTypes.PASSWORDED);
+      passwordedGroup.setHistoryList(group.getHistoryList());
+      passwordedGroup.setMemberList(group.getMemberList());
+      passwordedGroup.setName(group.getName());
+      passwordedGroup.setTaskList(group.getTaskList());
+      var groupList = getFromCsv(Group.class);
+
+      var optionalGroup = groupList.stream()
+              .filter(serverGroup -> serverGroup.getId() == group.getId())
+              .findAny();
+      if (optionalGroup.isEmpty() || !groupList.remove(optionalGroup.get())) {
+        return Statuses.FAILED;
+      }
+      insertIntoCsv(Group.class, groupList, true);
+      var passwordedGroupList = getFromCsv(PasswordedGroup.class);
+      passwordedGroupList.add(passwordedGroup);
+      insertIntoCsv(PasswordedGroup.class, passwordedGroupList, true);
+      return Statuses.UPDATED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+
+  private Statuses changeGroupTypeFromPassworded(Group group, GroupTypes groupType) {
+    try {
+      group.setGroupType(groupType);
+      var passwordedGroupList = getFromCsv(PasswordedGroup.class);
+      var optionalPasswordedGroup = passwordedGroupList.stream()
+              .filter(serverGroup -> serverGroup.getId() == group.getId())
+              .findAny();
+      if (optionalPasswordedGroup.isEmpty() || !passwordedGroupList.remove(optionalPasswordedGroup.get())) {
+        return Statuses.FAILED;
+      }
+      insertIntoCsv(PasswordedGroup.class, passwordedGroupList, true);
+      var groupList = getFromCsv(Group.class);
+      groupList.add(group);
+      insertIntoCsv(Group.class, groupList, true);
+      return Statuses.UPDATED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+
   @Override
   public Statuses changeGroupType(long userId, long groupId, @NonNull GroupTypes groupType) {
-    return null;
+    try {
+      var optionalUser = getUser(userId);
+      var optionalGroup = getGroup(groupId);
+      if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        return Statuses.NOT_FOUNDED;
+      }
+      var user = optionalUser.get();
+      var group = optionalGroup.get();
+
+      if (!group.getMemberList().get(user).equals(UserRole.CREATOR)) {
+        return Statuses.FORBIDDEN;
+      }
+      if (groupType.equals(group.getGroupType())) {
+        return Statuses.UPDATED;
+      }
+      group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_GROUP_TYPE),
+              OperationType.EDIT,
+              group.getGroupType().name()));
+
+      if (groupType.equals(GroupTypes.PASSWORDED) &&
+              (group.getGroupType().equals(GroupTypes.PUBLIC)
+                      || (group.getGroupType().equals(GroupTypes.WITH_CONFIRMATION)))) {
+        return changeGroupTypeToPassworded(group);
+      } else if (group.getGroupType().equals(GroupTypes.PASSWORDED) &&
+              (groupType.equals(GroupTypes.PUBLIC)
+                      || (groupType.equals(GroupTypes.WITH_CONFIRMATION)))) {
+        return changeGroupTypeFromPassworded(group, groupType);
+      } else {
+        group.setGroupType(groupType);
+        editGroup(group);
+        return Statuses.UPDATED;
+      }
+
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
+
 
   //TODO
   @Override
   public List<Group> searchGroupByName(@NonNull String name) {
     return null;
   }
+
 
   @Override
   public List<Group> getFullGroupList() {
@@ -846,6 +972,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   private Optional<Group> getUnfilledGroup(long groupId) {
     try {
       List<Group> groupList = getFromCsv(Group.class);
@@ -856,6 +983,7 @@ public class DataProviderCsv implements DataProvider {
       return Optional.empty();
     }
   }
+
 
   private Map<User, UserRole> getUserMap(long groupId) {
     var optionalGroup = getUnfilledGroup(groupId);
@@ -870,6 +998,7 @@ public class DataProviderCsv implements DataProvider {
     });
     return userMap;
   }
+
 
   private Map<Task, TaskState> getTaskMap(long groupId) {
     var optionalGroup = getUnfilledGroup(groupId);
@@ -941,6 +1070,7 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
+
 
   //TODO
   @Override
