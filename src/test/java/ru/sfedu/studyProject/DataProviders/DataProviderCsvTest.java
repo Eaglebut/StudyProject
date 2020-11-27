@@ -380,4 +380,17 @@ class DataProviderCsvTest {
                         group.getId(),
                         user.getTaskList().stream().findAny().get().getId()));
     }
+
+    @Test
+    @Order(9)
+    void createBasicGroupTaskCorrect() throws IOException {
+        User user = getUser();
+        Task task = getCorrectTestTask();
+        var groupList = dataProvider.getFullGroupList();
+        var group = groupList.stream().findAny();
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(user.getId(),
+                group.get().getId(),
+                "group basic task test",
+                TaskStatuses.TEST_TASK_STATUS));
+    }
 }

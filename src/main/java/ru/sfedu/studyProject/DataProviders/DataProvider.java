@@ -30,7 +30,7 @@ public interface DataProvider {
                       @NonNull String description,
                       @NonNull Date time);
 
-  Statuses createTask(long userId, long groupId, @NonNull String name);
+  Statuses createTask(long userId, long groupId, @NonNull String name, @NonNull TaskStatuses taskStatus);
 
   Statuses deleteTask(long userId, long taskId);
 

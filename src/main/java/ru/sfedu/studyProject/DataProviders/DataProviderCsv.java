@@ -1194,10 +1194,47 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
   @Override
-  public Statuses createTask(long userId, long groupId, @NonNull String name) {
-    return null;
+  public Statuses createTask(long userId, long groupId, @NonNull String name, @NonNull TaskStatuses taskStatus) {
+    try {
+      var optionalUser = getUser(userId);
+      var optionalGroup = getGroup(groupId);
+      if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        return Statuses.NOT_FOUNDED;
+      }
+      var group = optionalGroup.get();
+
+      switch (optionalGroup.get().getMemberList().get(optionalUser.get())) {
+
+        case CREATOR, ADMINISTRATOR -> {
+          var optionalTask = createTask(name, taskStatus);
+          if (optionalTask.isEmpty()) {
+            return Statuses.FAILED;
+          }
+          group.getTaskList().put(optionalTask.get(), TaskState.APPROVED);
+          group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+                  OperationType.ADD,
+                  String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
+                          optionalTask.get().getId(),
+                          TaskState.APPROVED)));
+          var status = editGroup(group);
+          if (status.equals(Statuses.UPDATED)) {
+            return Statuses.INSERTED;
+          } else {
+            return status;
+          }
+        }
+        case MEMBER, REQUIRES_CONFIRMATION -> {
+          return Statuses.FORBIDDEN;
+        }
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
   //TODO
