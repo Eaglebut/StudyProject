@@ -410,4 +410,14 @@ class DataProviderCsvTest {
                 task.getDescription(),
                 task.getTime()));
     }
+
+    @Test
+    @Order(9)
+    void updateGroupCorrect() throws IOException {
+        User user = getUser();
+        var groupList = dataProvider.getFullGroupList();
+        var group = groupList.stream().findAny();
+        group.get().setName("updated group");
+        Assertions.assertEquals(Statuses.UPDATED, dataProvider.updateGroup(user.getId(), group.get()));
+    }
 }

@@ -1295,10 +1295,56 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
+
   @Override
   public Statuses updateGroup(long userId, @NonNull Group editedGroup) {
-    return null;
+    try {
+      var optionalUser = getUser(userId);
+      var optionalGroup = getGroup(editedGroup.getId());
+      if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        return Statuses.NOT_FOUNDED;
+      }
+      var group = optionalGroup.get();
+
+      switch (optionalGroup.get().getMemberList().get(optionalUser.get())) {
+
+        case CREATOR, ADMINISTRATOR -> {
+          if (!(group.getHistoryList().equals(editedGroup.getHistoryList())
+                  && group.getTaskList().equals(editedGroup.getTaskList())
+                  && group.getMemberList().equals(editedGroup.getMemberList())
+                  && group.getGroupType().equals(editedGroup.getGroupType())
+                  && group.getCreated().equals(editedGroup.getCreated()))) {
+            return Statuses.FORBIDDEN;
+          }
+          if (!group.getName().equals(editedGroup.getName())) {
+            editedGroup.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_NAME),
+                    OperationType.EDIT,
+                    group.getName()));
+          }
+          if (group.getGroupType() == GroupTypes.PASSWORDED
+                  && ((PasswordedGroup) group).getPassword().equals(((PasswordedGroup) editedGroup).getPassword())) {
+            editedGroup.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_PASSWORD),
+                    OperationType.EDIT,
+                    ((PasswordedGroup) group).getPassword()));
+          }
+          var status = editGroup(editedGroup);
+          if (status == Statuses.INSERTED) {
+            return Statuses.UPDATED;
+          } else {
+            return status;
+          }
+        }
+        case MEMBER, REQUIRES_CONFIRMATION -> {
+          return Statuses.FORBIDDEN;
+        }
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
   //TODO
