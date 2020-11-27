@@ -161,8 +161,9 @@ public class DataProviderCsv implements DataProvider {
       List<User> userList = getFromCsv(User.class);
       return userList
               .stream()
-              .findFirst()
-              .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password));
+              .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password))
+              .findFirst();
+
     } catch (IOException e) {
       log.error(e);
       return Optional.empty();
@@ -697,10 +698,120 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
   @Override
   public Statuses addUserToGroup(long userId, long groupId) {
-    return null;
+    try {
+      var optionalUser = getUser(userId);
+      var optionalGroup = getGroup(groupId);
+      if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        return Statuses.NOT_FOUNDED;
+      }
+      var user = optionalUser.get();
+      var group = optionalGroup.get();
+
+      if (group.getMemberList().containsKey(user)) {
+        return Statuses.FORBIDDEN;
+      }
+      switch (group.getGroupType()) {
+        case PUBLIC, PASSWORDED -> {
+          group.getMemberList().put(user, UserRole.MEMBER);
+          group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_MEMBER),
+                  OperationType.ADD,
+                  String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
+                          user.getId(),
+                          UserRole.MEMBER.toString())));
+        }
+        case WITH_CONFIRMATION -> {
+          group.getMemberList().put(user, UserRole.REQUIRES_CONFIRMATION);
+          group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_MEMBER),
+                  OperationType.ADD,
+                  String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
+                          user.getId(),
+                          UserRole.REQUIRES_CONFIRMATION.toString())));
+        }
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
+      return editGroup(group);
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+  private void saveChangesHistory(Group group, Group editedGroup) {
+    try {
+      if (!group.getName().equals(editedGroup.getName())) {
+        editedGroup.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_NAME),
+                OperationType.EDIT,
+                group.getName()));
+      }
+    } catch (IOException e) {
+      log.error(e);
+    }
+  }
+
+  private void saveChangesHistory(PasswordedGroup group, PasswordedGroup editedGroup) {
+    try {
+      saveChangesHistory((Group) group, editedGroup);
+      if (!group.getPassword().equals(editedGroup.getPassword())) {
+        editedGroup.getHistoryList().add(addHistoryRecord(
+                PropertyLoader.getProperty(Constants.FIELD_NAME_PASSWORD),
+                OperationType.EDIT,
+                group.getPassword()));
+      }
+    } catch (IOException e) {
+      log.error(e);
+    }
+  }
+
+  private Statuses editGroup(Group editedGroup) {
+    try {
+      var optionalGroup = getGroup(editedGroup.getId());
+      if (optionalGroup.isEmpty()) {
+        return Statuses.NOT_FOUNDED;
+      }
+
+      switch (editedGroup.getGroupType()) {
+        case PASSWORDED -> {
+          var groupList = getFromCsv(PasswordedGroup.class);
+          var optGroup = groupList.stream()
+                  .filter(passwordedGroup -> passwordedGroup.getId() == editedGroup.getId())
+                  .findAny();
+          if (optGroup.isEmpty()) {
+            return Statuses.NOT_FOUNDED;
+          }
+          groupList.remove(optGroup.get());
+          saveChangesHistory(optGroup.get(), (PasswordedGroup) editedGroup);
+          groupList.add((PasswordedGroup) editedGroup);
+          insertIntoCsv(PasswordedGroup.class, groupList, true);
+          return Statuses.INSERTED;
+        }
+        case PUBLIC, WITH_CONFIRMATION -> {
+          var groupList = getFromCsv(Group.class);
+          var optGroup = groupList.stream()
+                  .filter(group -> group.getId() == editedGroup.getId())
+                  .findAny();
+          if (optGroup.isEmpty()) {
+            return Statuses.NOT_FOUNDED;
+          }
+          groupList.remove(optGroup.get());
+          saveChangesHistory(optGroup.get(), editedGroup);
+          groupList.add(editedGroup);
+          insertIntoCsv(Group.class, groupList, true);
+          return Statuses.INSERTED;
+        }
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
+
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
 
@@ -798,10 +909,37 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
-  //TODO
   @Override
   public Statuses deleteUserFromGroup(long userId, long groupId) {
-    return null;
+    try {
+      var optionalUser = getUser(userId);
+      var optionalGroup = getGroup(groupId);
+      if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        return Statuses.NOT_FOUNDED;
+      }
+      var user = optionalUser.get();
+      var group = optionalGroup.get();
+
+      if (!group.getMemberList().containsKey(user)) {
+        return Statuses.FORBIDDEN;
+      }
+
+      group.getMemberList().remove(user);
+      group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_MEMBER),
+              OperationType.DELETE,
+              String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
+                      user.getId(),
+                      UserRole.MEMBER.toString())));
+      var status = editGroup(group);
+      if (status.equals(Statuses.INSERTED)) {
+        return Statuses.DELETED;
+      } else {
+        return status;
+      }
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
   //TODO

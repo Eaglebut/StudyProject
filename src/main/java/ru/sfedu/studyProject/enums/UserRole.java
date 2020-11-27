@@ -1,5 +1,5 @@
 package ru.sfedu.studyProject.enums;
 
 public enum UserRole {
-  CREATOR
+  MEMBER, REQUIRES_CONFIRMATION, CREATOR
 }

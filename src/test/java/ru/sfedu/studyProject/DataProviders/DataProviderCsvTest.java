@@ -274,4 +274,40 @@ class DataProviderCsvTest {
         Assertions.assertEquals(group.getMemberList(), optionalGroup.get().getMemberList());
     }
 
+    @Test
+    @Order(6)
+    void addUserToGroupCorrect() throws IOException {
+        Group group = getCorrectGroup();
+        User user = new User();
+        user.setEmail("test2");
+        var correctUser = getCorrectTestUser();
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(user.getEmail(),
+                correctUser.getPassword(),
+                correctUser.getName(),
+                correctUser.getSurname(),
+                correctUser.getSignUpType()));
+        var serverUser = dataProvider.getUser(user.getEmail(), correctUser.getPassword());
+        Assertions.assertTrue(serverUser.isPresent());
+        Assertions.assertEquals(Statuses.INSERTED, dataProvider.addUserToGroup(serverUser.get().getId(), group.getId()));
+        var serverGroup = dataProvider.getGroup(group.getId());
+        Assertions.assertTrue(serverGroup.isPresent());
+        Assertions.assertTrue(serverGroup.get().getMemberList().containsKey(serverUser.get()));
+        Assertions.assertEquals(UserRole.MEMBER, serverGroup.get().getMemberList().get(serverUser.get()));
+    }
+
+    @Test
+    @Order(7)
+    void removeUserFromGroupCorrect() throws IOException {
+        Group group = getCorrectGroup();
+        User user = new User();
+        user.setEmail("test2");
+        var correctUser = getCorrectTestUser();
+        var serverUser = dataProvider.getUser(user.getEmail(), correctUser.getPassword());
+        Assertions.assertTrue(serverUser.isPresent());
+        Assertions.assertEquals(Statuses.DELETED, dataProvider.deleteUserFromGroup(serverUser.get().getId(), group.getId()));
+        var serverGroup = dataProvider.getGroup(group.getId());
+        Assertions.assertTrue(serverGroup.isPresent());
+        Assertions.assertFalse(serverGroup.get().getMemberList().containsKey(serverUser.get()));
+    }
+
 }

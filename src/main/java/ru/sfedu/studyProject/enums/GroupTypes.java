@@ -2,5 +2,7 @@ package ru.sfedu.studyProject.enums;
 
 
 public enum GroupTypes {
-  PUBLIC
+  PUBLIC,
+  WITH_CONFIRMATION,
+  PASSWORDED
 }
