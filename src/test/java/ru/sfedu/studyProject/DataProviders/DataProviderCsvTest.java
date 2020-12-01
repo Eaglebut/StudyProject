@@ -51,8 +51,8 @@ class DataProviderCsvTest {
         return task;
     }
 
-    private User getUser() throws IOException {
-        Optional<User> serverUser = dataProvider.getUser(getCorrectTestUser().getId());
+    private User getUser(long id) throws IOException {
+        Optional<User> serverUser = dataProvider.getUser(id);
         Assertions.assertTrue(serverUser.isPresent());
         log.debug(serverUser.get());
         return serverUser.get();
@@ -153,7 +153,7 @@ class DataProviderCsvTest {
     @Order(2)
     void createTaskCorrect() throws IOException {
         for (int i = 0; i < 2; i++) {
-            var serverUser = getUser();
+            var serverUser = getUser(0);
             List<Task> taskList = serverUser.getTaskList();
 
             Task correctTask = getCorrectTestTask();
@@ -175,7 +175,7 @@ class DataProviderCsvTest {
     @Order(2)
     void createExtendedTaskCorrect() throws IOException {
         for (int i = 0; i < 2; i++) {
-            var serverUser = getUser();
+            var serverUser = getUser(0);
             ExtendedTask correctExtendedTestTask = getCorrectExtendedTestTask();
             Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(serverUser.getId(),
                     correctExtendedTestTask.getName(),
@@ -186,7 +186,7 @@ class DataProviderCsvTest {
                     correctExtendedTestTask.getDescription(),
                     correctExtendedTestTask.getTime()
             ));
-            User updatedUser = getUser();
+            User updatedUser = getUser(0);
             Assertions.assertEquals(serverUser.getTaskList().size() + 1,
                     updatedUser.getTaskList().size());
             Assertions.assertTrue(updatedUser.getTaskList().stream()
@@ -198,7 +198,7 @@ class DataProviderCsvTest {
     @Order(3)
     void deleteTaskCorrect() throws IOException {
         for (int i = 0; i < 2; i++) {
-            var serverUser = getUser();
+            var serverUser = getUser(0);
             log.debug(serverUser.getTaskList().get(1));
             Assertions.assertEquals(Statuses.DELETED,
                     dataProvider.deleteTask(serverUser.getId(), serverUser.getTaskList().get(1).getId()));
@@ -212,7 +212,7 @@ class DataProviderCsvTest {
     @Test
     @Order(3)
     void editTaskCorrect() throws IOException {
-        User user = getUser();
+        User user = getUser(0);
         var task = user.getTaskList().get(0);
         task.setName(new Date(System.currentTimeMillis()).toString() + " edit");
         log.debug(task);
@@ -227,7 +227,7 @@ class DataProviderCsvTest {
     @Test
     @Order(4)
     void createGroupCorrect() throws IOException {
-        User user = getUser();
+        User user = getUser(0);
         Group group = getCorrectPublicGroup();
         Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup(group.getName(),
                 user.getId(),
@@ -250,7 +250,7 @@ class DataProviderCsvTest {
         group.setName("test public Group");
         group.setGroupType(GroupTypes.PUBLIC);
         Map<User, UserRole> userMap = new HashMap<>();
-        userMap.put((getUser()), UserRole.CREATOR);
+        userMap.put((getUser(0)), UserRole.CREATOR);
         group.setMemberList(userMap);
         return group;
     }
@@ -261,7 +261,7 @@ class DataProviderCsvTest {
         group.setName("test Group with confirmation");
         group.setGroupType(GroupTypes.WITH_CONFIRMATION);
         Map<User, UserRole> userMap = new HashMap<>();
-        userMap.put((getUser()), UserRole.CREATOR);
+        userMap.put((getUser(0)), UserRole.CREATOR);
         group.setMemberList(userMap);
         return group;
     }
@@ -272,7 +272,7 @@ class DataProviderCsvTest {
         group.setName("test passworded Group");
         group.setGroupType(GroupTypes.PASSWORDED);
         Map<User, UserRole> userMap = new HashMap<>();
-        userMap.put((getUser()), UserRole.CREATOR);
+        userMap.put((getUser(0)), UserRole.CREATOR);
         group.setMemberList(userMap);
         return group;
     }
@@ -343,7 +343,7 @@ class DataProviderCsvTest {
     @Order(8)
     void changeGroupTypeCorrect() throws IOException {
         Group group = getCorrectPublicGroup();
-        User user = getUser();
+        User user = getUser(0);
 
         Assertions.assertEquals(Statuses.UPDATED, dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.PASSWORDED));
         var serverGroup = dataProvider.getGroup(group.getId());
@@ -373,7 +373,7 @@ class DataProviderCsvTest {
     @Order(9)
     void suggestTaskToGroupCorrect() throws IOException {
         Group group = getCorrectConfirmationGroup();
-        User user = getUser();
+        User user = getUser(0);
 
         Assertions.assertEquals(Statuses.INSERTED,
                 dataProvider.suggestTask(user.getId(),
@@ -384,7 +384,7 @@ class DataProviderCsvTest {
     @Test
     @Order(9)
     void createBasicGroupTaskCorrect() throws IOException {
-        User user = getUser();
+        User user = getUser(0);
         var groupList = dataProvider.getFullGroupList();
         var group = groupList.stream().findAny();
         Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(user.getId(),
@@ -396,7 +396,7 @@ class DataProviderCsvTest {
     @Test
     @Order(9)
     void createExtendedGroupTaskCorrect() throws IOException {
-        User user = getUser();
+        User user = getUser(0);
         ExtendedTask task = getCorrectExtendedTestTask();
         var groupList = dataProvider.getFullGroupList();
         var group = groupList.stream().findAny();
@@ -414,10 +414,61 @@ class DataProviderCsvTest {
     @Test
     @Order(9)
     void updateGroupCorrect() throws IOException {
-        User user = getUser();
+        User user = getUser(0);
         var groupList = dataProvider.getFullGroupList();
         var group = groupList.stream().findAny();
         group.get().setName("updated group");
         Assertions.assertEquals(Statuses.UPDATED, dataProvider.updateGroup(user.getId(), group.get()));
+    }
+
+    @Test
+    @Order(9)
+    void setUserRoleCorrect() throws IOException {
+        long adminId = 0;
+        long userId = 1;
+        Optional<Group> group = dataProvider.getFullGroupList().stream().findAny();
+        Assertions.assertTrue(group.isPresent());
+        if (!group.get().getGroupType().equals(GroupTypes.WITH_CONFIRMATION)) {
+            Assertions.assertEquals(Statuses.UPDATED,
+                    dataProvider.changeGroupType(adminId, group.get().getId(), GroupTypes.WITH_CONFIRMATION));
+        }
+        if (!group.get().getMemberList().containsKey(userId)) {
+            Assertions.assertEquals(Statuses.INSERTED,
+                    dataProvider.addUserToGroup(userId, group.get().getId()));
+        }
+        group = dataProvider.getGroup(group.get().getId());
+        var user = getUser(userId);
+        Assertions.assertTrue(group.isPresent());
+        if (!group.get().getMemberList().get(user).equals(UserRole.REQUIRES_CONFIRMATION)) {
+            Assertions.assertEquals(Statuses.UPDATED,
+                    dataProvider.setUserRole(adminId,
+                            group.get().getId(),
+                            user.getId(),
+                            UserRole.REQUIRES_CONFIRMATION));
+        }
+        Assertions.assertEquals(Statuses.UPDATED,
+                dataProvider.setUserRole(adminId,
+                        group.get().getId(),
+                        user.getId(),
+                        UserRole.MEMBER));
+        Assertions.assertEquals(Statuses.UPDATED,
+                dataProvider.setUserRole(adminId,
+                        group.get().getId(),
+                        user.getId(),
+                        UserRole.ADMINISTRATOR));
+    }
+
+    @Order(10)
+    @Test
+    void deleteGroupTaskCorrect() throws IOException {
+        var optGroup = dataProvider.getFullGroupList().stream().findAny();
+        Assertions.assertTrue(optGroup.isPresent());
+        var optTask = optGroup.get().getTaskList().keySet().stream().findAny();
+        log.debug(optGroup.get());
+        Assertions.assertTrue(optTask.isPresent());
+        Assertions.assertEquals(Statuses.DELETED, dataProvider.deleteTask(0,
+                optGroup.get().getId(),
+                optTask.get().getId()));
+
     }
 }

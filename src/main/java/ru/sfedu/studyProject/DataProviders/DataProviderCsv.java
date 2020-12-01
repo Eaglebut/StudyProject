@@ -462,58 +462,111 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
-  @Override
-  public Statuses deleteTask(long userId, long taskId) {
+  private Statuses deleteTask(long taskId) {
     try {
-      var optionalUser = getUser(userId);
-      if (optionalUser.isEmpty()) {
-        return Statuses.FORBIDDEN;
-      }
-      User user = optionalUser.get();
-      Optional<Task> optionalTaskToDelete = user.getTaskList().stream()
+      var basicTaskList = getFromCsv(Task.class);
+      var optTask = basicTaskList.stream()
               .filter(task -> task.getId() == taskId)
               .findAny();
-      if (optionalTaskToDelete.isEmpty()) {
-        return Statuses.FORBIDDEN;
+      if (optTask.isPresent()) {
+        basicTaskList.remove(optTask.get());
+        insertIntoCsv(Task.class, basicTaskList, true);
+        return Statuses.DELETED;
       } else {
-        Task taskToDelete = optionalTaskToDelete.get();
-        user.getTaskList().remove(taskToDelete);
-
-        switch (taskToDelete.getTaskType()) {
-          case BASIC -> insertIntoCsv(Task.class, getFromCsv(Task.class)
-                  .stream()
-                  .filter(task -> taskId != task.getId())
-                  .collect(Collectors.toList()), true);
-
-          case EXTENDED -> insertIntoCsv(ExtendedTask.class, getFromCsv(ExtendedTask.class)
-                  .stream()
-                  .filter(task -> task.getId() != taskId)
-                  .collect(Collectors.toList()), true);
-
-          default -> {
-            return Statuses.FAILED;
-          }
+        var extendedTaskList = getFromCsv(ExtendedTask.class);
+        var optExtendedTask = extendedTaskList.stream()
+                .filter(task -> task.getId() == taskId)
+                .findAny();
+        if (optExtendedTask.isEmpty()) {
+          return Statuses.NOT_FOUNDED;
         }
-
-        user.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
-                OperationType.DELETE,
-                String.valueOf(taskId)));
-        var updateUserStatus = updateUser(user);
-        if (updateUserStatus != Statuses.UPDATED) {
-          return updateUserStatus;
-        }
+        extendedTaskList.remove(optExtendedTask.get());
+        insertIntoCsv(ExtendedTask.class, extendedTaskList, true);
         return Statuses.DELETED;
       }
+
     } catch (IOException e) {
       log.error(e);
       return Statuses.FAILED;
     }
   }
 
-  //TODO
+
+  @Override
+  public Statuses deleteTask(long userId, long taskId) {
+    try {
+      var optionalUser = getUser(userId);
+      var optionalTaskToDelete = getTask(taskId);
+      if (optionalUser.isEmpty() || optionalTaskToDelete.isEmpty()) {
+        return Statuses.FORBIDDEN;
+      }
+      User user = optionalUser.get();
+
+      Task taskToDelete = optionalTaskToDelete.get();
+      user.getTaskList().remove(taskToDelete);
+      var status = deleteTask(taskId);
+      if (!status.equals(Statuses.DELETED)) {
+        return status;
+      }
+      user.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+              OperationType.DELETE,
+              String.valueOf(taskId)));
+      var updateUserStatus = updateUser(user);
+      if (updateUserStatus != Statuses.UPDATED) {
+        return updateUserStatus;
+      }
+      return Statuses.DELETED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
   @Override
   public Statuses deleteTask(long userId, long groupId, long taskId) {
-    return null;
+    try {
+      var optionalUser = getUser(userId);
+      var optionalGroup = getGroup(groupId);
+      var optionalTask = getTask(taskId);
+
+      if (optionalUser.isEmpty() || optionalGroup.isEmpty() || optionalTask.isEmpty()) {
+        return Statuses.NOT_FOUNDED;
+      }
+
+      var user = optionalUser.get();
+      var group = optionalGroup.get();
+      var task = optionalTask.get();
+
+      if (!group.getMemberList().containsKey(user) || !group.getTaskList().containsKey(task)) {
+        return Statuses.FORBIDDEN;
+      }
+      var role = group.getMemberList().get(user);
+
+      switch (role) {
+        case ADMINISTRATOR, CREATOR -> {
+        }
+        default -> {
+          return Statuses.FORBIDDEN;
+        }
+      }
+
+      group.getTaskList().remove(task);
+
+      group.getHistoryList().add(addHistoryRecord(
+              PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+              OperationType.DELETE,
+              String.valueOf(task.getId())));
+
+      var status = editGroup(group);
+      if (status.equals(Statuses.INSERTED)) {
+        return deleteTask(task.getId());
+      } else {
+        return status;
+      }
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
 
@@ -1347,10 +1400,80 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
+  private Statuses setRole(Group group, User user, UserRole role) {
+    try {
+      group.getMemberList().replace(user, role);
+      group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_MEMBER),
+              OperationType.EDIT,
+              String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING), user.getId(), role.name())));
+      var status = editGroup(group);
+      if (status.equals(Statuses.INSERTED)) {
+        return Statuses.UPDATED;
+      } else return status;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+
   @Override
-  public Statuses setUserRole(long userId, long groupId, long userIdToSet, @NonNull UserRole role) {
-    return null;
+  public Statuses setUserRole(long administratorId, long groupId, long userIdToSet, @NonNull UserRole role) {
+
+    Optional<Group> optionalGroup = getGroup(groupId);
+    Optional<User> optionalAdministrator = getUser(administratorId);
+    Optional<User> optionalUser = getUser(userIdToSet);
+
+    if (optionalGroup.isEmpty() || optionalAdministrator.isEmpty() || optionalUser.isEmpty()) {
+      return Statuses.NOT_FOUNDED;
+    }
+    var group = optionalGroup.get();
+    var administrator = optionalAdministrator.get();
+    var user = optionalUser.get();
+
+    if (!group.getMemberList().containsKey(user) || !group.getMemberList().containsKey(administrator)) {
+      return Statuses.FORBIDDEN;
+    }
+    var userRole = group.getMemberList().get(user);
+    var administratorRole = group.getMemberList().get(administrator);
+
+    if (userRole.equals(UserRole.CREATOR)) {
+      return Statuses.FORBIDDEN;
+    }
+
+    switch (role) {
+      case CREATOR -> {
+        return Statuses.FORBIDDEN;
+      }
+      case MEMBER -> {
+        switch (userRole) {
+          case REQUIRES_CONFIRMATION -> {
+            if (!administratorRole.equals(UserRole.ADMINISTRATOR) && !administratorRole.equals(UserRole.CREATOR)) {
+              return Statuses.FORBIDDEN;
+            }
+            return setRole(group, user, role);
+          }
+          case ADMINISTRATOR -> {
+            if (!administratorRole.equals(UserRole.CREATOR)) {
+              return Statuses.FORBIDDEN;
+            }
+            return setRole(group, user, role);
+          }
+          default -> {
+            return Statuses.FORBIDDEN;
+          }
+        }
+      }
+      case ADMINISTRATOR -> {
+        if (!administratorRole.equals(UserRole.CREATOR)) {
+          return Statuses.FORBIDDEN;
+        }
+        return setRole(group, user, role);
+      }
+      default -> {
+        return Statuses.FAILED;
+      }
+    }
   }
 
   //TODO

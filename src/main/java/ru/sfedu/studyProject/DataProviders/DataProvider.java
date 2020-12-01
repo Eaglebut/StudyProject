@@ -75,7 +75,7 @@ public interface DataProvider {
 
   Statuses updateGroup(long userId, @NonNull Group editedGroup);
 
-  Statuses setUserRole(long userId, long groupId, long userIdToSet, @NonNull UserRole role);
+  Statuses setUserRole(long administratorId, long groupId, long userIdToSet, @NonNull UserRole role);
 
   Statuses changeTaskState(long userId, long groupId, long taskId, @NonNull TaskState state);
 
