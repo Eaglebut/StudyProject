@@ -557,8 +557,8 @@ public class DataProviderCsv implements DataProvider {
               OperationType.DELETE,
               String.valueOf(task.getId())));
 
-      var status = editGroup(group);
-      if (status.equals(Statuses.INSERTED)) {
+      var status = saveGroup(group);
+      if (status.equals(Statuses.UPDATED)) {
         return deleteTask(task.getId());
       } else {
         return status;
@@ -872,7 +872,12 @@ public class DataProviderCsv implements DataProvider {
           return Statuses.FAILED;
         }
       }
-      return editGroup(group);
+      var status = saveGroup(group);
+      if (status.equals(Statuses.UPDATED)) {
+        return Statuses.INSERTED;
+      } else {
+        return saveGroup(group);
+      }
     } catch (IOException e) {
       log.error(e);
       return Statuses.FAILED;
@@ -909,7 +914,7 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
-  private Statuses editGroup(Group editedGroup) {
+  private Statuses saveGroup(Group editedGroup) {
     try {
       var optionalGroup = getGroup(editedGroup.getId());
       if (optionalGroup.isEmpty()) {
@@ -943,7 +948,7 @@ public class DataProviderCsv implements DataProvider {
           saveChangesHistory(optGroup.get(), editedGroup);
           groupList.add(editedGroup);
           insertIntoCsv(Group.class, groupList, true);
-          return Statuses.INSERTED;
+          return Statuses.UPDATED;
         }
         default -> {
           return Statuses.FAILED;
@@ -1040,8 +1045,7 @@ public class DataProviderCsv implements DataProvider {
         return changeGroupTypeFromPassworded(group, groupType);
       } else {
         group.setGroupType(groupType);
-        editGroup(group);
-        return Statuses.UPDATED;
+        return saveGroup(group);
       }
 
     } catch (IOException e) {
@@ -1172,8 +1176,8 @@ public class DataProviderCsv implements DataProvider {
               String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
                       user.getId(),
                       UserRole.MEMBER.toString())));
-      var status = editGroup(group);
-      if (status.equals(Statuses.INSERTED)) {
+      var status = saveGroup(group);
+      if (status.equals(Statuses.UPDATED)) {
         return Statuses.DELETED;
       } else {
         return status;
@@ -1222,8 +1226,12 @@ public class DataProviderCsv implements DataProvider {
               String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
                       optionalTask.get().getId(),
                       group.getTaskList().get(optionalTask.get()))));
-      editGroup(group);
-      return Statuses.INSERTED;
+      var status = saveGroup(group);
+      if (status.equals(Statuses.UPDATED)) {
+        return Statuses.INSERTED;
+      } else {
+        return status;
+      }
     } catch (IOException e) {
       log.error(e);
       return Statuses.FAILED;
@@ -1271,7 +1279,12 @@ public class DataProviderCsv implements DataProvider {
           if (optionalTask.isEmpty()) {
             return Statuses.FAILED;
           }
-          return saveGroup(group, optionalTask.get());
+          var status = saveGroup(group, optionalTask.get());
+          if (status.equals(Statuses.UPDATED)) {
+            return Statuses.INSERTED;
+          } else {
+            return status;
+          }
         }
         case MEMBER, REQUIRES_CONFIRMATION -> {
           return Statuses.FORBIDDEN;
@@ -1317,7 +1330,12 @@ public class DataProviderCsv implements DataProvider {
           if (optionalTask.isEmpty()) {
             return Statuses.FAILED;
           }
-          return saveGroup(group, optionalTask.get());
+          var status = saveGroup(group, optionalTask.get());
+          if (status.equals(Statuses.UPDATED)) {
+            return Statuses.INSERTED;
+          } else {
+            return status;
+          }
         }
         case MEMBER, REQUIRES_CONFIRMATION -> {
           return Statuses.FORBIDDEN;
@@ -1340,12 +1358,7 @@ public class DataProviderCsv implements DataProvider {
             String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
                     task.getId(),
                     TaskState.APPROVED)));
-    var status = editGroup(group);
-    if (status.equals(Statuses.UPDATED)) {
-      return Statuses.INSERTED;
-    } else {
-      return status;
-    }
+    return saveGroup(group);
   }
 
 
@@ -1380,12 +1393,7 @@ public class DataProviderCsv implements DataProvider {
                     OperationType.EDIT,
                     ((PasswordedGroup) group).getPassword()));
           }
-          var status = editGroup(editedGroup);
-          if (status == Statuses.INSERTED) {
-            return Statuses.UPDATED;
-          } else {
-            return status;
-          }
+          return saveGroup(editedGroup);
         }
         case MEMBER, REQUIRES_CONFIRMATION -> {
           return Statuses.FORBIDDEN;
@@ -1406,10 +1414,8 @@ public class DataProviderCsv implements DataProvider {
       group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_MEMBER),
               OperationType.EDIT,
               String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING), user.getId(), role.name())));
-      var status = editGroup(group);
-      if (status.equals(Statuses.INSERTED)) {
-        return Statuses.UPDATED;
-      } else return status;
+      return saveGroup(group);
+
     } catch (IOException e) {
       log.error(e);
       return Statuses.FAILED;
@@ -1476,10 +1482,42 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
+
   @Override
   public Statuses changeTaskState(long userId, long groupId, long taskId, @NonNull TaskState state) {
-    return null;
+    try {
+      Optional<Group> optionalGroup = getGroup(groupId);
+      Optional<User> optionalAdministrator = getUser(userId);
+      Optional<Task> optionalTask = getTask(taskId);
+
+      if (optionalGroup.isEmpty() || optionalAdministrator.isEmpty() || optionalTask.isEmpty()) {
+        return Statuses.NOT_FOUNDED;
+      }
+      var group = optionalGroup.get();
+      var administrator = optionalAdministrator.get();
+      var task = optionalTask.get();
+
+      if (!group.getTaskList().containsKey(task) || !group.getMemberList().containsKey(administrator)) {
+        return Statuses.FORBIDDEN;
+      }
+      var administratorRole = group.getMemberList().get(administrator);
+
+      switch (administratorRole) {
+        case ADMINISTRATOR, CREATOR -> {
+          group.getTaskList().replace(task, state);
+          group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+                  OperationType.EDIT,
+                  String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING), taskId, state)));
+          return saveGroup(group);
+        }
+        default -> {
+          return Statuses.FORBIDDEN;
+        }
+      }
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
   //TODO

@@ -469,6 +469,22 @@ class DataProviderCsvTest {
         Assertions.assertEquals(Statuses.DELETED, dataProvider.deleteTask(0,
                 optGroup.get().getId(),
                 optTask.get().getId()));
+        optGroup = dataProvider.getGroup(optGroup.get().getId());
+        Assertions.assertTrue(optGroup.isPresent());
+        Assertions.assertFalse(optGroup.get().getTaskList().containsKey(optTask.get()));
+    }
 
+    @Order(10)
+    @Test
+    void changeTaskStateCorrect() {
+        var optGroup = dataProvider.getFullGroupList().stream().findAny();
+        Assertions.assertTrue(optGroup.isPresent());
+        var optTask = optGroup.get().getTaskList().keySet().stream().findAny();
+        log.debug(optGroup.get());
+        Assertions.assertTrue(optTask.isPresent());
+        Assertions.assertEquals(Statuses.UPDATED, dataProvider.changeTaskState(0,
+                optGroup.get().getId(),
+                optTask.get().getId(),
+                TaskState.SUGGESTED));
     }
 }
