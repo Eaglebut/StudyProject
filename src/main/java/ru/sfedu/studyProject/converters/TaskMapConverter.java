@@ -2,8 +2,7 @@ package ru.sfedu.studyProject.converters;
 
 import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.TaskState;
 import ru.sfedu.studyProject.model.Task;
@@ -13,9 +12,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 public class TaskMapConverter extends AbstractBeanField<Task, Integer> {
-
-  private static final Logger log = LogManager.getLogger(TaskMapConverter.class);
 
 
   @Override

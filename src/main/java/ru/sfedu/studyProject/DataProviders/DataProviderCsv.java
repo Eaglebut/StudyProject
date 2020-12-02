@@ -9,8 +9,7 @@ import com.opencsv.bean.StatefulBeanToCsvBuilder;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.NonNull;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
@@ -22,11 +21,11 @@ import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j2
 public class DataProviderCsv implements DataProvider {
 
-  private static final Logger log = LogManager.getLogger(DataProviderCsv.class);
-  private static DataProvider INSTANCE = null;
 
+  private static DataProvider INSTANCE = null;
 
 
   private DataProviderCsv() {
@@ -91,7 +90,6 @@ public class DataProviderCsv implements DataProvider {
     writer = new FileWriter(file);
     return new CSVWriter(writer);
   }
-
 
 
   private <T> CSVReader getCsvReader(Class<T> tClass) throws IOException {
@@ -471,7 +469,6 @@ public class DataProviderCsv implements DataProvider {
       if (optTask.isPresent()) {
         basicTaskList.remove(optTask.get());
         insertIntoCsv(Task.class, basicTaskList, true);
-        return Statuses.DELETED;
       } else {
         var extendedTaskList = getFromCsv(ExtendedTask.class);
         var optExtendedTask = extendedTaskList.stream()
@@ -482,8 +479,8 @@ public class DataProviderCsv implements DataProvider {
         }
         extendedTaskList.remove(optExtendedTask.get());
         insertIntoCsv(ExtendedTask.class, extendedTaskList, true);
-        return Statuses.DELETED;
       }
+      return Statuses.DELETED;
 
     } catch (IOException e) {
       log.error(e);

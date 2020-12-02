@@ -2,8 +2,7 @@ package ru.sfedu.studyProject.converters;
 
 import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.model.Task;
 import ru.sfedu.studyProject.utils.PropertyLoader;
@@ -12,10 +11,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Log4j2
 public class TaskListConverter extends AbstractBeanField<Task, Integer> {
 
-  private static final Logger log = LogManager.getLogger(TaskListConverter.class);
 
 
   @Override

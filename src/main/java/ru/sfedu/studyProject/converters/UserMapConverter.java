@@ -2,8 +2,7 @@ package ru.sfedu.studyProject.converters;
 
 import com.opencsv.bean.AbstractBeanField;
 import com.opencsv.exceptions.CsvDataTypeMismatchException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.UserRole;
 import ru.sfedu.studyProject.model.User;
@@ -13,9 +12,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j2
 public class UserMapConverter extends AbstractBeanField<User, Integer> {
-
-  private static final Logger log = LogManager.getLogger(UserMapConverter.class);
 
   @Override
   protected Object convert(String s) throws CsvDataTypeMismatchException {

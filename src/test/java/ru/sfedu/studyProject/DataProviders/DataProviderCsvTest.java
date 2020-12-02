@@ -1,7 +1,6 @@
 package ru.sfedu.studyProject.DataProviders;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.*;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
@@ -11,11 +10,9 @@ import ru.sfedu.studyProject.utils.PropertyLoader;
 import java.io.IOException;
 import java.util.*;
 
-
+@Log4j2
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class DataProviderCsvTest {
-
-    private static final Logger log = LogManager.getLogger(DataProviderCsvTest.class);
 
     private static final DataProvider dataProvider = DataProviderCsv.getInstance();
 
@@ -426,18 +423,18 @@ class DataProviderCsvTest {
     void setUserRoleCorrect() throws IOException {
         long adminId = 0;
         long userId = 1;
+        User user = getUser(userId);
         Optional<Group> group = dataProvider.getFullGroupList().stream().findAny();
         Assertions.assertTrue(group.isPresent());
         if (!group.get().getGroupType().equals(GroupTypes.WITH_CONFIRMATION)) {
             Assertions.assertEquals(Statuses.UPDATED,
                     dataProvider.changeGroupType(adminId, group.get().getId(), GroupTypes.WITH_CONFIRMATION));
         }
-        if (!group.get().getMemberList().containsKey(userId)) {
+        if (!group.get().getMemberList().containsKey(user)) {
             Assertions.assertEquals(Statuses.INSERTED,
                     dataProvider.addUserToGroup(userId, group.get().getId()));
         }
         group = dataProvider.getGroup(group.get().getId());
-        var user = getUser(userId);
         Assertions.assertTrue(group.isPresent());
         if (!group.get().getMemberList().get(user).equals(UserRole.REQUIRES_CONFIRMATION)) {
             Assertions.assertEquals(Statuses.UPDATED,
