@@ -460,6 +460,35 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
+  private Statuses deleteTask(List<Task> taskList) {
+    try {
+      var dbTaskList = getFromCsv(Task.class);
+      dbTaskList.addAll(getFromCsv(ExtendedTask.class));
+      dbTaskList.removeAll(taskList);
+      List<ExtendedTask> extendedTaskList = new ArrayList<>();
+      List<Task> basicTaskList = new ArrayList<>();
+      dbTaskList.forEach(task -> {
+        switch (task.getTaskType()) {
+          case EXTENDED -> extendedTaskList.add((ExtendedTask) task);
+          case BASIC -> basicTaskList.add(task);
+        }
+      });
+      insertIntoCsv(ExtendedTask.class, extendedTaskList, true);
+      insertIntoCsv(Task.class, basicTaskList, true);
+      for (var task : taskList) {
+        var status = deleteHistoryList(task.getHistoryList());
+        if (!status.equals(Statuses.DELETED)) {
+          return status;
+        }
+      }
+      return Statuses.DELETED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+
   private Statuses deleteTask(long taskId) {
     try {
       var basicTaskList = getFromCsv(Task.class);
@@ -468,6 +497,10 @@ public class DataProviderCsv implements DataProvider {
               .findAny();
       if (optTask.isPresent()) {
         basicTaskList.remove(optTask.get());
+        var status = deleteHistoryList(optTask.get().getHistoryList());
+        if (!status.equals(Statuses.DELETED)) {
+          return status;
+        }
         insertIntoCsv(Task.class, basicTaskList, true);
       } else {
         var extendedTaskList = getFromCsv(ExtendedTask.class);
@@ -478,6 +511,10 @@ public class DataProviderCsv implements DataProvider {
           return Statuses.NOT_FOUNDED;
         }
         extendedTaskList.remove(optExtendedTask.get());
+        var status = deleteHistoryList(optExtendedTask.get().getHistoryList());
+        if (!status.equals(Statuses.DELETED)) {
+          return status;
+        }
         insertIntoCsv(ExtendedTask.class, extendedTaskList, true);
       }
       return Statuses.DELETED;
@@ -1517,10 +1554,70 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
+  private Statuses deleteHistoryList(List<ModificationRecord> historyList) {
+    try {
+      if (historyList.isEmpty()) {
+        return Statuses.DELETED;
+      }
+      var recordList = getFromCsv(ModificationRecord.class);
+      recordList.removeAll(historyList);
+      insertIntoCsv(ModificationRecord.class, recordList, true);
+      return Statuses.DELETED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
+  private Statuses deleteGroup(Group group) {
+    try {
+
+      switch (group.getGroupType()) {
+        case PUBLIC, WITH_CONFIRMATION -> {
+          List<Group> groupList = getFromCsv(Group.class);
+          groupList = groupList.stream().filter(group1 -> group1.getId() != group.getId()).collect(Collectors.toList());
+          insertIntoCsv(Group.class, groupList, true);
+        }
+        case PASSWORDED -> {
+          List<PasswordedGroup> groupList = getFromCsv(PasswordedGroup.class);
+          groupList = groupList.stream().filter(group1 -> group1.getId() != group.getId()).collect(Collectors.toList());
+          insertIntoCsv(PasswordedGroup.class, groupList, true);
+        }
+        default -> {
+          return Statuses.FAILED;
+        }
+      }
+
+      var status = deleteTask(new ArrayList<>(group.getTaskList().keySet()));
+      if (!status.equals(Statuses.DELETED)) {
+        return status;
+      }
+      return deleteHistoryList(group.getHistoryList());
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
+  }
+
   @Override
   public Statuses deleteGroup(long userId, long groupId) {
-    return null;
+    Optional<Group> optionalGroup = getGroup(groupId);
+    Optional<User> optionalUser = getUser(userId);
+    if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+      return Statuses.NOT_FOUNDED;
+    }
+    User user = optionalUser.get();
+    Group group = optionalGroup.get();
+
+    if (!group.getMemberList().containsKey(user)) {
+      return Statuses.FORBIDDEN;
+    }
+
+    if (!group.getMemberList().get(user).equals(UserRole.CREATOR)) {
+      return Statuses.FORBIDDEN;
+    }
+
+    return deleteGroup(group);
   }
 
   //TODO

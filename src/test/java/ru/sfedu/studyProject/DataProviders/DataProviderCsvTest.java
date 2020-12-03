@@ -484,4 +484,13 @@ class DataProviderCsvTest {
                 optTask.get().getId(),
                 TaskState.SUGGESTED));
     }
+
+    @Order(11)
+    @Test
+    void deleteGroupCorrect() {
+        var optGroup = dataProvider.getFullGroupList().stream().findAny();
+        Assertions.assertTrue(optGroup.isPresent());
+        log.debug(optGroup.get());
+        Assertions.assertEquals(Statuses.DELETED, dataProvider.deleteGroup(0, optGroup.get().getId()));
+    }
 }
