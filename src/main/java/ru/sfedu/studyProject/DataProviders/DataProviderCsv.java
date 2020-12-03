@@ -1620,9 +1620,16 @@ public class DataProviderCsv implements DataProvider {
     return deleteGroup(group);
   }
 
-  //TODO
   @Override
   public List<Group> getUsersGroups(long userId) {
-    return null;
+    var optUser = getUser(userId);
+    if (optUser.isEmpty()) {
+      return new ArrayList<>();
+    }
+    var groupList = getFullGroupList();
+    return groupList.stream()
+            .filter(group -> group.getMemberList().containsKey(optUser.get()))
+            .collect(Collectors.toList());
+
   }
 }

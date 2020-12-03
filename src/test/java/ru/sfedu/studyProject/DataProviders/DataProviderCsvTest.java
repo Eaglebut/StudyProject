@@ -457,7 +457,7 @@ class DataProviderCsvTest {
 
     @Order(10)
     @Test
-    void deleteGroupTaskCorrect() throws IOException {
+    void deleteGroupTaskCorrect() {
         var optGroup = dataProvider.getFullGroupList().stream().findAny();
         Assertions.assertTrue(optGroup.isPresent());
         var optTask = optGroup.get().getTaskList().keySet().stream().findAny();
@@ -483,6 +483,15 @@ class DataProviderCsvTest {
                 optGroup.get().getId(),
                 optTask.get().getId(),
                 TaskState.SUGGESTED));
+    }
+
+
+    @Order(10)
+    @Test
+    void getUserGroupsCorrect() {
+        var groupList = dataProvider.getFullGroupList();
+        var usersGroupList = dataProvider.getUsersGroups(0);
+        Assertions.assertEquals(groupList, usersGroupList);
     }
 
     @Order(11)
