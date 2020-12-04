@@ -664,7 +664,13 @@ public class DataProviderCsv implements DataProvider {
 
 
   private boolean isEditValid(Task task, Task editedTask) {
-    return task.getHistoryList().equals(editedTask.getHistoryList())
+    return task.getName() != null
+            && !task.getName().isEmpty()
+            && task.getCreated() != null
+            && task.getStatus() != null
+            && task.getTaskType() != null
+            && task.getHistoryList() != null
+            && task.getHistoryList().equals(editedTask.getHistoryList())
             && task.getCreated().getTime() == editedTask.getCreated().getTime()
             && task.getTaskType().equals(editedTask.getTaskType());
   }
