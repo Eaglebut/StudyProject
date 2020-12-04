@@ -70,6 +70,11 @@ class DataProviderCsvTest {
             user.getName(),
             user.getSurname(),
             user.getSignUpType()));
+    Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(new Date(System.currentTimeMillis()).toString(),
+            user.getPassword(),
+            user.getName(),
+            user.getSurname(),
+            user.getSignUpType()));
   }
 
   @Test
@@ -625,12 +630,40 @@ class DataProviderCsvTest {
 
   @Test
   @Order(9)
+  void suggestTaskToGroupIncorrect() {
+    Assertions.assertEquals(Statuses.NOT_FOUNDED,
+            dataProvider.suggestTask(0,
+                    1,
+                    123));
+  }
+
+  @Test
+  @Order(9)
   void createBasicGroupTaskCorrect() {
     User user = getUser(0);
     var groupList = dataProvider.getFullGroupList();
     var group = groupList.stream().findAny();
     Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(user.getId(),
             group.get().getId(),
+            "group basic task test",
+            TaskStatuses.TEST_TASK_STATUS));
+  }
+
+  @Test
+  @Order(9)
+  void createBasicGroupTaskIncorrect() {
+    var groupList = dataProvider.getFullGroupList();
+    var group = groupList.stream().findAny();
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.createTask(1,
+            group.get().getId(),
+            "group basic task test",
+            TaskStatuses.TEST_TASK_STATUS));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(165,
+            group.get().getId(),
+            "group basic task test",
+            TaskStatuses.TEST_TASK_STATUS));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(0,
+            1546,
             "group basic task test",
             TaskStatuses.TEST_TASK_STATUS));
   }
@@ -655,12 +688,67 @@ class DataProviderCsvTest {
 
   @Test
   @Order(9)
+  void createExtendedGroupTaskIncorrect() throws IOException {
+    User user = getUser(0);
+    ExtendedTask task = getCorrectExtendedTestTask();
+    var groupList = dataProvider.getFullGroupList();
+    var group = groupList.stream().findAny();
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(163,
+            group.get().getId(),
+            "group extended task test",
+            task.getStatus(),
+            task.getRepetitionType(),
+            task.getRemindType(),
+            task.getImportance(),
+            task.getDescription(),
+            task.getTime()));
+
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(0,
+            136,
+            "group extended task test",
+            task.getStatus(),
+            task.getRepetitionType(),
+            task.getRemindType(),
+            task.getImportance(),
+            task.getDescription(),
+            task.getTime()));
+  }
+
+  @Test
+  @Order(9)
   void updateGroupCorrect() {
     User user = getUser(0);
     var groupList = dataProvider.getFullGroupList();
     var group = groupList.stream().findAny();
     group.get().setName("updated group");
     Assertions.assertEquals(Statuses.UPDATED, dataProvider.updateGroup(user.getId(), group.get()));
+  }
+
+  @Test
+  @Order(9)
+  void updateGroupIncorrect() {
+    User user = getUser(0);
+    var groupList = dataProvider.getFullGroupList();
+    var group = groupList.stream().findAny();
+    group.get().setCreated(null);
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.updateGroup(user.getId(), group.get()));
+
+    user = getUser(0);
+    groupList = dataProvider.getFullGroupList();
+    group = groupList.stream().findAny();
+    group.get().setCreated(new Date(System.currentTimeMillis()));
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.updateGroup(user.getId(), group.get()));
+
+    user = getUser(0);
+    groupList = dataProvider.getFullGroupList();
+    group = groupList.stream().findAny();
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.updateGroup(45, group.get()));
+
+    user = getUser(0);
+    groupList = dataProvider.getFullGroupList();
+    group = groupList.stream().findAny();
+    group.get().setId(156);
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.updateGroup(user.getId(), group.get()));
   }
 
   @Test
@@ -700,6 +788,43 @@ class DataProviderCsvTest {
                     UserRole.ADMINISTRATOR));
   }
 
+  @Test
+  @Order(9)
+  void setUserRoleIncorrect() {
+    long adminId = 0;
+    long userId = 1;
+    User user = getUser(userId);
+    Optional<Group> group = dataProvider.getFullGroupList().stream().findAny();
+    Assertions.assertTrue(group.isPresent());
+    if (!group.get().getGroupType().equals(GroupTypes.WITH_CONFIRMATION)) {
+      Assertions.assertEquals(Statuses.UPDATED,
+              dataProvider.changeGroupType(adminId, group.get().getId(), GroupTypes.WITH_CONFIRMATION));
+    }
+    if (!group.get().getMemberList().containsKey(user)) {
+      Assertions.assertEquals(Statuses.INSERTED,
+              dataProvider.addUserToGroup(userId, group.get().getId()));
+    }
+    group = dataProvider.getGroup(group.get().getId());
+    Assertions.assertTrue(group.isPresent());
+    if (!group.get().getMemberList().get(user).equals(UserRole.REQUIRES_CONFIRMATION)) {
+      Assertions.assertEquals(Statuses.FORBIDDEN,
+              dataProvider.setUserRole(1,
+                      group.get().getId(),
+                      0,
+                      UserRole.REQUIRES_CONFIRMATION));
+    }
+    Assertions.assertEquals(Statuses.FORBIDDEN,
+            dataProvider.setUserRole(adminId,
+                    group.get().getId(),
+                    user.getId(),
+                    UserRole.CREATOR));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED,
+            dataProvider.setUserRole(adminId,
+                    54,
+                    user.getId(),
+                    UserRole.ADMINISTRATOR));
+  }
+
   @Order(10)
   @Test
   void deleteGroupTaskCorrect() {
@@ -718,6 +843,28 @@ class DataProviderCsvTest {
 
   @Order(10)
   @Test
+  void deleteGroupTaskIncorrect() {
+    var optGroup = dataProvider.getFullGroupList().stream().findAny();
+    Assertions.assertTrue(optGroup.isPresent());
+    var optTask = optGroup.get().getTaskList().keySet().stream().findAny();
+    log.debug(optGroup.get());
+    Assertions.assertTrue(optTask.isPresent());
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteTask(2,
+            optGroup.get().getId(),
+            optTask.get().getId()));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteTask(0,
+            optGroup.get().getId(),
+            5468));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteTask(542,
+            optGroup.get().getId(),
+            optTask.get().getId()));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteTask(0,
+            123,
+            optTask.get().getId()));
+  }
+
+  @Order(10)
+  @Test
   void changeTaskStateCorrect() {
     var optGroup = dataProvider.getFullGroupList().stream().findAny();
     Assertions.assertTrue(optGroup.isPresent());
@@ -730,6 +877,28 @@ class DataProviderCsvTest {
             TaskState.SUGGESTED));
   }
 
+  @Order(10)
+  @Test
+  void changeTaskStateIncorrect() {
+    var optGroup = dataProvider.getFullGroupList().stream().findAny();
+    Assertions.assertTrue(optGroup.isPresent());
+    var optTask = optGroup.get().getTaskList().keySet().stream().findAny();
+    log.debug(optGroup.get());
+    Assertions.assertTrue(optTask.isPresent());
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.changeTaskState(0,
+            58,
+            optTask.get().getId(),
+            TaskState.SUGGESTED));
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.changeTaskState(2,
+            optGroup.get().getId(),
+            optTask.get().getId(),
+            TaskState.SUGGESTED));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.changeTaskState(0,
+            optGroup.get().getId(),
+            56468,
+            TaskState.SUGGESTED));
+  }
+
 
   @Order(10)
   @Test
@@ -739,6 +908,13 @@ class DataProviderCsvTest {
     Assertions.assertEquals(groupList, usersGroupList);
   }
 
+  @Order(10)
+  @Test
+  void getUserGroupsIncorrect() {
+    var usersGroupList = dataProvider.getUsersGroups(5458);
+    Assertions.assertTrue(usersGroupList.isEmpty());
+  }
+
   @Order(11)
   @Test
   void deleteGroupCorrect() {
@@ -746,5 +922,16 @@ class DataProviderCsvTest {
     Assertions.assertTrue(optGroup.isPresent());
     log.debug(optGroup.get());
     Assertions.assertEquals(Statuses.DELETED, dataProvider.deleteGroup(0, optGroup.get().getId()));
+  }
+
+  @Order(11)
+  @Test
+  void deleteGroupIncorrect() {
+    var optGroup = dataProvider.getFullGroupList().stream().findAny();
+    Assertions.assertTrue(optGroup.isPresent());
+    log.debug(optGroup.get());
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteGroup(1, optGroup.get().getId()));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteGroup(1165, optGroup.get().getId()));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteGroup(0, 165165));
   }
 }

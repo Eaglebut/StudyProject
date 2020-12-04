@@ -1311,8 +1311,11 @@ public class DataProviderCsv implements DataProvider {
         return Statuses.NOT_FOUNDED;
       }
       var group = optionalGroup.get();
-
-      switch (optionalGroup.get().getMemberList().get(optionalUser.get())) {
+      var role = optionalGroup.get().getMemberList().get(optionalUser.get());
+      if (role == null) {
+        return Statuses.FORBIDDEN;
+      }
+      switch (role) {
 
         case CREATOR, ADMINISTRATOR -> {
           var optionalTask = createTask(name, taskStatus);
@@ -1411,8 +1414,11 @@ public class DataProviderCsv implements DataProvider {
         return Statuses.NOT_FOUNDED;
       }
       var group = optionalGroup.get();
-
-      switch (optionalGroup.get().getMemberList().get(optionalUser.get())) {
+      var role = optionalGroup.get().getMemberList().get(optionalUser.get());
+      if (role == null) {
+        return Statuses.FORBIDDEN;
+      }
+      switch (role) {
 
         case CREATOR, ADMINISTRATOR -> {
           if (!(group.getHistoryList().equals(editedGroup.getHistoryList())
