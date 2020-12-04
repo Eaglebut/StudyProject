@@ -643,6 +643,7 @@ class DataProviderCsvTest {
     User user = getUser(0);
     var groupList = dataProvider.getFullGroupList();
     var group = groupList.stream().findAny();
+    Assertions.assertTrue(group.isPresent());
     Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(user.getId(),
             group.get().getId(),
             "group basic task test",
@@ -654,6 +655,7 @@ class DataProviderCsvTest {
   void createBasicGroupTaskIncorrect() {
     var groupList = dataProvider.getFullGroupList();
     var group = groupList.stream().findAny();
+    Assertions.assertTrue(group.isPresent());
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.createTask(1,
             group.get().getId(),
             "group basic task test",
@@ -675,6 +677,7 @@ class DataProviderCsvTest {
     ExtendedTask task = getCorrectExtendedTestTask();
     var groupList = dataProvider.getFullGroupList();
     var group = groupList.stream().findAny();
+    Assertions.assertTrue(group.isPresent());
     Assertions.assertEquals(Statuses.INSERTED, dataProvider.createTask(user.getId(),
             group.get().getId(),
             "group extended task test",
@@ -689,10 +692,10 @@ class DataProviderCsvTest {
   @Test
   @Order(9)
   void createExtendedGroupTaskIncorrect() throws IOException {
-    User user = getUser(0);
     ExtendedTask task = getCorrectExtendedTestTask();
     var groupList = dataProvider.getFullGroupList();
     var group = groupList.stream().findAny();
+    Assertions.assertTrue(group.isPresent());
     Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(163,
             group.get().getId(),
             "group extended task test",
@@ -720,6 +723,7 @@ class DataProviderCsvTest {
     User user = getUser(0);
     var groupList = dataProvider.getFullGroupList();
     var group = groupList.stream().findAny();
+    Assertions.assertTrue(group.isPresent());
     group.get().setName("updated group");
     Assertions.assertEquals(Statuses.UPDATED, dataProvider.updateGroup(user.getId(), group.get()));
   }
@@ -730,23 +734,26 @@ class DataProviderCsvTest {
     User user = getUser(0);
     var groupList = dataProvider.getFullGroupList();
     var group = groupList.stream().findAny();
+    Assertions.assertTrue(group.isPresent());
     group.get().setCreated(null);
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.updateGroup(user.getId(), group.get()));
 
     user = getUser(0);
     groupList = dataProvider.getFullGroupList();
     group = groupList.stream().findAny();
+    Assertions.assertTrue(group.isPresent());
     group.get().setCreated(new Date(System.currentTimeMillis()));
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.updateGroup(user.getId(), group.get()));
 
-    user = getUser(0);
     groupList = dataProvider.getFullGroupList();
     group = groupList.stream().findAny();
+    Assertions.assertTrue(group.isPresent());
     Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.updateGroup(45, group.get()));
 
     user = getUser(0);
     groupList = dataProvider.getFullGroupList();
     group = groupList.stream().findAny();
+    Assertions.assertTrue(group.isPresent());
     group.get().setId(156);
     Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.updateGroup(user.getId(), group.get()));
   }
