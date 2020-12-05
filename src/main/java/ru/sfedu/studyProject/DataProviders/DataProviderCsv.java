@@ -1830,51 +1830,61 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+  //TODO
   @Override
   public String getUsersStatistic() {
     return null;
   }
 
+  //TODO
   @Override
   public String getGroupsStatistic() {
     return null;
   }
 
+  //TODO
   @Override
   public List<User> getFullUsersList() {
     return null;
   }
 
+  //TODO
   @Override
   public Optional<Long> getAverageGroupSize() {
     return Optional.empty();
   }
 
+  //TODO
   @Override
   public Map<GroupTypes, Long> getAverageGroupSizeDividedByGroupType() {
     return null;
   }
 
+  //TODO
   @Override
   public Map<Date, Long> getNewGroupPerDay() {
     return null;
   }
 
+  //TODO
   @Override
   public Map<GroupTypes, Long> getGroupCountPerType() {
     return null;
   }
 
+  //TODO
   @Override
   public Map<Date, Long> getNewUsersPerDay() {
     return null;
   }
 
+  //TODO
   @Override
   public Optional<Long> getAverageTaskPerUser() {
     return Optional.empty();
   }
 
+  //TODO
   @Override
   public Map<Date, Long> getAverageNewTaskPerUserPerDay() {
     return null;
