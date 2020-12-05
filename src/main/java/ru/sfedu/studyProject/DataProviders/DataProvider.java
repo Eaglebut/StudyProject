@@ -92,19 +92,19 @@ public interface DataProvider {
 
   List<User> getFullUsersList();
 
-  Optional<Long> getAverageGroupSize();
+  Optional<Double> getAverageGroupSize();
 
-  Map<GroupTypes, Long> getAverageGroupSizeDividedByGroupType();
+  Map<GroupTypes, Double> getAverageGroupSizeDividedByGroupType();
 
-  Map<Date, Long> getNewGroupPerDay();
+  Map<Date, Double> getNewGroupPerDay();
 
-  Map<GroupTypes, Long> getGroupCountPerType();
+  Map<GroupTypes, Double> getGroupCountPerType();
 
-  Map<Date, Long> getNewUsersPerDay();
+  Map<Date, Double> getNewUsersPerDay();
 
-  Optional<Long> getAverageTaskPerUser();
+  Optional<Double> getAverageTaskPerUser();
 
-  Map<Date, Long> getAverageNewTaskPerUserPerDay();
+  Map<Date, Double> getAverageNewTaskPerUserPerDay();
 
 
 }

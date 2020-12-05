@@ -1880,50 +1880,68 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
   @Override
-  public Optional<Long> getAverageGroupSize() {
+  public Optional<Double> getAverageGroupSize() {
     var groupList = getFullGroupList();
     long groupSizes = 0;
     for (Group group : groupList) {
       groupSizes += group.getMemberList().size();
     }
-    return Optional.of(groupSizes / groupList.size());
+    return Optional.of((groupSizes * 1.0) / groupList.size());
+  }
+
+  @Override
+  public Map<GroupTypes, Double> getAverageGroupSizeDividedByGroupType() {
+    var groupList = getFullGroupList();
+    Map<GroupTypes, Double> groupSizes = new HashMap<>();
+
+    groupList.forEach(group -> {
+      if (!groupSizes.containsKey(group.getGroupType())) {
+        groupSizes.put(group.getGroupType(), 0.0);
+      }
+      groupSizes.replace(group.getGroupType(), groupSizes.get(group.getGroupType()) + group.getMemberList().size());
+    });
+    var groupCount = getGroupCountPerType();
+    groupSizes.forEach((groupType, size) -> size /= groupCount.get(groupType));
+    return groupSizes;
   }
 
   //TODO
   @Override
-  public Map<GroupTypes, Long> getAverageGroupSizeDividedByGroupType() {
+  public Map<Date, Double> getNewGroupPerDay() {
     return null;
   }
 
+  @Override
+  public Map<GroupTypes, Double> getGroupCountPerType() {
+    var groupList = getFullGroupList();
+    Map<GroupTypes, Double> groupCount = new HashMap<>();
+
+    groupList.forEach(group -> {
+      if (!groupCount.containsKey(group.getGroupType())) {
+        groupCount.put(group.getGroupType(), 0.0);
+      }
+      groupCount.replace(group.getGroupType(), groupCount.get(group.getGroupType()) + 1);
+    });
+    return groupCount;
+  }
+
   //TODO
   @Override
-  public Map<Date, Long> getNewGroupPerDay() {
+  public Map<Date, Double> getNewUsersPerDay() {
     return null;
   }
 
-  //TODO
   @Override
-  public Map<GroupTypes, Long> getGroupCountPerType() {
-    return null;
+  public Optional<Double> getAverageTaskPerUser() {
+    var userList = getFullUsersList();
+    long taskCount = userList.stream().mapToLong(user -> user.getTaskList().size()).sum();
+    return Optional.of((taskCount * 1.0) / userList.size());
   }
 
   //TODO
   @Override
-  public Map<Date, Long> getNewUsersPerDay() {
-    return null;
-  }
-
-  //TODO
-  @Override
-  public Optional<Long> getAverageTaskPerUser() {
-    return Optional.empty();
-  }
-
-  //TODO
-  @Override
-  public Map<Date, Long> getAverageNewTaskPerUserPerDay() {
+  public Map<Date, Double> getAverageNewTaskPerUserPerDay() {
     return null;
   }
 }

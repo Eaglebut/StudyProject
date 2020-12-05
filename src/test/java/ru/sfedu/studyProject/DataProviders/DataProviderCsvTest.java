@@ -423,12 +423,13 @@ class DataProviderCsvTest {
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
 
-    userList.forEach(user -> {
-      if (!group.getMemberList().containsKey(user)) {
+    for (User user1 : userList) {
+      if (!group.getMemberList().containsKey(user1)) {
         Assertions.assertEquals(Statuses.INSERTED,
-                dataProvider.addUserToGroup(user.getId(), group.getId()));
+                dataProvider.addUserToGroup(user1.getId(), group.getId()));
+        return;
       }
-    });
+    }
   }
 
   @Test
@@ -796,16 +797,58 @@ class DataProviderCsvTest {
   }
 
   @Test
-  void getUserInfoCorrect() throws IOException {
+  void getUserInfoCorrect() {
     createBasicGroupTaskCorrect();
     createExtendedGroupTaskCorrect();
-    log.debug(dataProvider.getUserInfo(0));
+    log.info(dataProvider.getUserInfo(0));
   }
 
   @Test
   void getFullUserList() {
     Assertions.assertTrue(dataProvider.getFullUsersList().size() > 0);
     log.debug(dataProvider.getFullUsersList());
+  }
+
+  @Test
+  void getAverageGroupSize() {
+    var optSize = dataProvider.getAverageGroupSize();
+    Assertions.assertTrue(optSize.isPresent());
+    log.info(optSize.get());
+  }
+
+  @Test
+  void getGroupCountPerType() {
+    var groupCount = dataProvider.getGroupCountPerType();
+    Assertions.assertFalse(groupCount.isEmpty());
+    StringBuilder builder = new StringBuilder();
+    groupCount.forEach((groupTypes, aLong) -> {
+      builder.append(groupTypes)
+              .append(" : ")
+              .append(aLong)
+              .append("\n");
+    });
+    log.info(builder.toString());
+  }
+
+  @Test
+  void getAverageGroupSizeDividedByGroupType() {
+    var groupSizes = dataProvider.getGroupCountPerType();
+    Assertions.assertFalse(groupSizes.isEmpty());
+    StringBuilder builder = new StringBuilder();
+    groupSizes.forEach((groupTypes, aLong) -> {
+      builder.append(groupTypes)
+              .append(" : ")
+              .append(aLong)
+              .append("\n");
+    });
+    log.info(builder.toString());
+  }
+
+  @Test
+  void getAverageTaskPerUser() {
+    var optSize = dataProvider.getAverageTaskPerUser();
+    Assertions.assertTrue(optSize.isPresent());
+    log.info(optSize.get());
   }
 
 
