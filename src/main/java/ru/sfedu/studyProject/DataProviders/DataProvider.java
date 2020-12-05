@@ -8,6 +8,7 @@ import ru.sfedu.studyProject.model.User;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -82,5 +83,28 @@ public interface DataProvider {
   Statuses deleteGroup(long userId, long groupId);
 
   List<Group> getUsersGroups(long userId);
+
+  String getUserInfo(long userId);
+
+  String getUsersStatistic();
+
+  String getGroupsStatistic();
+
+  List<User> getFullUsersList();
+
+  Optional<Long> getAverageGroupSize();
+
+  Map<GroupTypes, Long> getAverageGroupSizeDividedByGroupType();
+
+  Map<Date, Long> getNewGroupPerDay();
+
+  Map<GroupTypes, Long> getGroupCountPerType();
+
+  Map<Date, Long> getNewUsersPerDay();
+
+  Optional<Long> getAverageTaskPerUser();
+
+  Map<Date, Long> getAverageNewTaskPerUserPerDay();
+
 
 }

@@ -1644,4 +1644,239 @@ public class DataProviderCsv implements DataProvider {
             .collect(Collectors.toList());
 
   }
+
+  private String userToString(User user) throws IOException {
+    return String.format(PropertyLoader.getProperty(Constants.FORMAT_USER_TO_STRING),
+            user.getId(),
+            user.getName(),
+            user.getSurname(),
+            user.getEmail(),
+            user.getPassword(),
+            user.getCreated(),
+            user.getSignUpType(),
+            user.getToken());
+  }
+
+  private String historyListToString(List<ModificationRecord> historyList, int tabNum) {
+    StringBuilder builder = new StringBuilder();
+    historyList.forEach(modificationRecord -> {
+      try {
+        builder.append(modificationRecordToString(modificationRecord, tabNum));
+        builder.append(PropertyLoader.getProperty(Constants.NEW_LINE));
+      } catch (IOException e) {
+        log.error(e);
+      }
+    });
+    return builder.toString();
+  }
+
+  private String modificationRecordToString(ModificationRecord record, int tabNum) throws IOException {
+
+    StringBuilder tabsBuilder = new StringBuilder();
+    tabsBuilder.append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum)));
+
+    return String.format(PropertyLoader.getProperty(Constants.FORMAT_MODIFICATION_RECORD_TO_STRING),
+            tabsBuilder.toString(), record.getId(),
+            tabsBuilder.toString(),
+            record.getChangedDate(),
+            tabsBuilder.toString(),
+            record.getOperationType(),
+            tabsBuilder.toString(),
+            record.getChangedValueName(),
+            tabsBuilder.toString(),
+            record.getChangedValue());
+  }
+
+  private String extendedTaskToString(ExtendedTask task, int tabNum) throws IOException {
+    StringBuilder tabsBuilder = new StringBuilder();
+    tabsBuilder.append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum)));
+    return basicTaskToString(task, tabNum) +
+            String.format(PropertyLoader.getProperty(Constants.FORMAT_EXTENDED_TASK_TO_STRING),
+                    tabsBuilder.toString(),
+                    task.getDescription(),
+                    tabsBuilder.toString(),
+                    task.getRemindType(),
+                    tabsBuilder.toString(),
+                    task.getImportance(),
+                    tabsBuilder.toString(),
+                    task.getRepetitionType(),
+                    tabsBuilder.toString(),
+                    task.getTime());
+
+  }
+
+  private String basicTaskToString(Task task, int tabNum) throws IOException {
+    StringBuilder tabsBuilder = new StringBuilder();
+    tabsBuilder.append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum)));
+    return String.format(PropertyLoader.getProperty(Constants.FORMAT_BASIC_TASK_TO_STRING),
+            tabsBuilder.toString(),
+            task.getId(),
+            tabsBuilder.toString(),
+            task.getTaskType(),
+            tabsBuilder.toString(),
+            task.getCreated(),
+            tabsBuilder.toString(),
+            task.getName(),
+            tabsBuilder.toString(),
+            task.getStatus(),
+            tabsBuilder.toString(),
+            historyListToString(task.getHistoryList(), tabNum + 1));
+  }
+
+  private String taskListToString(List<Task> taskList, int tabNum) {
+    StringBuilder builder = new StringBuilder();
+    taskList.forEach(task -> {
+      switch (task.getTaskType()) {
+        case BASIC -> {
+          try {
+            builder.append(basicTaskToString(task, tabNum));
+          } catch (IOException e) {
+            log.error(e);
+          }
+        }
+        case EXTENDED -> {
+          try {
+            builder.append(extendedTaskToString((ExtendedTask) task, tabNum));
+          } catch (IOException e) {
+            log.error(e);
+          }
+        }
+      }
+    });
+    return builder.toString();
+  }
+
+  private String groupListToString(List<Group> groupList, int tabNum) {
+    StringBuilder builder = new StringBuilder();
+    groupList.forEach(group -> {
+      try {
+        builder.append(groupToString(group, tabNum));
+        builder.append(PropertyLoader.getProperty(Constants.NEW_LINE));
+      } catch (IOException e) {
+        log.error(e);
+      }
+    });
+    return builder.toString();
+  }
+
+  private String groupToString(Group group, int tabNum) throws IOException {
+    StringBuilder tabsBuilder = new StringBuilder();
+    tabsBuilder.append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum)));
+    return String.format(PropertyLoader.getProperty(Constants.FORMAT_GROUP_TO_STRING),
+            tabsBuilder.toString(),
+            group.getId(),
+            tabsBuilder.toString(),
+            group.getGroupType(),
+            tabsBuilder.toString(),
+            group.getCreated(),
+            tabsBuilder.toString(),
+            group.getName(),
+            tabsBuilder.toString(),
+            groupTasksToString(group.getTaskList(), tabNum + 1),
+            tabsBuilder.toString(),
+            historyListToString(group.getHistoryList(), tabNum + 1));
+
+  }
+
+  private String groupTasksToString(Map<Task, TaskState> taskMap, int tabNum) throws IOException {
+    StringBuilder tabsBuilder = new StringBuilder();
+    tabsBuilder.append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum + 1)));
+    StringBuilder builder = new StringBuilder();
+    taskMap.forEach((task, taskState) -> {
+      switch (task.getTaskType()) {
+        case BASIC -> {
+          try {
+            builder.append(String.format(PropertyLoader.getProperty(Constants.FORMAT_GROUP_TASK_TO_STRING),
+                    tabsBuilder.toString(),
+                    taskState,
+                    basicTaskToString(task, tabNum + 2)));
+          } catch (IOException e) {
+            log.error(e);
+          }
+        }
+        case EXTENDED -> {
+          try {
+            builder.append(String.format(PropertyLoader.getProperty(Constants.FORMAT_GROUP_TASK_TO_STRING),
+                    tabsBuilder.toString(),
+                    taskState,
+                    extendedTaskToString((ExtendedTask) task, tabNum + 2)));
+          } catch (IOException e) {
+            log.error(e);
+          }
+        }
+      }
+    });
+    return builder.toString();
+  }
+
+  @Override
+  public String getUserInfo(long userId) {
+    try {
+      var optUser = getUser(userId);
+      if (optUser.isEmpty()) {
+        return PropertyLoader.getProperty(Constants.MESSAGE_USER_NOT_FOUNDED);
+      }
+      var user = optUser.get();
+      var groupList = getUsersGroups(userId);
+
+      return String.format(PropertyLoader.getProperty(Constants.FORMAT_USER),
+              userToString(user),
+              taskListToString(user.getTaskList(), 1),
+              historyListToString(user.getHistoryList(), 1),
+              groupListToString(groupList, 1));
+    } catch (IOException e) {
+      log.error(e);
+      return "";
+    }
+  }
+
+  @Override
+  public String getUsersStatistic() {
+    return null;
+  }
+
+  @Override
+  public String getGroupsStatistic() {
+    return null;
+  }
+
+  @Override
+  public List<User> getFullUsersList() {
+    return null;
+  }
+
+  @Override
+  public Optional<Long> getAverageGroupSize() {
+    return Optional.empty();
+  }
+
+  @Override
+  public Map<GroupTypes, Long> getAverageGroupSizeDividedByGroupType() {
+    return null;
+  }
+
+  @Override
+  public Map<Date, Long> getNewGroupPerDay() {
+    return null;
+  }
+
+  @Override
+  public Map<GroupTypes, Long> getGroupCountPerType() {
+    return null;
+  }
+
+  @Override
+  public Map<Date, Long> getNewUsersPerDay() {
+    return null;
+  }
+
+  @Override
+  public Optional<Long> getAverageTaskPerUser() {
+    return Optional.empty();
+  }
+
+  @Override
+  public Map<Date, Long> getAverageNewTaskPerUserPerDay() {
+    return null;
+  }
 }

@@ -218,7 +218,7 @@ class DataProviderCsvTest {
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.editUser(user));
 
     user = getUser(0);
-    user.setToken("dwaw");
+    user.setToken("test");
     log.debug(user);
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.editUser(user));
 
@@ -940,5 +940,13 @@ class DataProviderCsvTest {
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteGroup(1, optGroup.get().getId()));
     Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteGroup(1165, optGroup.get().getId()));
     Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteGroup(0, 165165));
+  }
+
+  @Order(12)
+  @Test
+  void getUserInfoCorrect() throws IOException {
+    createBasicGroupTaskCorrect();
+    createExtendedGroupTaskCorrect();
+    log.debug(dataProvider.getUserInfo(0));
   }
 }

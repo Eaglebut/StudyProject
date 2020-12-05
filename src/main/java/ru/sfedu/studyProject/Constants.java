@@ -43,4 +43,15 @@ public class Constants {
   public static final String FIELD_NAME_MEMBER = "field.name.member";
   public static final String FIELD_NAME_GROUP_TYPE = "field.name.groupType";
   public static final String MAP_FORMAT_STRING = "map.formatString";
+  public static final String FORMAT_USER_TO_STRING = "format.user.toString";
+  public static final String FORMAT_MODIFICATION_RECORD_TO_STRING = "format.modificationRecord.toString";
+  public static final String FORMAT_EXTENDED_TASK_TO_STRING = "format.extendedTask.toString";
+  public static final String FORMAT_BASIC_TASK_TO_STRING = "format.basicTask.toString";
+  public static final String FORMAT_GROUP_TO_STRING = "format.group.toString";
+  public static final String FORMAT_GROUP_TASK_TO_STRING = "format.groupTask.toString";
+  public static final String NEW_LINE = "new_line";
+  public static final String TAB = "tab";
+  public static final String MESSAGE_USER_NOT_FOUNDED = "message.userNotFounded";
+  public static final String FORMAT_USER = "format.user";
+
 }
