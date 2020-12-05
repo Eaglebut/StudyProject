@@ -50,7 +50,6 @@ public class ModificationRecordConverter extends AbstractBeanField<ModificationR
         builder.delete(builder.length() - 1, builder.length());
       }
       builder.append(PropertyLoader.getProperty(Constants.ARRAY_END_SYMBOL));
-      log.debug(builder.toString());
       return builder.toString();
     } catch (IOException e) {
       log.error(e);

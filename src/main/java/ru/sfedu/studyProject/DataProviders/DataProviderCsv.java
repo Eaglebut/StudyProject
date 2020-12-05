@@ -352,7 +352,6 @@ public class DataProviderCsv implements DataProvider {
       createdTask.setCreated(new Date(System.currentTimeMillis()));
       createdTask.setHistoryList(new ArrayList<>());
       createdTask.setStatus(status);
-      log.debug(createdTask);
       insertIntoCsv(createdTask);
       nextId(Task.class);
       return Optional.of(createdTask);
@@ -809,7 +808,16 @@ public class DataProviderCsv implements DataProvider {
 
 
   private boolean isEditValid(User user, User editedUser) {
-    return user.getHistoryList().equals(editedUser.getHistoryList())
+    return editedUser.getEmail() != null
+            && editedUser.getCreated() != null
+            && editedUser.getHistoryList() != null
+            && editedUser.getName() != null
+            && editedUser.getPassword() != null
+            && editedUser.getToken() != null
+            && editedUser.getSurname() != null
+            && editedUser.getTaskList() != null
+            && editedUser.getSignUpType() != null
+            && user.getHistoryList().equals(editedUser.getHistoryList())
             && user.getCreated().getTime() == editedUser.getCreated().getTime()
             && user.getTaskList().equals(editedUser.getTaskList())
             && user.getSignUpType().equals(editedUser.getSignUpType());
@@ -825,11 +833,17 @@ public class DataProviderCsv implements DataProvider {
               .filter(user -> user.getId() == editedUser.getId())
               .findFirst();
 
-      if (optionalUser.isEmpty()) {
+      var optUser = getUser(editedUser.getId());
+
+      if (optionalUser.isEmpty() || optUser.isEmpty()) {
         return Statuses.NOT_FOUNDED;
       }
 
-      if (!isEditValid(editedUser, optionalUser.get())) {
+      if (!isEditValid(optUser.get(), editedUser)) {
+        log.debug(optUser.get().getHistoryList().equals(editedUser.getHistoryList()));
+        log.debug(optUser.get().getCreated().getTime() == editedUser.getCreated().getTime());
+        log.debug(optUser.get().getTaskList().equals(editedUser.getTaskList()));
+        log.debug(optUser.get().getSignUpType().equals(editedUser.getSignUpType()));
         return Statuses.FORBIDDEN;
       }
       userList.remove(optionalUser.get());
@@ -1064,6 +1078,9 @@ public class DataProviderCsv implements DataProvider {
       }
       var user = optionalUser.get();
       var group = optionalGroup.get();
+      if (!group.getMemberList().containsKey(user)) {
+        return Statuses.FORBIDDEN;
+      }
 
       if (!group.getMemberList().get(user).equals(UserRole.CREATOR)) {
         return Statuses.FORBIDDEN;
@@ -1554,7 +1571,11 @@ public class DataProviderCsv implements DataProvider {
           group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
                   OperationType.EDIT,
                   String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING), taskId, state)));
-          return saveGroup(group);
+          var status = saveGroup(group);
+          if (status.equals(Statuses.INSERTED)) {
+            return Statuses.UPDATED;
+          }
+          return status;
         }
         default -> {
           return Statuses.FORBIDDEN;
@@ -1842,16 +1863,32 @@ public class DataProviderCsv implements DataProvider {
     return null;
   }
 
-  //TODO
   @Override
   public List<User> getFullUsersList() {
-    return null;
+    try {
+      var userList = getFromCsv(User.class);
+
+      userList.forEach(user -> {
+        user.setTaskList(getTasks(user));
+        user.setHistoryList(getHistoryList(User.class, user));
+      });
+
+      return userList;
+    } catch (IOException e) {
+      log.error(e);
+      return new ArrayList<>();
+    }
   }
 
   //TODO
   @Override
   public Optional<Long> getAverageGroupSize() {
-    return Optional.empty();
+    var groupList = getFullGroupList();
+    long groupSizes = 0;
+    for (Group group : groupList) {
+      groupSizes += group.getMemberList().size();
+    }
+    return Optional.of(groupSizes / groupList.size());
   }
 
   //TODO
