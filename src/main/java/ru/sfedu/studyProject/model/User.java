@@ -50,7 +50,6 @@ public class User implements Serializable {
   @CsvCustomBindByName(converter = ModificationRecordConverter.class)
   private List<ModificationRecord> historyList;
 
-
   //
   // Methods
   //

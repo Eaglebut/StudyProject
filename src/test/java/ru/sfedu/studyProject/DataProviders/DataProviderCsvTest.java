@@ -821,12 +821,11 @@ class DataProviderCsvTest {
     var groupCount = dataProvider.getGroupCountPerType();
     Assertions.assertFalse(groupCount.isEmpty());
     StringBuilder builder = new StringBuilder();
-    groupCount.forEach((groupTypes, aLong) -> {
-      builder.append(groupTypes)
-              .append(" : ")
-              .append(aLong)
-              .append("\n");
-    });
+    groupCount.forEach((groupTypes, aLong) ->
+            builder.append(groupTypes)
+                    .append(" : ")
+                    .append(aLong)
+                    .append("\n"));
     log.info(builder.toString());
   }
 
@@ -835,21 +834,24 @@ class DataProviderCsvTest {
     var groupSizes = dataProvider.getGroupCountPerType();
     Assertions.assertFalse(groupSizes.isEmpty());
     StringBuilder builder = new StringBuilder();
-    groupSizes.forEach((groupTypes, aLong) -> {
-      builder.append(groupTypes)
-              .append(" : ")
-              .append(aLong)
-              .append("\n");
-    });
+    groupSizes.forEach((groupTypes, aLong) ->
+            builder.append(groupTypes)
+                    .append(" : ")
+                    .append(aLong)
+                    .append("\n"));
     log.info(builder.toString());
   }
 
   @Test
-  void getAverageTaskPerUser() {
-    var optSize = dataProvider.getAverageTaskPerUser();
+  void getAverageTaskPerGroup() {
+    var optSize = dataProvider.getAverageTaskPerGroup();
     Assertions.assertTrue(optSize.isPresent());
     log.info(optSize.get());
   }
 
+  @Test
+  void getGroupStatistic() {
+    log.info(dataProvider.getGroupsStatistic());
+  }
 
 }

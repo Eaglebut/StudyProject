@@ -86,7 +86,7 @@ public interface DataProvider {
 
   String getUserInfo(long userId);
 
-  String getUsersStatistic();
+  String getTaskStatistic();
 
   String getGroupsStatistic();
 
@@ -94,17 +94,16 @@ public interface DataProvider {
 
   Optional<Double> getAverageGroupSize();
 
+  Map<Owner, Long> getTaskCountPerOwner();
+
+  Map<Owner, Double> getAverageTaskPerOwner();
+
+  Map<TaskTypes, Long> getTaskCountPerType();
+
   Map<GroupTypes, Double> getAverageGroupSizeDividedByGroupType();
 
-  Map<Date, Double> getNewGroupPerDay();
+  Map<GroupTypes, Long> getGroupCountPerType();
 
-  Map<GroupTypes, Double> getGroupCountPerType();
-
-  Map<Date, Double> getNewUsersPerDay();
-
-  Optional<Double> getAverageTaskPerUser();
-
-  Map<Date, Double> getAverageNewTaskPerUserPerDay();
-
+  Optional<Double> getAverageTaskPerGroup();
 
 }

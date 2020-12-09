@@ -20,6 +20,7 @@ import ru.sfedu.studyProject.utils.PropertyLoader;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Log4j2
 public class DataProviderCsv implements DataProvider {
@@ -324,7 +325,9 @@ public class DataProviderCsv implements DataProvider {
   }
 
 
-  private ModificationRecord addHistoryRecord(String changedValueName, OperationType operationType, String changedValue) {
+  private ModificationRecord addHistoryRecord(String changedValueName,
+                                              OperationType operationType,
+                                              String changedValue) {
     try {
       ModificationRecord record = new ModificationRecord();
       record.setId(getNextId(ModificationRecord.class));
@@ -405,18 +408,18 @@ public class DataProviderCsv implements DataProvider {
       Optional<User> optionalUser = getUser(userId);
       if (optionalUser.isEmpty()) {
         return Statuses.FORBIDDEN;
-      } else {
-        User user = optionalUser.get();
-        user.getTaskList().add(createdTask);
-        user.getHistoryList()
-                .add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
-                        OperationType.ADD,
-                        String.valueOf(createdTask.getId())));
-        var updateUserStatus = updateUser(user);
-        if (updateUserStatus != Statuses.UPDATED) {
-          return updateUserStatus;
-        }
       }
+      User user = optionalUser.get();
+      user.getTaskList().add(createdTask);
+      user.getHistoryList()
+              .add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
+                      OperationType.ADD,
+                      String.valueOf(createdTask.getId())));
+      var updateUserStatus = updateUser(user);
+      if (updateUserStatus != Statuses.UPDATED) {
+        return updateUserStatus;
+      }
+
 
     } catch (IOException e) {
       log.error(e);
@@ -1286,9 +1289,8 @@ public class DataProviderCsv implements DataProvider {
       var status = saveGroup(group);
       if (status.equals(Statuses.UPDATED)) {
         return Statuses.INSERTED;
-      } else {
-        return status;
       }
+      return status;
     } catch (IOException e) {
       log.error(e);
       return Statuses.FAILED;
@@ -1604,7 +1606,6 @@ public class DataProviderCsv implements DataProvider {
 
   private Statuses deleteGroup(Group group) {
     try {
-
       switch (group.getGroupType()) {
         case PUBLIC, WITH_CONFIRMATION -> {
           List<Group> groupList = getFromCsv(Group.class);
@@ -1853,14 +1854,57 @@ public class DataProviderCsv implements DataProvider {
 
   //TODO
   @Override
-  public String getUsersStatistic() {
+  public String getTaskStatistic() {
     return null;
   }
 
-  //TODO
+  private String groupCountByTypeToString(Map<GroupTypes, Long> groupCounts, int tabNum) {
+    StringBuilder builder = new StringBuilder();
+    groupCounts.forEach((groupTypes, aLong) -> {
+      try {
+        builder
+                .append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum)))
+                .append(groupTypes)
+                .append(PropertyLoader.getProperty(Constants.MAP_DELIMITER))
+                .append(aLong)
+                .append(PropertyLoader.getProperty(Constants.NEW_LINE));
+      } catch (IOException e) {
+        log.error(e);
+      }
+    });
+    return builder.toString();
+  }
+
+  private String averageGroupSizesByTypeToString(Map<GroupTypes, Double> groupSizes, int tabNum) {
+    StringBuilder builder = new StringBuilder();
+    groupSizes.forEach((groupTypes, aDouble) -> {
+      try {
+        builder
+                .append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum)))
+                .append(groupTypes)
+                .append(PropertyLoader.getProperty(Constants.MAP_DELIMITER))
+                .append(aDouble)
+                .append(PropertyLoader.getProperty(Constants.NEW_LINE));
+      } catch (IOException e) {
+        log.error(e);
+      }
+    });
+    return builder.toString();
+  }
+
   @Override
   public String getGroupsStatistic() {
-    return null;
+    try {
+      return String.format(PropertyLoader.getProperty(Constants.FORMAT_GROUP_STATISTIC),
+              getFullGroupList().size(),
+
+              groupCountByTypeToString(getGroupCountPerType(), 1),
+              getAverageGroupSize().get(),
+              averageGroupSizesByTypeToString(getAverageGroupSizeDividedByGroupType(), 1));
+    } catch (IOException e) {
+      log.error(e);
+      return "";
+    }
   }
 
   @Override
@@ -1880,6 +1924,7 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+
   @Override
   public Optional<Double> getAverageGroupSize() {
     var groupList = getFullGroupList();
@@ -1888,6 +1933,39 @@ public class DataProviderCsv implements DataProvider {
       groupSizes += group.getMemberList().size();
     }
     return Optional.of((groupSizes * 1.0) / groupList.size());
+  }
+
+  @Override
+  public Map<Owner, Long> getTaskCountPerOwner() {
+    List<User> userList = getFullUsersList();
+    var groupList = getFullGroupList();
+    Map<Owner, Long> taskCount = new HashMap<>();
+
+    taskCount.put(Owner.USER, (long) userList.stream().flatMapToInt(user -> IntStream.of(user.getTaskList().size())).sum());
+    taskCount.put(Owner.PUBLIC_GROUP, 0L);
+    taskCount.put(Owner.GROUP_WITH_CONFIRMATION, 0L);
+    taskCount.put(Owner.PASSWORDED_GROUP, 0L);
+    groupList.forEach(group -> {
+      switch (group.getGroupType()) {
+        case PUBLIC -> taskCount.replace(Owner.PUBLIC_GROUP, taskCount.get(Owner.PUBLIC_GROUP) + 1);
+        case PASSWORDED -> taskCount.replace(Owner.PASSWORDED_GROUP, taskCount.get(Owner.PASSWORDED_GROUP) + 1);
+        case WITH_CONFIRMATION -> taskCount.replace(Owner.GROUP_WITH_CONFIRMATION,
+                taskCount.get(Owner.GROUP_WITH_CONFIRMATION) + 1);
+      }
+    });
+    return taskCount;
+  }
+
+  //TODO
+  @Override
+  public Map<Owner, Double> getAverageTaskPerOwner() {
+    return null;
+  }
+
+  //TODO
+  @Override
+  public Map<TaskTypes, Long> getTaskCountPerType() {
+    return null;
   }
 
   @Override
@@ -1902,46 +1980,32 @@ public class DataProviderCsv implements DataProvider {
       groupSizes.replace(group.getGroupType(), groupSizes.get(group.getGroupType()) + group.getMemberList().size());
     });
     var groupCount = getGroupCountPerType();
-    groupSizes.forEach((groupType, size) -> size /= groupCount.get(groupType));
+    groupSizes.forEach((groupType, size) -> groupSizes.replace(groupType, size / groupCount.get(groupType)));
     return groupSizes;
   }
 
-  //TODO
-  @Override
-  public Map<Date, Double> getNewGroupPerDay() {
-    return null;
-  }
 
   @Override
-  public Map<GroupTypes, Double> getGroupCountPerType() {
+  public Map<GroupTypes, Long> getGroupCountPerType() {
     var groupList = getFullGroupList();
-    Map<GroupTypes, Double> groupCount = new HashMap<>();
+    Map<GroupTypes, Long> groupCount = new HashMap<>();
 
     groupList.forEach(group -> {
       if (!groupCount.containsKey(group.getGroupType())) {
-        groupCount.put(group.getGroupType(), 0.0);
+        groupCount.put(group.getGroupType(), 0L);
       }
       groupCount.replace(group.getGroupType(), groupCount.get(group.getGroupType()) + 1);
     });
     return groupCount;
   }
 
-  //TODO
-  @Override
-  public Map<Date, Double> getNewUsersPerDay() {
-    return null;
-  }
 
   @Override
-  public Optional<Double> getAverageTaskPerUser() {
-    var userList = getFullUsersList();
-    long taskCount = userList.stream().mapToLong(user -> user.getTaskList().size()).sum();
-    return Optional.of((taskCount * 1.0) / userList.size());
+  public Optional<Double> getAverageTaskPerGroup() {
+    var groupList = getFullGroupList();
+    long groupCount = groupList.stream().mapToLong(group -> group.getTaskList().size()).sum();
+    return Optional.of((groupCount * 1.0) / groupList.size());
   }
 
-  //TODO
-  @Override
-  public Map<Date, Double> getAverageNewTaskPerUserPerDay() {
-    return null;
-  }
+
 }
