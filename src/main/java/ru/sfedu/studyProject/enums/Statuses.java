@@ -6,6 +6,6 @@ public enum Statuses {
     DELETED,
     FAILED,
     NOT_FOUNDED,
-    FORBIDDEN
+    SAVED, FORBIDDEN
 
 }

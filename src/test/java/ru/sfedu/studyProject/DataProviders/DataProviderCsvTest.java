@@ -854,4 +854,9 @@ class DataProviderCsvTest {
     log.info(dataProvider.getGroupsStatistic());
   }
 
+  @Test
+  void getTaskStatistic() {
+    log.info(dataProvider.getTaskStatistic());
+  }
+
 }

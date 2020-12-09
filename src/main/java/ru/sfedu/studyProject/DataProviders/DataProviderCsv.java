@@ -10,7 +10,6 @@ import com.opencsv.exceptions.CsvDataTypeMismatchException;
 import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
 import ru.sfedu.studyProject.model.*;
@@ -25,13 +24,10 @@ import java.util.stream.IntStream;
 @Log4j2
 public class DataProviderCsv implements DataProvider {
 
-
   private static DataProvider INSTANCE = null;
-
 
   private DataProviderCsv() {
   }
-
 
   public static DataProvider getInstance() {
     if (INSTANCE == null) {
@@ -40,11 +36,9 @@ public class DataProviderCsv implements DataProvider {
     return INSTANCE;
   }
 
-
   private <T> void insertIntoCsv(T object) throws IOException {
     insertIntoCsv(object.getClass(), Collections.singletonList(object), false);
   }
-
 
   private <T> void insertIntoCsv(Class<?> tClass,
                                  List<T> objectList,
@@ -71,7 +65,6 @@ public class DataProviderCsv implements DataProvider {
     csvWriter.close();
   }
 
-
   private <T> CSVWriter getCsvWriter(Class<T> tClass) throws IOException {
     FileWriter writer;
     File path = new File(PropertyLoader.getProperty(Constants.CSV_PATH));
@@ -79,39 +72,30 @@ public class DataProviderCsv implements DataProvider {
             + tClass.getSimpleName().toLowerCase()
             + PropertyLoader.getProperty(Constants.CSV_EXTENSION));
     log.debug(file.getPath());
-    if (!file.exists()) {
-      if (path.mkdirs()) {
-        if (!file.createNewFile()) {
-          throw new IOException(
-                  String.format(PropertyLoader.getProperty(Constants.EXCEPTION_CANNOT_CREATE_FILE),
-                          file.getName()));
-        }
-      }
+    if (!file.exists() && path.mkdirs() && !file.createNewFile()) {
+      throw new IOException(
+              String.format(PropertyLoader.getProperty(Constants.EXCEPTION_CANNOT_CREATE_FILE),
+                      file.getName()));
     }
     writer = new FileWriter(file);
     return new CSVWriter(writer);
   }
 
-
   private <T> CSVReader getCsvReader(Class<T> tClass) throws IOException {
     File file = new File(PropertyLoader.getProperty(Constants.CSV_PATH)
             + tClass.getSimpleName().toLowerCase()
             + PropertyLoader.getProperty(Constants.CSV_EXTENSION));
+    if (!file.exists() && !file.createNewFile()) {
+      throw new IOException(
+              String.format(
+                      PropertyLoader.getProperty(Constants.EXCEPTION_CANNOT_CREATE_FILE),
+                      file.getName()));
 
-    if (!file.exists()) {
-      if (!file.createNewFile()) {
-        throw new IOException(
-                String.format(
-                        PropertyLoader.getProperty(Constants.EXCEPTION_CANNOT_CREATE_FILE),
-                        file.getName()));
-      }
     }
-
     FileReader fileReader = new FileReader(file);
     BufferedReader bufferedReader = new BufferedReader(fileReader);
     return new CSVReader(bufferedReader);
   }
-
 
   private <T> List<T> getFromCsv(Class<T> tClass) throws IOException {
     List<T> tList;
@@ -130,7 +114,6 @@ public class DataProviderCsv implements DataProvider {
     return tList;
   }
 
-
   public void deleteAll() {
     List<Class> classList = new ArrayList<>();
     classList.add(ExtendedTask.class);
@@ -145,7 +128,6 @@ public class DataProviderCsv implements DataProvider {
     classList.forEach(this::deleteFile);
   }
 
-
   private <T> void deleteFile(Class<T> tClass) {
     try {
       log.debug(new File(PropertyLoader.getProperty(Constants.CSV_PATH)
@@ -156,60 +138,26 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+  private <T> List<ModificationRecord> getHistoryListId(Class<T> tClass, T object) {
 
-  private Optional<User> getUserProfile(long userId) {
-    try {
-      List<User> userList = getFromCsv(User.class);
-      return userList
-              .stream()
-              .filter(user -> user.getId() == userId)
-              .findFirst();
-    } catch (IOException e) {
-      log.error(e);
-      return Optional.empty();
+    if (tClass.equals(ExtendedTask.class)) {
+      return ((ExtendedTask) object).getHistoryList();
+    } else if (tClass.equals(Group.class)) {
+      return ((Group) object).getHistoryList();
+    } else if (tClass.equals(PasswordedGroup.class)) {
+      return ((PasswordedGroup) object).getHistoryList();
+    } else if (tClass.equals(Task.class)) {
+      return ((Task) object).getHistoryList();
+    } else if (tClass.equals(User.class)) {
+      return ((User) object).getHistoryList();
+    } else {
+      return new ArrayList<>();
     }
   }
-
-
-  private Optional<User> getUserProfile(String email,
-                                        String password) {
-    try {
-      List<User> userList = getFromCsv(User.class);
-      return userList
-              .stream()
-              .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password))
-              .findFirst();
-
-    } catch (IOException e) {
-      log.error(e);
-      return Optional.empty();
-    }
-  }
-
 
   private <T> List<ModificationRecord> getHistoryList(Class<T> tClass, T object) {
     try {
-      List<ModificationRecord> objectHistoryList;
-      if (tClass.equals(ExtendedTask.class)) {
-        ExtendedTask extendedTask = (ExtendedTask) object;
-        objectHistoryList = extendedTask.getHistoryList();
-      } else if (tClass.equals(Group.class)) {
-        Group group = (Group) object;
-        objectHistoryList = group.getHistoryList();
-      } else if (tClass.equals(PasswordedGroup.class)) {
-        PasswordedGroup passwordedGroup = (PasswordedGroup) object;
-        objectHistoryList = passwordedGroup.getHistoryList();
-      } else if (tClass.equals(Task.class)) {
-        Task task = (Task) object;
-        objectHistoryList = task.getHistoryList();
-      } else if (tClass.equals(User.class)) {
-        User user = (User) object;
-        objectHistoryList = user.getHistoryList();
-      } else {
-        return null;
-      }
-
-
+      List<ModificationRecord> objectHistoryList = getHistoryListId(tClass, object);
       List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);
       return historyList
               .stream()
@@ -224,35 +172,48 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   @Override
   public Optional<User> getUser(long userId) {
     Optional<User> optionalUser = getUserProfile(userId);
-    if (optionalUser.isPresent()) {
-      User user = optionalUser.get();
+    optionalUser.ifPresent(user -> {
       user.setTaskList(getTasks(user));
       user.setHistoryList(getHistoryList(User.class, user));
-      return Optional.of(user);
-    } else {
+    });
+    return optionalUser;
+  }
+
+  private Optional<User> getUserProfile(long userId) {
+    try {
+      List<User> userList = getFromCsv(User.class);
+      return userList.stream().filter(user -> user.getId() == userId).findAny();
+    } catch (IOException e) {
+      log.error(e);
       return Optional.empty();
     }
   }
 
+  private Optional<User> getUserProfile(String email, String password) {
+    try {
+      List<User> userList = getFromCsv(User.class);
+      return userList.stream()
+              .filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password))
+              .findAny();
+    } catch (IOException e) {
+      log.error(e);
+      return Optional.empty();
+    }
+  }
 
   @Override
   public Optional<User> getUser(@NonNull String email,
                                 @NonNull String password) {
     Optional<User> optionalUser = getUserProfile(email, password);
-    if (optionalUser.isPresent()) {
-      User user = optionalUser.get();
+    optionalUser.ifPresent(user -> {
       user.setTaskList(getTasks(user));
       user.setHistoryList(getHistoryList(User.class, user));
-      return Optional.of(user);
-    } else {
-      return Optional.empty();
-    }
+    });
+    return optionalUser;
   }
-
 
   private Optional<Task> getTask(long id) {
     try {
@@ -281,7 +242,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   private List<Task> getTasks(@NonNull User user) throws NoSuchElementException {
     List<Task> usersTaskIdList = user.getTaskList();
     List<Task> taskList = new ArrayList<>();
@@ -291,7 +251,6 @@ public class DataProviderCsv implements DataProvider {
     });
     return taskList;
   }
-
 
   private <T> long getNextId(Class<T> tClass) throws IOException {
     List<Metadata> metadataList = getFromCsv(Metadata.class);
@@ -304,26 +263,24 @@ public class DataProviderCsv implements DataProvider {
     return optionalMetadata.get().getLastId();
   }
 
-
   private <T> void nextId(Class<T> tClass) throws IOException {
     List<Metadata> metadataList = getFromCsv(Metadata.class);
     Optional<Metadata> optionalMetadata = metadataList.stream()
             .filter(metadata -> metadata.getClassName().equals(tClass.getSimpleName().toLowerCase()))
             .findAny();
-    Metadata metadata;
-    if (optionalMetadata.isEmpty()) {
-      metadata = new Metadata();
-      metadata.setClassName(tClass.getSimpleName().toLowerCase());
-      metadata.setLastId(1L);
-    } else {
-      metadata = optionalMetadata.get();
-      metadataList.remove(metadata);
-      metadata.setLastId(metadata.getLastId() + 1);
-    }
-    metadataList.add(metadata);
+    optionalMetadata.ifPresentOrElse(metadata -> {
+              metadata.setLastId(metadata.getLastId() + 1);
+              metadataList.set(metadataList.indexOf(metadata), metadata);
+            },
+            () -> {
+              Metadata metadata = new Metadata();
+              metadata.setClassName(tClass.getSimpleName().toLowerCase());
+              metadata.setLastId(1L);
+              metadataList.add(metadata);
+            }
+    );
     insertIntoCsv(Metadata.class, metadataList, true);
   }
-
 
   private ModificationRecord addHistoryRecord(String changedValueName,
                                               OperationType operationType,
@@ -344,7 +301,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   private Optional<Task> createTask(@NonNull String taskName,
                                     @NonNull TaskStatuses status) {
     try {
@@ -363,7 +319,6 @@ public class DataProviderCsv implements DataProvider {
       return Optional.empty();
     }
   }
-
 
   private Optional<Task> createTask(@NonNull String taskName,
                                     @NonNull TaskStatuses status,
@@ -394,7 +349,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   @Override
   public Statuses createTask(long userId,
                              @NonNull String taskName,
@@ -419,15 +373,12 @@ public class DataProviderCsv implements DataProvider {
       if (updateUserStatus != Statuses.UPDATED) {
         return updateUserStatus;
       }
-
-
     } catch (IOException e) {
       log.error(e);
       return Statuses.FAILED;
     }
     return Statuses.INSERTED;
   }
-
 
   @Override
   public Statuses createTask(long userId,
@@ -461,7 +412,6 @@ public class DataProviderCsv implements DataProvider {
     return Statuses.INSERTED;
   }
 
-
   private Statuses deleteTask(List<Task> taskList) {
     try {
       var dbTaskList = getFromCsv(Task.class);
@@ -489,7 +439,6 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
-
 
   private Statuses deleteTask(long taskId) {
     try {
@@ -526,7 +475,6 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
-
 
   @Override
   public Statuses deleteTask(long userId, long taskId) {
@@ -605,7 +553,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   private void saveChangesHistory(Task task, Task editedTask) {
     try {
       if (!task.getName().equals(editedTask.getName())) {
@@ -624,7 +571,6 @@ public class DataProviderCsv implements DataProvider {
       log.error(e);
     }
   }
-
 
   private void saveChangesHistory(ExtendedTask task, ExtendedTask editedTask) {
     try {
@@ -664,7 +610,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   private boolean isEditValid(Task task, Task editedTask) {
     return task.getName() != null
             && !task.getName().isEmpty()
@@ -676,7 +621,6 @@ public class DataProviderCsv implements DataProvider {
             && task.getCreated().getTime() == editedTask.getCreated().getTime()
             && task.getTaskType().equals(editedTask.getTaskType());
   }
-
 
   @Override
   public Statuses editTask(long userId, @NonNull Task editedTask) {
@@ -723,7 +667,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   @Override
   public Statuses createUser(@NonNull String email,
                              @NonNull String password,
@@ -754,7 +697,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   private Statuses updateUser(@NonNull User editedUser) {
     try {
       var userList = getFromCsv(User.class);
@@ -775,7 +717,6 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
-
 
   private void saveChangesHistory(User user, User editedUser) {
     try {
@@ -809,7 +750,6 @@ public class DataProviderCsv implements DataProvider {
 
   }
 
-
   private boolean isEditValid(User user, User editedUser) {
     return editedUser.getEmail() != null
             && editedUser.getCreated() != null
@@ -826,7 +766,6 @@ public class DataProviderCsv implements DataProvider {
             && user.getSignUpType().equals(editedUser.getSignUpType());
   }
 
-
   @Override
   public Statuses editUser(@NonNull User editedUser) {
     try {
@@ -837,11 +776,9 @@ public class DataProviderCsv implements DataProvider {
               .findFirst();
 
       var optUser = getUser(editedUser.getId());
-
       if (optionalUser.isEmpty() || optUser.isEmpty()) {
         return Statuses.NOT_FOUNDED;
       }
-
       if (!isEditValid(optUser.get(), editedUser)) {
         log.debug(optUser.get().getHistoryList().equals(editedUser.getHistoryList()));
         log.debug(optUser.get().getCreated().getTime() == editedUser.getCreated().getTime());
@@ -859,7 +796,6 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
-
 
   @Override
   public Statuses createGroup(@NonNull String groupName, long creatorId, @NonNull GroupTypes groupType) {
@@ -892,7 +828,6 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
-
 
   @Override
   public Statuses addUserToGroup(long userId, long groupId) {
@@ -941,7 +876,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   private void saveChangesHistory(Group group, Group editedGroup) {
     try {
       if (!group.getName().equals(editedGroup.getName())) {
@@ -954,7 +888,6 @@ public class DataProviderCsv implements DataProvider {
       log.error(e);
     }
   }
-
 
   private void saveChangesHistory(PasswordedGroup group, PasswordedGroup editedGroup) {
     try {
@@ -970,14 +903,12 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   private Statuses saveGroup(Group editedGroup) {
     try {
       var optionalGroup = getGroup(editedGroup.getId());
       if (optionalGroup.isEmpty()) {
         return Statuses.NOT_FOUNDED;
       }
-
       switch (editedGroup.getGroupType()) {
         case PASSWORDED -> {
           var groupList = getFromCsv(PasswordedGroup.class);
@@ -1011,13 +942,11 @@ public class DataProviderCsv implements DataProvider {
           return Statuses.FAILED;
         }
       }
-
     } catch (IOException e) {
       log.error(e);
       return Statuses.FAILED;
     }
   }
-
 
   private Statuses changeGroupTypeToPassworded(Group group) {
     try {
@@ -1048,7 +977,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   private Statuses changeGroupTypeFromPassworded(Group group, GroupTypes groupType) {
     try {
       group.setGroupType(groupType);
@@ -1069,7 +997,6 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
-
 
   @Override
   public Statuses changeGroupType(long userId, long groupId, @NonNull GroupTypes groupType) {
@@ -1114,7 +1041,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
   @Override
   public List<Group> searchGroupByName(@NonNull String name) {
     try {
@@ -1129,27 +1055,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-
-  @Override
-  public List<Group> getFullGroupList() {
-    try {
-      var groupList = getFromCsv(Group.class);
-      groupList.addAll(getFromCsv(PasswordedGroup.class));
-
-      groupList.forEach(group -> {
-        group.setTaskList(getTaskMap(group.getId()));
-        group.setMemberList(getUserMap(group.getId()));
-        group.setHistoryList(getHistoryList(Group.class, group));
-      });
-
-      return groupList;
-    } catch (IOException e) {
-      log.error(e);
-      return new ArrayList<>();
-    }
-  }
-
-
   private Optional<Group> getUnfilledGroup(long groupId) {
     try {
       List<Group> groupList = getFromCsv(Group.class);
@@ -1160,7 +1065,6 @@ public class DataProviderCsv implements DataProvider {
       return Optional.empty();
     }
   }
-
 
   private Map<User, UserRole> getUserMap(long groupId) {
     var optionalGroup = getUnfilledGroup(groupId);
@@ -1176,7 +1080,6 @@ public class DataProviderCsv implements DataProvider {
     return userMap;
   }
 
-
   private Map<Task, TaskState> getTaskMap(long groupId) {
     var optionalGroup = getUnfilledGroup(groupId);
     Map<Task, TaskState> taskMap = new HashMap<>();
@@ -1190,7 +1093,6 @@ public class DataProviderCsv implements DataProvider {
     });
     return taskMap;
   }
-
 
   @Override
   public Optional<Group> getGroup(long groupId) {
@@ -1225,7 +1127,6 @@ public class DataProviderCsv implements DataProvider {
       }
       var user = optionalUser.get();
       var group = optionalGroup.get();
-
       if (!group.getMemberList().containsKey(user)) {
         return Statuses.FORBIDDEN;
       }
@@ -1412,7 +1313,6 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  @NotNull
   private Statuses saveGroup(Group group, Task task) throws IOException {
     group.getTaskList().put(task, TaskState.APPROVED);
     group.getHistoryList().add(addHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
@@ -1422,7 +1322,6 @@ public class DataProviderCsv implements DataProvider {
                     TaskState.APPROVED)));
     return saveGroup(group);
   }
-
 
   @Override
   public Statuses updateGroup(long userId, @NonNull Group editedGroup) {
@@ -1438,7 +1337,6 @@ public class DataProviderCsv implements DataProvider {
         return Statuses.FORBIDDEN;
       }
       switch (role) {
-
         case CREATOR, ADMINISTRATOR -> {
           if (!(group.getHistoryList().equals(editedGroup.getHistoryList())
                   && group.getTaskList().equals(editedGroup.getTaskList())
@@ -1486,7 +1384,6 @@ public class DataProviderCsv implements DataProvider {
       return Statuses.FAILED;
     }
   }
-
 
   @Override
   public Statuses setUserRole(long administratorId, long groupId, long userIdToSet, @NonNull UserRole role) {
@@ -1546,7 +1443,6 @@ public class DataProviderCsv implements DataProvider {
       }
     }
   }
-
 
   @Override
   public Statuses changeTaskState(long userId, long groupId, long taskId, @NonNull TaskState state) {
@@ -1852,44 +1748,34 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
-  //TODO
+  private <K, V> String mapToString(Map<K, V> kvMap, int tabNum) {
+    StringBuilder builder = new StringBuilder();
+    kvMap.forEach((k, v) -> {
+      try {
+        builder.append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum + 1)))
+                .append(k)
+                .append(PropertyLoader.getProperty(Constants.MAP_DELIMITER))
+                .append(v)
+                .append(PropertyLoader.getProperty(Constants.NEW_LINE));
+      } catch (IOException e) {
+        log.error(e);
+      }
+    });
+    return builder.toString();
+  }
+
   @Override
   public String getTaskStatistic() {
-    return null;
-  }
-
-  private String groupCountByTypeToString(Map<GroupTypes, Long> groupCounts, int tabNum) {
-    StringBuilder builder = new StringBuilder();
-    groupCounts.forEach((groupTypes, aLong) -> {
-      try {
-        builder
-                .append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum)))
-                .append(groupTypes)
-                .append(PropertyLoader.getProperty(Constants.MAP_DELIMITER))
-                .append(aLong)
-                .append(PropertyLoader.getProperty(Constants.NEW_LINE));
-      } catch (IOException e) {
-        log.error(e);
-      }
-    });
-    return builder.toString();
-  }
-
-  private String averageGroupSizesByTypeToString(Map<GroupTypes, Double> groupSizes, int tabNum) {
-    StringBuilder builder = new StringBuilder();
-    groupSizes.forEach((groupTypes, aDouble) -> {
-      try {
-        builder
-                .append(PropertyLoader.getProperty(Constants.TAB).repeat(Math.max(0, tabNum)))
-                .append(groupTypes)
-                .append(PropertyLoader.getProperty(Constants.MAP_DELIMITER))
-                .append(aDouble)
-                .append(PropertyLoader.getProperty(Constants.NEW_LINE));
-      } catch (IOException e) {
-        log.error(e);
-      }
-    });
-    return builder.toString();
+    try {
+      return String.format(PropertyLoader.getProperty(Constants.FORMAT_TASK_STATISTIC),
+              getFullTaskList().size(),
+              mapToString(getTaskCountPerType(), 1),
+              mapToString(getTaskCountPerOwner(), 1),
+              mapToString(getAverageTaskPerOwner(), 1));
+    } catch (IOException e) {
+      log.error(e);
+      return "";
+    }
   }
 
   @Override
@@ -1897,10 +1783,9 @@ public class DataProviderCsv implements DataProvider {
     try {
       return String.format(PropertyLoader.getProperty(Constants.FORMAT_GROUP_STATISTIC),
               getFullGroupList().size(),
-
-              groupCountByTypeToString(getGroupCountPerType(), 1),
+              mapToString(getGroupCountPerType(), 1),
               getAverageGroupSize().get(),
-              averageGroupSizesByTypeToString(getAverageGroupSizeDividedByGroupType(), 1));
+              mapToString(getAverageGroupSizeDividedByGroupType(), 1));
     } catch (IOException e) {
       log.error(e);
       return "";
@@ -1924,6 +1809,35 @@ public class DataProviderCsv implements DataProvider {
     }
   }
 
+  @Override
+  public List<Group> getFullGroupList() {
+    try {
+      List<Group> groupList = getFromCsv(Group.class);
+      groupList.addAll(getFromCsv(PasswordedGroup.class));
+      groupList.forEach(group -> {
+        group.setHistoryList(getHistoryList(Group.class, group));
+        group.setTaskList(getTaskMap(group.getId()));
+        group.setMemberList(getUserMap(group.getId()));
+      });
+      return groupList;
+    } catch (IOException e) {
+      log.error(e);
+      return new ArrayList<>();
+    }
+  }
+
+  @Override
+  public List<Task> getFullTaskList() {
+    try {
+      List<Task> taskList = getFromCsv(Task.class);
+      taskList.addAll(getFromCsv(ExtendedTask.class));
+      taskList.forEach(task -> task.setHistoryList(getHistoryList(Task.class, task)));
+      return taskList;
+    } catch (IOException e) {
+      log.error(e);
+      return new ArrayList<>();
+    }
+  }
 
   @Override
   public Optional<Double> getAverageGroupSize() {
@@ -1932,7 +1846,7 @@ public class DataProviderCsv implements DataProvider {
     for (Group group : groupList) {
       groupSizes += group.getMemberList().size();
     }
-    return Optional.of((groupSizes * 1.0) / groupList.size());
+    return Optional.of(((double) groupSizes) / groupList.size());
   }
 
   @Override
@@ -1941,31 +1855,49 @@ public class DataProviderCsv implements DataProvider {
     var groupList = getFullGroupList();
     Map<Owner, Long> taskCount = new HashMap<>();
 
-    taskCount.put(Owner.USER, (long) userList.stream().flatMapToInt(user -> IntStream.of(user.getTaskList().size())).sum());
-    taskCount.put(Owner.PUBLIC_GROUP, 0L);
-    taskCount.put(Owner.GROUP_WITH_CONFIRMATION, 0L);
-    taskCount.put(Owner.PASSWORDED_GROUP, 0L);
+    Arrays.stream(Owner.values()).forEach(owner -> taskCount.put(owner, 0L));
+    taskCount.replace(Owner.USER,
+            (long) userList.stream().flatMapToInt(user -> IntStream.of(user.getTaskList().size())).sum());
     groupList.forEach(group -> {
       switch (group.getGroupType()) {
-        case PUBLIC -> taskCount.replace(Owner.PUBLIC_GROUP, taskCount.get(Owner.PUBLIC_GROUP) + 1);
-        case PASSWORDED -> taskCount.replace(Owner.PASSWORDED_GROUP, taskCount.get(Owner.PASSWORDED_GROUP) + 1);
+        case PUBLIC -> taskCount.replace(Owner.PUBLIC_GROUP,
+                taskCount.get(Owner.PUBLIC_GROUP) + group.getTaskList().size());
+        case PASSWORDED -> taskCount.replace(Owner.PASSWORDED_GROUP,
+                taskCount.get(Owner.PASSWORDED_GROUP) + group.getTaskList().size());
         case WITH_CONFIRMATION -> taskCount.replace(Owner.GROUP_WITH_CONFIRMATION,
-                taskCount.get(Owner.GROUP_WITH_CONFIRMATION) + 1);
+                taskCount.get(Owner.GROUP_WITH_CONFIRMATION) + group.getTaskList().size());
       }
     });
     return taskCount;
   }
 
-  //TODO
   @Override
   public Map<Owner, Double> getAverageTaskPerOwner() {
-    return null;
+    var taskCount = getTaskCountPerOwner();
+    Map<Owner, Double> averageTask = new HashMap<>();
+    averageTask.put(Owner.USER, ((double) taskCount.get(Owner.USER)) / getFullUsersList().size());
+    averageTask.put(Owner.PUBLIC_GROUP,
+            ((double) taskCount.get(Owner.PUBLIC_GROUP)) / getFullGroupList().stream()
+                    .filter(group -> group.getGroupType().equals(GroupTypes.PUBLIC))
+                    .count());
+    averageTask.put(Owner.GROUP_WITH_CONFIRMATION,
+            ((double) taskCount.get(Owner.GROUP_WITH_CONFIRMATION)) / getFullGroupList().stream()
+                    .filter(group -> group.getGroupType().equals(GroupTypes.WITH_CONFIRMATION))
+                    .count());
+    averageTask.put(Owner.PASSWORDED_GROUP,
+            ((double) taskCount.get(Owner.PASSWORDED_GROUP)) / getFullGroupList().stream()
+                    .filter(group -> group.getGroupType().equals(GroupTypes.PASSWORDED))
+                    .count());
+    return averageTask;
   }
 
-  //TODO
   @Override
   public Map<TaskTypes, Long> getTaskCountPerType() {
-    return null;
+    Map<TaskTypes, Long> taskCount = new HashMap<>();
+    var taskList = getFullTaskList();
+    Arrays.stream(TaskTypes.values()).forEach(taskType -> taskCount.put(taskType, 0L));
+    taskList.forEach(task -> taskCount.replace(task.getTaskType(), taskCount.get(task.getTaskType()) + 1));
+    return taskCount;
   }
 
   @Override
@@ -1984,7 +1916,6 @@ public class DataProviderCsv implements DataProvider {
     return groupSizes;
   }
 
-
   @Override
   public Map<GroupTypes, Long> getGroupCountPerType() {
     var groupList = getFullGroupList();
@@ -1999,13 +1930,10 @@ public class DataProviderCsv implements DataProvider {
     return groupCount;
   }
 
-
   @Override
   public Optional<Double> getAverageTaskPerGroup() {
     var groupList = getFullGroupList();
     long groupCount = groupList.stream().mapToLong(group -> group.getTaskList().size()).sum();
-    return Optional.of((groupCount * 1.0) / groupList.size());
+    return Optional.of(((double) groupCount) / groupList.size());
   }
-
-
 }

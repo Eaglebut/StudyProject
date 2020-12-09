@@ -50,6 +50,7 @@ public class Constants {
   public static final String FORMAT_GROUP_TO_STRING = "format.group.toString";
   public static final String FORMAT_GROUP_TASK_TO_STRING = "format.groupTask.toString";
   public static final String FORMAT_GROUP_STATISTIC = "format.groupStatistic";
+  public static final String FORMAT_TASK_STATISTIC = "format.taskStatistic";
   public static final String NEW_LINE = "new_line";
   public static final String TAB = "tab";
   public static final String MESSAGE_USER_NOT_FOUNDED = "message.userNotFounded";

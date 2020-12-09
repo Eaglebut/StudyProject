@@ -100,6 +100,8 @@ public interface DataProvider {
 
   Map<TaskTypes, Long> getTaskCountPerType();
 
+  List<Task> getFullTaskList();
+
   Map<GroupTypes, Double> getAverageGroupSizeDividedByGroupType();
 
   Map<GroupTypes, Long> getGroupCountPerType();
