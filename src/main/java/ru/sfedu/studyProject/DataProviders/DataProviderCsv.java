@@ -21,6 +21,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * The type Data provider csv.
+ */
 @Log4j2
 public class DataProviderCsv implements DataProvider {
 
@@ -29,6 +32,11 @@ public class DataProviderCsv implements DataProvider {
   private DataProviderCsv() {
   }
 
+  /**
+   * Gets instance.
+   *
+   * @return the instance
+   */
   public static DataProvider getInstance() {
     if (INSTANCE == null) {
       INSTANCE = new DataProviderCsv();
@@ -114,6 +122,9 @@ public class DataProviderCsv implements DataProvider {
     return tList;
   }
 
+  /**
+   * Delete all bean csv files.
+   */
   public void deleteAll() {
     List<Class> classList = new ArrayList<>();
     classList.add(ExtendedTask.class);
