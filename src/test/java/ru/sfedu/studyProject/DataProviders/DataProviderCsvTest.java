@@ -29,7 +29,6 @@ class DataProviderCsvTest {
 
     DataProviderCsv dataProviderCsv = (DataProviderCsv) dataProvider;
     dataProviderCsv.deleteAll();
-
     for (int k = 0; k < 1; k++) {
       String userEmail = new Date(System.currentTimeMillis()).toString() + "@" + random.nextInt();
       Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(userEmail,
@@ -319,12 +318,12 @@ class DataProviderCsvTest {
   void deleteTaskIncorrect() {
     var serverUser = user;
     log.debug(serverUser.getTaskList().get(0));
-    Assertions.assertEquals(Statuses.FORBIDDEN,
+    Assertions.assertEquals(Statuses.NOT_FOUNDED,
             dataProvider.deleteTask(58465,
                     serverUser.getTaskList().get(0).getId()));
     Assertions.assertEquals(Statuses.FORBIDDEN,
             dataProvider.deleteTask(0, 46810));
-    Assertions.assertEquals(Statuses.FORBIDDEN,
+    Assertions.assertEquals(Statuses.NOT_FOUNDED,
             dataProvider.deleteTask(16480, 10468));
 
   }
@@ -496,7 +495,7 @@ class DataProviderCsvTest {
     var group = optGroup.get();
     var optTask = user.getTaskList().stream().findAny();
     Assertions.assertTrue(optTask.isPresent());
-    Assertions.assertEquals(Statuses.INSERTED,
+    Assertions.assertEquals(Statuses.SUGGESTED,
             dataProvider.suggestTask(user.getId(),
                     group.getId(),
                     optTask.get().getId()));
@@ -504,7 +503,7 @@ class DataProviderCsvTest {
 
   @Test
   void suggestTaskToGroupIncorrect() {
-    Assertions.assertEquals(Statuses.NOT_FOUNDED,
+    Assertions.assertEquals(Statuses.FORBIDDEN,
             dataProvider.suggestTask(0,
                     1,
                     123));
@@ -532,7 +531,7 @@ class DataProviderCsvTest {
             group.getId(),
             "group basic task test",
             TaskStatuses.TEST_TASK_STATUS));
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(112365,
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.createTask(112365,
             group.getId(),
             "group basic task test",
             TaskStatuses.TEST_TASK_STATUS));
@@ -566,7 +565,7 @@ class DataProviderCsvTest {
     var optGroup = groupList.stream().findAny();
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(163,
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.createTask(163,
             group.getId(),
             "test",
             TaskStatuses.TEST_TASK_STATUS,
@@ -714,10 +713,10 @@ class DataProviderCsvTest {
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteTask(2,
             optGroup.get().getId(),
             optTask.get().getId()));
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteTask(0,
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteTask(0,
             optGroup.get().getId(),
             5468));
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteTask(5425,
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteTask(5425,
             optGroup.get().getId(),
             optTask.get().getId()));
     Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteTask(0,
@@ -792,14 +791,12 @@ class DataProviderCsvTest {
     Assertions.assertTrue(optGroup.isPresent());
     log.debug(optGroup.get());
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteGroup(1, optGroup.get().getId()));
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteGroup(1165, optGroup.get().getId()));
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteGroup(1165, optGroup.get().getId()));
     Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteGroup(user.getId(), 165165));
   }
 
   @Test
   void getUserInfoCorrect() {
-    createBasicGroupTaskCorrect();
-    createExtendedGroupTaskCorrect();
     log.info(dataProvider.getUserInfo(0));
   }
 
