@@ -44,15 +44,9 @@ public class DataProviderCsv extends AbstractDataProvider {
 
 
   private <T> void insertIntoCsv(Class<T> tClass,
-                                 List<T> objectList,
-                                 boolean overwrite) throws IOException {
+                                 List<T> objectList) throws IOException {
     List<T> tList;
-    if (!overwrite) {
-      tList = getFromCsv(tClass);
-      tList.addAll(objectList);
-    } else {
-      tList = objectList;
-    }
+    tList = objectList;
     if (tList.isEmpty()) {
       deleteFile(tClass);
     }
@@ -141,40 +135,6 @@ public class DataProviderCsv extends AbstractDataProvider {
               + PropertyLoader.getProperty(Constants.CSV_EXTENSION)).delete());
     } catch (IOException e) {
       log.error(e);
-    }
-  }
-
-  private <T> List<ModificationRecord> getHistoryListId(Class<T> tClass, T object) {
-
-    if (tClass.equals(ExtendedTask.class)) {
-      return ((ExtendedTask) object).getHistoryList();
-    } else if (tClass.equals(Group.class)) {
-      return ((Group) object).getHistoryList();
-    } else if (tClass.equals(PasswordedGroup.class)) {
-      return ((PasswordedGroup) object).getHistoryList();
-    } else if (tClass.equals(Task.class)) {
-      return ((Task) object).getHistoryList();
-    } else if (tClass.equals(User.class)) {
-      return ((User) object).getHistoryList();
-    } else {
-      return new ArrayList<>();
-    }
-  }
-
-  private <T> List<ModificationRecord> getHistoryList(Class<T> tClass, T object) {
-    try {
-      List<ModificationRecord> objectHistoryList = getHistoryListId(tClass, object);
-      List<ModificationRecord> historyList = getFromCsv(ModificationRecord.class);
-      return historyList
-              .stream()
-              .filter(modificationRecord -> objectHistoryList
-                      .stream()
-                      .anyMatch(userModificationRecord ->
-                              userModificationRecord.getId() == modificationRecord.getId()))
-              .collect(Collectors.toList());
-    } catch (IOException e) {
-      log.error(e);
-      return new ArrayList<>();
     }
   }
 
@@ -271,7 +231,7 @@ public class DataProviderCsv extends AbstractDataProvider {
         returnStatus = Statuses.INSERTED;
       }
       userList.add(user);
-      insertIntoCsv(User.class, userList, true);
+      insertIntoCsv(User.class, userList);
       return returnStatus;
     } catch (IOException e) {
       log.error(e);
@@ -384,9 +344,9 @@ public class DataProviderCsv extends AbstractDataProvider {
       if (group.getGroupType().equals(GroupTypes.PASSWORDED)) {
         List<PasswordedGroup> passwordedGroupList = new ArrayList<>();
         groupList.forEach(basicGroup -> passwordedGroupList.add((PasswordedGroup) basicGroup));
-        insertIntoCsv(PasswordedGroup.class, passwordedGroupList, true);
+        insertIntoCsv(PasswordedGroup.class, passwordedGroupList);
       } else {
-        insertIntoCsv(Group.class, groupList, true);
+        insertIntoCsv(Group.class, groupList);
       }
 
       return returnStatus;
@@ -415,12 +375,12 @@ public class DataProviderCsv extends AbstractDataProvider {
             passwordedGroupList.add((PasswordedGroup) group);
           }
         });
-        insertIntoCsv(PasswordedGroup.class, passwordedGroupList, true);
+        insertIntoCsv(PasswordedGroup.class, passwordedGroupList);
       } else {
         groupList = groupList.stream()
                 .filter(group -> !group.getGroupType().equals(GroupTypes.PASSWORDED))
                 .collect(Collectors.toList());
-        insertIntoCsv(Group.class, groupList, true);
+        insertIntoCsv(Group.class, groupList);
       }
       return Statuses.DELETED;
     } catch (IOException e) {
@@ -526,9 +486,9 @@ public class DataProviderCsv extends AbstractDataProvider {
       if (task.getTaskType().equals(TaskTypes.EXTENDED)) {
         List<ExtendedTask> extendedTaskList = new ArrayList<>();
         taskList.forEach(basicTask -> extendedTaskList.add((ExtendedTask) basicTask));
-        insertIntoCsv(ExtendedTask.class, extendedTaskList, true);
+        insertIntoCsv(ExtendedTask.class, extendedTaskList);
       } else {
-        insertIntoCsv(Task.class, taskList, true);
+        insertIntoCsv(Task.class, taskList);
       }
       return returnStatus;
     } catch (IOException e) {
@@ -556,12 +516,12 @@ public class DataProviderCsv extends AbstractDataProvider {
             extendedTaskList.add((ExtendedTask) task);
           }
         });
-        insertIntoCsv(ExtendedTask.class, extendedTaskList, true);
+        insertIntoCsv(ExtendedTask.class, extendedTaskList);
       } else {
         taskList = taskList.stream()
                 .filter(group -> group.getTaskType().equals(TaskTypes.BASIC))
                 .collect(Collectors.toList());
-        insertIntoCsv(Task.class, taskList, true);
+        insertIntoCsv(Task.class, taskList);
       }
       return Statuses.DELETED;
     } catch (IOException e) {
@@ -629,7 +589,7 @@ public class DataProviderCsv extends AbstractDataProvider {
     try {
       var modificationRecordList = getFromCsv(ModificationRecord.class);
       modificationRecordList.add(modificationRecord);
-      insertIntoCsv(ModificationRecord.class, modificationRecordList, true);
+      insertIntoCsv(ModificationRecord.class, modificationRecordList);
     } catch (IOException e) {
       log.error(e);
     }
@@ -670,7 +630,7 @@ public class DataProviderCsv extends AbstractDataProvider {
               metadataList.add(metadata);
             }
     );
-    insertIntoCsv(Metadata.class, metadataList, true);
+    insertIntoCsv(Metadata.class, metadataList);
   }
 
 }

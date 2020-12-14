@@ -69,15 +69,18 @@ class DataProviderCsvTest {
       }
 
       for (int i = 0; i < 3; i++) {
-        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup("test group " + num + " public",
-                user.getId(),
-                GroupTypes.PUBLIC));
-        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup("test group " + num + " passworded",
-                user.getId(),
-                GroupTypes.PASSWORDED));
-        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup("test group " + num + " with confirmation",
-                user.getId(),
-                GroupTypes.WITH_CONFIRMATION));
+        Assertions.assertEquals(Statuses.INSERTED,
+                dataProvider.createGroup("test group " + num + " public",
+                        user.getId(),
+                        GroupTypes.PUBLIC));
+        Assertions.assertEquals(Statuses.INSERTED,
+                dataProvider.createGroup("test group " + num + " passworded",
+                        user.getId(),
+                        GroupTypes.PASSWORDED));
+        Assertions.assertEquals(Statuses.INSERTED,
+                dataProvider.createGroup("test group " + num + " with confirmation",
+                        user.getId(),
+                        GroupTypes.WITH_CONFIRMATION));
       }
       List<Group> groupList = dataProvider.getUsersGroups(user.getId());
 
@@ -126,11 +129,12 @@ class DataProviderCsvTest {
 
   @Test
   void createUserCorrect() {
-    Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(user.getEmail() + new Date(System.currentTimeMillis()).toString(),
-            user.getPassword(),
-            user.getName(),
-            user.getSurname(),
-            user.getSignUpType()));
+    Assertions.assertEquals(Statuses.INSERTED,
+            dataProvider.createUser(user.getEmail() + new Date(System.currentTimeMillis()).toString(),
+                    user.getPassword(),
+                    user.getName(),
+                    user.getSurname(),
+                    user.getSignUpType()));
     Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(new Date(System.currentTimeMillis()).toString(),
             user.getPassword(),
             user.getName(),
@@ -310,7 +314,8 @@ class DataProviderCsvTest {
               dataProvider.deleteTask(serverUser.getId(), serverUser.getTaskList().get(i).getId()));
       Optional<User> updatedUser = dataProvider.getUser(user.getId());
       Assertions.assertTrue(updatedUser.isPresent());
-      Assertions.assertEquals(serverUser.getTaskList().size() - (i + 1), updatedUser.get().getTaskList().size());
+      Assertions.assertEquals(serverUser.getTaskList().size() - (i + 1),
+              updatedUser.get().getTaskList().size());
     }
   }
 
@@ -453,17 +458,20 @@ class DataProviderCsvTest {
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
 
-    Assertions.assertEquals(Statuses.UPDATED, dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.PASSWORDED));
+    Assertions.assertEquals(Statuses.UPDATED,
+            dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.PASSWORDED));
     var serverGroup = dataProvider.getGroup(group.getId());
     Assertions.assertTrue(serverGroup.isPresent());
     Assertions.assertEquals(GroupTypes.PASSWORDED, serverGroup.get().getGroupType());
 
-    Assertions.assertEquals(Statuses.UPDATED, dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.WITH_CONFIRMATION));
+    Assertions.assertEquals(Statuses.UPDATED,
+            dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.WITH_CONFIRMATION));
     serverGroup = dataProvider.getGroup(group.getId());
     Assertions.assertTrue(serverGroup.isPresent());
     Assertions.assertEquals(GroupTypes.WITH_CONFIRMATION, serverGroup.get().getGroupType());
 
-    Assertions.assertEquals(Statuses.UPDATED, dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.PUBLIC));
+    Assertions.assertEquals(Statuses.UPDATED,
+            dataProvider.changeGroupType(user.getId(), group.getId(), GroupTypes.PUBLIC));
     serverGroup = dataProvider.getGroup(group.getId());
     Assertions.assertTrue(serverGroup.isPresent());
     Assertions.assertEquals(GroupTypes.PUBLIC, serverGroup.get().getGroupType());
@@ -476,9 +484,12 @@ class DataProviderCsvTest {
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
 
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.changeGroupType(10631, group.getId(), GroupTypes.PASSWORDED));
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.changeGroupType(user.getId(), 16516, GroupTypes.PASSWORDED));
-    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.changeGroupType(3, group.getId(), GroupTypes.PASSWORDED));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED,
+            dataProvider.changeGroupType(10631, group.getId(), GroupTypes.PASSWORDED));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED,
+            dataProvider.changeGroupType(user.getId(), 16516, GroupTypes.PASSWORDED));
+    Assertions.assertEquals(Statuses.FORBIDDEN,
+            dataProvider.changeGroupType(3, group.getId(), GroupTypes.PASSWORDED));
   }
 
 
@@ -490,7 +501,9 @@ class DataProviderCsvTest {
   @Test
   void suggestTaskToGroupCorrect() {
     var groupList = dataProvider.getUsersGroups(user.getId());
-    var optGroup = groupList.stream().filter(group -> !group.getGroupType().equals(GroupTypes.PUBLIC)).findAny();
+    var optGroup = groupList.stream()
+            .filter(group -> !group.getGroupType().equals(GroupTypes.PUBLIC))
+            .findAny();
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
     var optTask = user.getTaskList().stream().findAny();
