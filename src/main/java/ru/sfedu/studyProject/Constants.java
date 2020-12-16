@@ -5,24 +5,16 @@ public class Constants {
 
   public static final String CONFIG_PATH = "config.path";
   public static final String CSV_PATH = "csv.path";
+  public static final String XML_PATH = "xml.path";
   public static final String CSV_EXTENSION = "csv.extension";
+  public static final String XML_EXTENSION = "xml.extension";
   public static final String EXCEPTION_CANNOT_CREATE_FILE = "exception.IOException.cannotCreateFile.message";
-  public static final String TEST_USER_CORRECT_ID = "test.user.correct.id";
-  public static final String TEST_USER_CORRECT_EMAIL = "test.user.correct.email";
-  public static final String TEST_USER_CORRECT_PASSWORD = "test.user.correct.password";
-  public static final String TEST_USER_CORRECT_NAME = "test.user.correct.name";
-  public static final String TEST_USER_CORRECT_SURNAME = "test.user.correct.surname";
-  public static final String TEST_USER_CORRECT_SIGN_UP_TYPE = "test.user.correct.signUpType";
-  public static final String TEST_TASK1_CORRECT_ID = "test.task1.correct.id";
-  public static final String TEST_TASK1_CORRECT_STATUS = "test.task1.correct.status";
-  public static final String MESSAGE_NULL_METHOD = "message.nullMethod";
   public static final String ARRAY_DELIMITER = "array.delimiter";
   public static final String ARRAY_START_SYMBOL = "array.startSymbol";
   public static final String ARRAY_END_SYMBOL = "array.endSymbol";
   public static final String MAP_START_SYMBOL = "map.startSymbol";
   public static final String MAP_END_SYMBOL = "map.endSymbol";
   public static final String MAP_DELIMITER = "map.delimiter";
-  public static final String TEST_USER_INCORRECT_ID = "test.user.incorrect.id";
   public static final String TEST_USER_INCORRECT_EMAIL = "test.user.incorrect.email";
   public static final String TEST_USER_INCORRECT_PASSWORD = "test.user.incorrect.password";
   public static final String CONVERTER_REGEXP_LIST_WITHOUT_QUOTES = "converter.regexp.list.withoutQuotes";

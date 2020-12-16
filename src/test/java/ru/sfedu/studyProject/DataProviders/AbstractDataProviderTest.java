@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Log4j2
-abstract class DataProviderTest {
+abstract class AbstractDataProviderTest {
 
   private static final List<User> userList = new ArrayList<>();
   private static final Random random = new Random();
@@ -307,7 +307,7 @@ abstract class DataProviderTest {
             dataProvider.deleteTask(58465,
                     serverUser.getTaskList().get(0).getId()));
     Assertions.assertEquals(Statuses.FORBIDDEN,
-            dataProvider.deleteTask(0, 46810));
+            dataProvider.deleteTask(userId, 46810));
     Assertions.assertEquals(Statuses.NOT_FOUNDED,
             dataProvider.deleteTask(16480, 10468));
 
@@ -483,7 +483,7 @@ abstract class DataProviderTest {
 
   void suggestTaskToGroupIncorrect() {
     Assertions.assertEquals(Statuses.FORBIDDEN,
-            dataProvider.suggestTask(0,
+            dataProvider.suggestTask(userId,
                     1,
                     123));
   }
@@ -512,7 +512,7 @@ abstract class DataProviderTest {
             group.getId(),
             "group basic task test",
             TaskStatuses.TEST_TASK_STATUS));
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(0,
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(userId,
             1546,
             "group basic task test",
             TaskStatuses.TEST_TASK_STATUS));
@@ -550,7 +550,7 @@ abstract class DataProviderTest {
             "test description",
             new Date(System.currentTimeMillis() + random.nextLong())));
 
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(0,
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.createTask(userId,
             13426,
             "test",
             TaskStatuses.TEST_TASK_STATUS,
@@ -682,13 +682,13 @@ abstract class DataProviderTest {
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteTask(2,
             optGroup.get().getId(),
             optTask.get().getId()));
-    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteTask(0,
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteTask(userId,
             optGroup.get().getId(),
             5468));
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteTask(5425,
             optGroup.get().getId(),
             optTask.get().getId()));
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteTask(0,
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteTask(userId,
             12253,
             optTask.get().getId()));
   }
@@ -722,7 +722,7 @@ abstract class DataProviderTest {
             optGroup.get().getId(),
             optTask.get().getId(),
             TaskState.SUGGESTED));
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.changeTaskState(0,
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.changeTaskState(userId,
             optGroup.get().getId(),
             56468,
             TaskState.SUGGESTED));
@@ -731,7 +731,7 @@ abstract class DataProviderTest {
 
   void getUserGroupsCorrect() {
 
-    var usersGroupList = dataProvider.getUsersGroups(0);
+    var usersGroupList = dataProvider.getUsersGroups(userId);
     Assertions.assertTrue(usersGroupList.size() > 0);
   }
 
@@ -759,7 +759,7 @@ abstract class DataProviderTest {
   }
 
   void getUserInfoCorrect() {
-    log.info(dataProvider.getUserInfo(0));
+    log.info(dataProvider.getUserInfo(userId));
   }
 
   void getFullUserList() {

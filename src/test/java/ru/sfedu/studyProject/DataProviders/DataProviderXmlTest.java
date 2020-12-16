@@ -8,17 +8,17 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 
 @Log4j2
-public class DataProviderCsvTest extends AbstractDataProviderTest {
+public class DataProviderXmlTest extends AbstractDataProviderTest {
 
-  DataProviderCsvTest() {
-    dataProvider = DataProviderCsv.getInstance();
+  DataProviderXmlTest() {
+    dataProvider = DataProviderXml.getInstance();
   }
 
   @BeforeAll
   static void test() {
-    DataProviderCsv dataProviderCsv = DataProviderCsv.getInstance();
-    dataProviderCsv.deleteAll();
-    setUp(dataProviderCsv);
+    DataProviderXml dataProviderXml = DataProviderXml.getInstance();
+    dataProviderXml.deleteAll();
+    setUp(dataProviderXml);
   }
 
   @BeforeEach

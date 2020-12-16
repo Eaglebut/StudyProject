@@ -224,19 +224,19 @@ public abstract class AbstractDataProvider implements DataProvider {
     StringBuilder builder = new StringBuilder();
     taskList.forEach(task -> {
       switch (task.getTaskType()) {
-        case BASIC -> {
+        case BASIC:
           try {
             builder.append(basicTaskToString(task, tabNum));
+            break;
           } catch (IOException e) {
             log.error(e);
-          }
         }
-        case EXTENDED -> {
+        case EXTENDED:
           try {
             builder.append(extendedTaskToString((ExtendedTask) task, tabNum));
+            break;
           } catch (IOException e) {
             log.error(e);
-          }
         }
       }
     });
@@ -346,7 +346,7 @@ public abstract class AbstractDataProvider implements DataProvider {
     StringBuilder builder = new StringBuilder();
     taskMap.forEach((task, taskState) -> {
       switch (task.getTaskType()) {
-        case BASIC -> {
+        case BASIC:
           try {
             builder.append(String.format(PropertyLoader.getProperty(Constants.FORMAT_GROUP_TASK_TO_STRING),
                     tabsBuilder.toString(),
@@ -355,8 +355,8 @@ public abstract class AbstractDataProvider implements DataProvider {
           } catch (IOException e) {
             log.error(e);
           }
-        }
-        case EXTENDED -> {
+          break;
+        case EXTENDED:
           try {
             builder.append(String.format(PropertyLoader.getProperty(Constants.FORMAT_GROUP_TASK_TO_STRING),
                     tabsBuilder.toString(),
@@ -365,7 +365,7 @@ public abstract class AbstractDataProvider implements DataProvider {
           } catch (IOException e) {
             log.error(e);
           }
-        }
+          break;
       }
     });
     return builder.toString();
@@ -398,11 +398,15 @@ public abstract class AbstractDataProvider implements DataProvider {
     }
     Group group;
     switch (groupType) {
-      case PASSWORDED -> group = new PasswordedGroup();
-      case PUBLIC, WITH_CONFIRMATION -> group = new Group();
-      default -> {
+      case PASSWORDED:
+        group = new PasswordedGroup();
+        break;
+      case PUBLIC:
+      case WITH_CONFIRMATION:
+        group = new Group();
+        break;
+      default:
         return Statuses.FAILED;
-      }
     }
     group.setCreated(new Date(System.currentTimeMillis()));
     group.setGroupType(groupType);
@@ -452,25 +456,25 @@ public abstract class AbstractDataProvider implements DataProvider {
         return Statuses.FORBIDDEN;
       }
       switch (group.getGroupType()) {
-        case PUBLIC, PASSWORDED -> {
+        case PUBLIC:
+        case PASSWORDED:
           group.getMemberList().put(user, UserRole.MEMBER);
           group.getHistoryList().add(createHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_MEMBER),
                   OperationType.ADD,
                   String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
                           user.getId(),
                           UserRole.MEMBER.toString())));
-        }
-        case WITH_CONFIRMATION -> {
+          break;
+        case WITH_CONFIRMATION:
           group.getMemberList().put(user, UserRole.REQUIRES_CONFIRMATION);
           group.getHistoryList().add(createHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_MEMBER),
                   OperationType.ADD,
                   String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING),
                           user.getId(),
                           UserRole.REQUIRES_CONFIRMATION.toString())));
-        }
-        default -> {
+          break;
+        default:
           return Statuses.FAILED;
-        }
       }
       var status = saveGroupInDB(group);
       if (status.equals(Statuses.UPDATED)) {
@@ -497,7 +501,8 @@ public abstract class AbstractDataProvider implements DataProvider {
         return Statuses.FORBIDDEN;
       }
       switch (role) {
-        case CREATOR, ADMINISTRATOR -> {
+        case CREATOR:
+        case ADMINISTRATOR:
           if (!(group.getHistoryList().equals(editedGroup.getHistoryList())
                   && group.getTaskList().equals(editedGroup.getTaskList())
                   && group.getMemberList().equals(editedGroup.getMemberList())
@@ -517,13 +522,11 @@ public abstract class AbstractDataProvider implements DataProvider {
                     ((PasswordedGroup) group).getPassword()));
           }
           return saveGroupInDB(editedGroup);
-        }
-        case MEMBER, REQUIRES_CONFIRMATION -> {
+        case MEMBER:
+        case REQUIRES_CONFIRMATION:
           return Statuses.FORBIDDEN;
-        }
-        default -> {
+        default:
           return Statuses.FAILED;
-        }
       }
     } catch (IOException e) {
       log.error(e);
@@ -586,19 +589,17 @@ public abstract class AbstractDataProvider implements DataProvider {
               OperationType.EDIT,
               group.getGroupType().name()));
       switch (group.getGroupType()) {
-        case PUBLIC, WITH_CONFIRMATION -> {
+        case PUBLIC:
+        case WITH_CONFIRMATION:
           if (groupType.equals(GroupTypes.PASSWORDED)) {
             return changeGroupTypeToPassworded(group);
           }
           group.setGroupType(groupType);
           return saveGroupInDB(group);
-        }
-        case PASSWORDED -> {
+        case PASSWORDED:
           return changeGroupTypeFromPassworded(group, groupType);
-        }
-        default -> {
+        default:
           return Statuses.FAILED;
-        }
       }
     } catch (IOException e) {
       log.error(e);
@@ -749,37 +750,30 @@ public abstract class AbstractDataProvider implements DataProvider {
       return Statuses.FORBIDDEN;
     }
     switch (role) {
-      case CREATOR -> {
+      case CREATOR:
         return Statuses.FORBIDDEN;
-      }
-      case MEMBER -> {
+      case MEMBER:
         switch (userRole) {
-          case REQUIRES_CONFIRMATION -> {
+          case REQUIRES_CONFIRMATION:
             if (!administratorRole.equals(UserRole.ADMINISTRATOR) && !administratorRole.equals(UserRole.CREATOR)) {
               return Statuses.FORBIDDEN;
             }
             return setRole(group, user, role);
-          }
-          case ADMINISTRATOR -> {
+          case ADMINISTRATOR:
             if (!administratorRole.equals(UserRole.CREATOR)) {
               return Statuses.FORBIDDEN;
             }
             return setRole(group, user, role);
-          }
-          default -> {
+          default:
             return Statuses.FORBIDDEN;
-          }
         }
-      }
-      case ADMINISTRATOR -> {
+      case ADMINISTRATOR:
         if (!administratorRole.equals(UserRole.CREATOR)) {
           return Statuses.FORBIDDEN;
         }
         return setRole(group, user, role);
-      }
-      default -> {
+      default:
         return Statuses.FAILED;
-      }
     }
   }
 
@@ -816,16 +810,15 @@ public abstract class AbstractDataProvider implements DataProvider {
       var administratorRole = group.getMemberList().get(administrator);
 
       switch (administratorRole) {
-        case ADMINISTRATOR, CREATOR -> {
+        case ADMINISTRATOR:
+        case CREATOR:
           group.getTaskList().replace(task, state);
           group.getHistoryList().add(createHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
                   OperationType.EDIT,
                   String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING), taskId, state)));
           return saveGroupInDB(group);
-        }
-        default -> {
+        default:
           return Statuses.FORBIDDEN;
-        }
       }
     } catch (IOException e) {
       log.error(e);
@@ -836,7 +829,6 @@ public abstract class AbstractDataProvider implements DataProvider {
   @Override
   public Statuses suggestTask(long userId, long groupId, long taskId) {
     var optionalGroup = getGroupFromDB(groupId);
-
     if (optionalGroup.isEmpty()) {
       return Statuses.NOT_FOUNDED;
     }
@@ -857,15 +849,13 @@ public abstract class AbstractDataProvider implements DataProvider {
       return Statuses.FORBIDDEN;
     }
     switch (group.getGroupType()) {
-      case PUBLIC -> {
+      case PUBLIC:
         return Statuses.FORBIDDEN;
-      }
-      case PASSWORDED, WITH_CONFIRMATION -> {
+      case PASSWORDED:
+      case WITH_CONFIRMATION:
         return suggestTask(group, user, optionalTask.get());
-      }
-      default -> {
+      default:
         return Statuses.FAILED;
-      }
     }
   }
 
@@ -873,11 +863,15 @@ public abstract class AbstractDataProvider implements DataProvider {
     var userRole = group.getMemberList().get(user);
     TaskState taskState;
     switch (userRole) {
-      case MEMBER -> taskState = TaskState.SUGGESTED;
-      case CREATOR, ADMINISTRATOR -> taskState = TaskState.APPROVED;
-      default -> {
+      case MEMBER:
+        taskState = TaskState.SUGGESTED;
+        break;
+      case CREATOR:
+      case ADMINISTRATOR:
+        taskState = TaskState.APPROVED;
+        break;
+      default:
         return Statuses.FORBIDDEN;
-      }
     }
     user.getTaskList().remove(task);
     group.getTaskList().put(task, taskState);
@@ -1004,19 +998,18 @@ public abstract class AbstractDataProvider implements DataProvider {
       return Statuses.FORBIDDEN;
     }
     switch (role) {
-      case CREATOR, ADMINISTRATOR -> {
+      case CREATOR:
+      case ADMINISTRATOR:
         Task task = new Task();
         setBasicTask(task, taskName, taskStatus);
         task.setTaskType(TaskTypes.BASIC);
         group.getTaskList().put(task, TaskState.APPROVED);
         return saveGroupWithTask(group, task);
-      }
-      case MEMBER, REQUIRES_CONFIRMATION -> {
+      case MEMBER:
+      case REQUIRES_CONFIRMATION:
         return Statuses.FORBIDDEN;
-      }
-      default -> {
+      default:
         return Statuses.FAILED;
-      }
     }
   }
 
@@ -1049,7 +1042,8 @@ public abstract class AbstractDataProvider implements DataProvider {
       return Statuses.FORBIDDEN;
     }
     switch (role) {
-      case CREATOR, ADMINISTRATOR -> {
+      case CREATOR:
+      case ADMINISTRATOR:
         ExtendedTask task = new ExtendedTask();
         setBasicTask(task, taskName, taskStatus);
         task.setTaskType(TaskTypes.BASIC);
@@ -1060,13 +1054,11 @@ public abstract class AbstractDataProvider implements DataProvider {
         task.setTime(time);
         group.getTaskList().put(task, TaskState.APPROVED);
         return saveGroupWithTask(group, task);
-      }
-      case MEMBER, REQUIRES_CONFIRMATION -> {
+      case MEMBER:
+      case REQUIRES_CONFIRMATION:
         return Statuses.FORBIDDEN;
-      }
-      default -> {
+      default:
         return Statuses.FAILED;
-      }
     }
   }
 
@@ -1173,20 +1165,16 @@ public abstract class AbstractDataProvider implements DataProvider {
       return Statuses.FORBIDDEN;
     }
     switch (optionalUserTask.get().getTaskType()) {
-      case BASIC -> {
-        Task userTask = optionalUserTask.get();
-        saveChangesHistory(userTask, editedTask);
-        return saveTaskInDB(userTask);
-      }
-      case EXTENDED -> {
-        ExtendedTask userTask = (ExtendedTask) optionalUserTask.get();
-
-        saveChangesHistory(userTask, (ExtendedTask) editedTask);
+      case BASIC:
+        Task basicUserTask = optionalUserTask.get();
+        saveChangesHistory(basicUserTask, editedTask);
+        return saveTaskInDB(basicUserTask);
+      case EXTENDED:
+        ExtendedTask extendedUserTask = (ExtendedTask) optionalUserTask.get();
+        saveChangesHistory(extendedUserTask, (ExtendedTask) editedTask);
         return Statuses.UPDATED;
-      }
-      default -> {
+      default:
         return Statuses.FAILED;
-      }
     }
   }
 
@@ -1284,12 +1272,17 @@ public abstract class AbstractDataProvider implements DataProvider {
             (long) userList.stream().flatMapToInt(user -> IntStream.of(user.getTaskList().size())).sum());
     groupList.forEach(group -> {
       switch (group.getGroupType()) {
-        case PUBLIC -> taskCount.replace(Owner.PUBLIC_GROUP,
-                taskCount.get(Owner.PUBLIC_GROUP) + group.getTaskList().size());
-        case PASSWORDED -> taskCount.replace(Owner.PASSWORDED_GROUP,
-                taskCount.get(Owner.PASSWORDED_GROUP) + group.getTaskList().size());
-        case WITH_CONFIRMATION -> taskCount.replace(Owner.GROUP_WITH_CONFIRMATION,
-                taskCount.get(Owner.GROUP_WITH_CONFIRMATION) + group.getTaskList().size());
+        case PUBLIC:
+          taskCount.replace(Owner.PUBLIC_GROUP,
+                  taskCount.get(Owner.PUBLIC_GROUP) + group.getTaskList().size());
+          break;
+        case PASSWORDED:
+          taskCount.replace(Owner.PASSWORDED_GROUP,
+                  taskCount.get(Owner.PASSWORDED_GROUP) + group.getTaskList().size());
+          break;
+        case WITH_CONFIRMATION:
+          taskCount.replace(Owner.GROUP_WITH_CONFIRMATION,
+                  taskCount.get(Owner.GROUP_WITH_CONFIRMATION) + group.getTaskList().size());
       }
     });
     return taskCount;
