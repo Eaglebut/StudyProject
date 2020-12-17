@@ -18,6 +18,7 @@ public class DataProviderCsvTest extends AbstractDataProviderTest {
   static void test() {
     DataProviderCsv dataProviderCsv = DataProviderCsv.getInstance();
     dataProviderCsv.deleteAll();
+    dataProviderCsv.createFiles();
     setUp(dataProviderCsv);
   }
 

@@ -17,14 +17,15 @@ import java.util.stream.Collectors;
 @Log4j2
 abstract class AbstractDataProviderTest {
 
-  private static final List<User> userList = new ArrayList<>();
+  private static List<User> userList;
   private static final Random random = new Random();
-  static DataProvider dataProvider;
+  protected DataProvider dataProvider;
   private static User user;
   private static int num = 0;
   long userId;
 
   static void setUp(DataProvider dataProvider) {
+    userList = new ArrayList<>();
     for (int k = 0; k < 1; k++) {
       String userEmail = new Date(System.currentTimeMillis()).toString() + "@" + random.nextInt();
       Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(userEmail,
@@ -102,6 +103,8 @@ abstract class AbstractDataProviderTest {
         }
         userList.forEach(user -> {
           if (random.nextInt() % 3 == 0) {
+            log.debug(user);
+            log.debug(group);
             Assertions.assertEquals(Statuses.INSERTED, dataProvider.addUserToGroup(user.getId(), group.getId()));
           }
         });

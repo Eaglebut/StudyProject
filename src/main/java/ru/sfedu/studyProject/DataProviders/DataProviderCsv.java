@@ -48,10 +48,11 @@ public class DataProviderCsv extends AbstractGenericDataProvider {
   }
 
   private <T> CSVReader getCsvReader(Class<T> tClass) throws IOException {
+    File path = new File(PropertyLoader.getProperty(Constants.CSV_PATH));
     File file = new File(PropertyLoader.getProperty(Constants.CSV_PATH)
             + tClass.getSimpleName().toLowerCase()
             + PropertyLoader.getProperty(Constants.CSV_EXTENSION));
-    if (!file.exists() && !file.createNewFile()) {
+    if (!file.exists() && path.mkdirs() && !file.createNewFile()) {
       throw new IOException(
               String.format(
                       PropertyLoader.getProperty(Constants.EXCEPTION_CANNOT_CREATE_FILE),

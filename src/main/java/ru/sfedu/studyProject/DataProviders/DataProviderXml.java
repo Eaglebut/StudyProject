@@ -3,8 +3,6 @@ package ru.sfedu.studyProject.DataProviders;
 import lombok.extern.log4j.Log4j2;
 import org.simpleframework.xml.core.Persister;
 import ru.sfedu.studyProject.Constants;
-import ru.sfedu.studyProject.model.*;
-import ru.sfedu.studyProject.utils.Metadata;
 import ru.sfedu.studyProject.utils.PropertyLoader;
 import ru.sfedu.studyProject.utils.XmlList;
 
@@ -29,19 +27,6 @@ public class DataProviderXml extends AbstractGenericDataProvider {
     return INSTANCE;
   }
 
-  public void createFiles() {
-    try {
-      insertIntoDB(ExtendedTask.class, new ArrayList<>());
-      insertIntoDB(Group.class, new ArrayList<>());
-      insertIntoDB(ModificationRecord.class, new ArrayList<>());
-      insertIntoDB(PasswordedGroup.class, new ArrayList<>());
-      insertIntoDB(Task.class, new ArrayList<>());
-      insertIntoDB(User.class, new ArrayList<>());
-      insertIntoDB(Metadata.class, new ArrayList<>());
-    } catch (IOException e) {
-      log.error(e);
-    }
-  }
 
   @Override
   protected <T> void insertIntoDB(Class<T> tClass, List<T> objectList) throws IOException {

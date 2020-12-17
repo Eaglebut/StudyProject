@@ -22,6 +22,20 @@ public abstract class AbstractGenericDataProvider extends AbstractDataProvider {
 
   protected abstract <T> List<T> getFromDB(Class<T> tClass) throws IOException;
 
+  public void createFiles() {
+    try {
+      insertIntoDB(ExtendedTask.class, new ArrayList<>());
+      insertIntoDB(Group.class, new ArrayList<>());
+      insertIntoDB(ModificationRecord.class, new ArrayList<>());
+      insertIntoDB(PasswordedGroup.class, new ArrayList<>());
+      insertIntoDB(Task.class, new ArrayList<>());
+      insertIntoDB(User.class, new ArrayList<>());
+      insertIntoDB(Metadata.class, new ArrayList<>());
+    } catch (IOException e) {
+      log.error(e);
+    }
+  }
+
   /**
    * Delete all bean csv files.
    */
