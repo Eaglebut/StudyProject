@@ -7,7 +7,6 @@ import com.opencsv.bean.CsvDate;
 import lombok.*;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
-import org.simpleframework.xml.Root;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.converters.ModificationRecordConverter;
 import ru.sfedu.studyProject.converters.TaskListConverter;
@@ -25,42 +24,41 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true)
 @ToString
-@Root
 public class User implements Serializable {
 
   //
   // Fields
   //
-  @Attribute
   @CsvBindByName
+  @Attribute
   private long id;
   @CsvBindByName
-  @Attribute
   @CsvDate(value = Constants.DATE_FORMAT)
+  @Attribute
   private Date created;
-  @Attribute
   @CsvBindByName
+  @Attribute
   private String email;
-  @Attribute
   @CsvBindByName
+  @Attribute
   private String password;
-  @Attribute
   @CsvBindByName
+  @Attribute
   private String name;
-  @Attribute
   @CsvBindByName
+  @Attribute
   private String surname;
-  @Attribute
   @CsvBindByName
-  private String token;
   @Attribute
-  @CsvBindByName()
+  private String token;
+  @CsvBindByName
+  @Attribute
   private SignUpTypes signUpType;
-  @ElementList
   @CsvCustomBindByName(converter = TaskListConverter.class)
-  private List<Task> taskList;
   @ElementList
+  private List<Task> taskList;
   @CsvCustomBindByName(converter = ModificationRecordConverter.class)
+  @ElementList
   private List<ModificationRecord> historyList;
 
   //

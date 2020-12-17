@@ -3,6 +3,7 @@ package ru.sfedu.studyProject.model;
 
 import com.opencsv.bean.CsvBindByName;
 import lombok.*;
+import org.simpleframework.xml.Attribute;
 
 /**
  * Class PasswordedGroup
@@ -17,6 +18,7 @@ public class PasswordedGroup extends Group {
   //
   // Fields
   //
+  @Attribute(required = false)
   @CsvBindByName
   private String password;
 

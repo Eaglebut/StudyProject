@@ -18,6 +18,7 @@ public class DataProviderXmlTest extends AbstractDataProviderTest {
   static void test() {
     DataProviderXml dataProviderXml = DataProviderXml.getInstance();
     dataProviderXml.deleteAll();
+    dataProviderXml.createFiles();
     setUp(dataProviderXml);
   }
 

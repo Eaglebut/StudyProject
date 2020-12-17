@@ -12,6 +12,7 @@ import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j2
 abstract class AbstractDataProviderTest {
@@ -391,6 +392,11 @@ abstract class AbstractDataProviderTest {
     Assertions.assertEquals(group.getName(), optionalGroup.get().getName());
     Assertions.assertEquals(group.getGroupType(), optionalGroup.get().getGroupType());
     Assertions.assertEquals(group.getMemberList(), optionalGroup.get().getMemberList());
+
+    var passwordedGroup = groupList.stream()
+            .filter(group1 -> group1.getGroupType().equals(GroupTypes.PASSWORDED))
+            .collect(Collectors.toList());
+
   }
 
   void addUserToGroupCorrect() {

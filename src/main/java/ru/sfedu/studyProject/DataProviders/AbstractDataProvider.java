@@ -91,6 +91,7 @@ public abstract class AbstractDataProvider implements DataProvider {
     user.setTaskList(new ArrayList<>());
     user.setSignUpType(signUpType);
     user.setCreated(new Date(System.currentTimeMillis()));
+    user.setToken(Integer.toHexString(user.hashCode()));
     return saveUserInDB(user);
   }
 

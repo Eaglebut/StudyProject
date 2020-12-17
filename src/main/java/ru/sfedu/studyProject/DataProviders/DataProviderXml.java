@@ -1,125 +1,95 @@
 package ru.sfedu.studyProject.DataProviders;
 
-import ru.sfedu.studyProject.enums.Statuses;
-import ru.sfedu.studyProject.enums.TaskState;
-import ru.sfedu.studyProject.enums.UserRole;
-import ru.sfedu.studyProject.model.Group;
-import ru.sfedu.studyProject.model.ModificationRecord;
-import ru.sfedu.studyProject.model.Task;
-import ru.sfedu.studyProject.model.User;
+import lombok.extern.log4j.Log4j2;
+import org.simpleframework.xml.core.Persister;
+import ru.sfedu.studyProject.Constants;
+import ru.sfedu.studyProject.model.*;
+import ru.sfedu.studyProject.utils.Metadata;
+import ru.sfedu.studyProject.utils.PropertyLoader;
+import ru.sfedu.studyProject.utils.XmlList;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
-public class DataProviderXml extends AbstractDataProvider {
-  @Override
-  protected Optional<User> getUserFromDB(long userId) {
-    return Optional.empty();
-  }
+@Log4j2
+public class DataProviderXml extends AbstractGenericDataProvider {
 
-  @Override
-  protected Optional<User> getUserFromDB(String email, String password) {
-    return Optional.empty();
-  }
+  private static DataProviderXml INSTANCE;
 
-  @Override
-  protected List<User> getUserListFromDB() {
-    return null;
-  }
-
-  @Override
-  protected Map<User, UserRole> getUserListFromDB(Group group) {
-    return null;
-  }
-
-  @Override
-  protected Statuses saveUserInDB(User user) {
-    return null;
-  }
-
-  @Override
-  protected Optional<Group> getGroupFromDB(long groupId) {
-    return Optional.empty();
-  }
-
-  @Override
-  protected List<Group> getGroupListFromDB() {
-    return null;
-  }
-
-  @Override
-  protected List<Group> getGroupListFromDB(User user) {
-    return null;
-  }
-
-  @Override
-  protected List<Group> getGroupListFromDB(String name) {
-    return null;
-  }
-
-  @Override
-  protected Statuses saveGroupInDB(Group group) {
-    return null;
-  }
-
-  @Override
-  protected Statuses deleteGroupFromDB(long groupId) {
-    return null;
-  }
-
-  @Override
-  protected Optional<Task> getTaskFromDB(long TaskId) {
-    return Optional.empty();
-  }
-
-  @Override
-  protected List<Task> getTaskListFromDB() {
-    return null;
-  }
-
-  @Override
-  protected List<Task> getTaskListFromDB(User user) {
-    return null;
-  }
-
-  @Override
-  protected Map<Task, TaskState> getTaskListFromDB(Group group) {
-    return null;
-  }
-
-  @Override
-  protected Statuses saveTaskInDB(Task task) {
-    return null;
-  }
-
-  @Override
-  protected Statuses deleteTaskFromDB(long taskId) {
-    return null;
-  }
-
-  @Override
-  protected List<ModificationRecord> getModificationRecordListFromDB(User user) {
-    return null;
-  }
-
-  @Override
-  protected List<ModificationRecord> getModificationRecordListFromDB(Task task) {
-    return null;
-  }
-
-  @Override
-  protected List<ModificationRecord> getModificationRecordListFromDB(Group group) {
-    return null;
-  }
-
-  @Override
-  protected void createModificationRecordInDB(ModificationRecord modificationRecord) {
+  private DataProviderXml() {
 
   }
 
-  @Override
-  protected <T> long getNextId(Class<T> tClass) {
-    return 0;
+  public static DataProviderXml getInstance() {
+    if (INSTANCE == null) {
+      INSTANCE = new DataProviderXml();
+    }
+    return INSTANCE;
   }
+
+  public void createFiles() {
+    try {
+      insertIntoDB(ExtendedTask.class, new ArrayList<>());
+      insertIntoDB(Group.class, new ArrayList<>());
+      insertIntoDB(ModificationRecord.class, new ArrayList<>());
+      insertIntoDB(PasswordedGroup.class, new ArrayList<>());
+      insertIntoDB(Task.class, new ArrayList<>());
+      insertIntoDB(User.class, new ArrayList<>());
+      insertIntoDB(Metadata.class, new ArrayList<>());
+    } catch (IOException e) {
+      log.error(e);
+    }
+  }
+
+  @Override
+  protected <T> void insertIntoDB(Class<T> tClass, List<T> objectList) throws IOException {
+    Persister serializer = new Persister();
+    try {
+      serializer.write(new XmlList<>(objectList), getFile(tClass));
+    } catch (Exception e) {
+      log.error(e);
+      throw new IOException(e);
+    }
+  }
+
+  @Override
+  protected <T> List<T> getFromDB(Class<T> tClass) throws IOException {
+    Persister serializer = new Persister();
+    XmlList<T> xmlList = new XmlList<>();
+    try {
+      xmlList = serializer.read(xmlList.getClass(), getFile(tClass));
+      return xmlList.getTList() == null ? new ArrayList<>() : xmlList.getTList();
+    } catch (Exception e) {
+      log.error(e);
+      throw new IOException(e);
+    }
+  }
+
+
+  @Override
+  protected <T> void deleteFile(Class<T> tClass) {
+    try {
+      log.debug(new File(PropertyLoader.getProperty(Constants.XML_PATH)
+              + tClass.getSimpleName().toLowerCase()
+              + PropertyLoader.getProperty(Constants.XML_EXTENSION)).delete());
+    } catch (IOException e) {
+      log.error(e);
+    }
+  }
+
+  private <T> File getFile(Class<T> tClass) throws IOException {
+    File path = new File(PropertyLoader.getProperty(Constants.XML_PATH));
+    File file = new File(PropertyLoader.getProperty(Constants.XML_PATH)
+            + tClass.getSimpleName().toLowerCase()
+            + PropertyLoader.getProperty(Constants.XML_EXTENSION));
+    log.debug(file.getPath());
+    if (!file.exists()) {
+      log.debug(path.mkdirs());
+      log.debug(file.createNewFile());
+    }
+    return file;
+  }
+
 }

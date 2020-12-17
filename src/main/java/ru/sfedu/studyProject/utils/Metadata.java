@@ -4,6 +4,7 @@ import com.opencsv.bean.CsvBindByName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.simpleframework.xml.Attribute;
 
 @Data
 @EqualsAndHashCode
@@ -11,8 +12,10 @@ import lombok.ToString;
 public class Metadata {
 
   @CsvBindByName
+  @Attribute
   private String className;
   @CsvBindByName
+  @Attribute
   private Long lastId;
 
 }
