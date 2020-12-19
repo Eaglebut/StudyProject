@@ -12,7 +12,6 @@ import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Log4j2
 abstract class AbstractDataProviderTest {
@@ -89,6 +88,7 @@ abstract class AbstractDataProviderTest {
                           "test " + random.nextInt(),
                           TaskStatuses.TEST_TASK_STATUS));
         }
+        dataProvider.getFullGroupList().forEach(log::info);
         for (int i = 0; i < random.nextInt() % 5 + 2; i++) {
           Assertions.assertEquals(Statuses.INSERTED,
                   dataProvider.createTask(user.getId(),
@@ -395,11 +395,6 @@ abstract class AbstractDataProviderTest {
     Assertions.assertEquals(group.getName(), optionalGroup.get().getName());
     Assertions.assertEquals(group.getGroupType(), optionalGroup.get().getGroupType());
     Assertions.assertEquals(group.getMemberList(), optionalGroup.get().getMemberList());
-
-    var passwordedGroup = groupList.stream()
-            .filter(group1 -> group1.getGroupType().equals(GroupTypes.PASSWORDED))
-            .collect(Collectors.toList());
-
   }
 
   void addUserToGroupCorrect() {
@@ -513,7 +508,7 @@ abstract class AbstractDataProviderTest {
     var optGroup = groupList.stream().findAny();
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
-    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.createTask(1,
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.createTask(3,
             group.getId(),
             "group basic task test",
             TaskStatuses.TEST_TASK_STATUS));
@@ -762,7 +757,7 @@ abstract class AbstractDataProviderTest {
     var optGroup = groupList.stream().findAny();
     Assertions.assertTrue(optGroup.isPresent());
     log.debug(optGroup.get());
-    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteGroup(1, optGroup.get().getId()));
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteGroup(2, optGroup.get().getId()));
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteGroup(1165, optGroup.get().getId()));
     Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteGroup(user.getId(), 165165));
   }

@@ -56,9 +56,7 @@ public class DataProviderXml extends AbstractGenericDataProvider {
   @Override
   protected <T> void deleteFile(Class<T> tClass) {
     try {
-      log.debug(new File(PropertyLoader.getProperty(Constants.XML_PATH)
-              + tClass.getSimpleName().toLowerCase()
-              + PropertyLoader.getProperty(Constants.XML_EXTENSION)).delete());
+      log.debug(getFile(tClass).delete());
     } catch (IOException e) {
       log.error(e);
     }

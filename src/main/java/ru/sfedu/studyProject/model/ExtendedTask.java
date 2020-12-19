@@ -21,6 +21,7 @@ import java.util.Date;
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = true)
 @ToString(callSuper = true)
+@AllArgsConstructor
 public class ExtendedTask extends Task {
 
   //

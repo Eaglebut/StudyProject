@@ -13,6 +13,7 @@ import org.simpleframework.xml.Attribute;
 @Setter
 @EqualsAndHashCode(doNotUseGetters = true, callSuper = true)
 @ToString(callSuper = true)
+@AllArgsConstructor
 public class PasswordedGroup extends Group {
 
   //

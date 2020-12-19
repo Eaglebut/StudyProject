@@ -10,7 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * The type Data provider csv.
+ * The abstract generic data provider.
  */
 @Log4j2
 public abstract class AbstractGenericDataProvider extends AbstractDataProvider {
@@ -22,6 +22,11 @@ public abstract class AbstractGenericDataProvider extends AbstractDataProvider {
 
   protected abstract <T> List<T> getFromDB(Class<T> tClass) throws IOException;
 
+  protected abstract <T> void deleteFile(Class<T> tClass);
+
+  /**
+   * Create files.
+   */
   public void createFiles() {
     try {
       insertIntoDB(ExtendedTask.class, new ArrayList<>());
@@ -53,7 +58,6 @@ public abstract class AbstractGenericDataProvider extends AbstractDataProvider {
     classList.forEach(this::deleteFile);
   }
 
-  protected abstract <T> void deleteFile(Class<T> tClass);
 
   @Override
   protected Optional<User> getUserFromDB(long userId) {

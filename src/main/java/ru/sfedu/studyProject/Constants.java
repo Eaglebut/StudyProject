@@ -1,7 +1,7 @@
 package ru.sfedu.studyProject;
 
 public class Constants {
-  public static final String DATE_FORMAT = "dd.MM.yyyy HH:mm:ss z";
+  public static final String DATE_FORMAT = "dd-MM-yyyy HH:mm:ss.SSS";
 
   public static final String CONFIG_PATH = "config.path";
   public static final String CSV_PATH = "csv.path";
@@ -47,5 +47,6 @@ public class Constants {
   public static final String TAB = "tab";
   public static final String MESSAGE_USER_NOT_FOUNDED = "message.userNotFounded";
   public static final String FORMAT_USER = "format.user";
-
+  public static final String JDBC_DRIVER = "jdbc.driver";
+  public static final String JDBC_URL = "jdbc.url";
 }
