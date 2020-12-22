@@ -32,16 +32,20 @@ public class DataProviderJdbc extends AbstractDataProvider {
   }
 
   public void dropAll() {
-    executeStatement("drop table if exists GROUP_MEMBERSHIP cascade;\n" +
-            "drop table if exists USER_HISTORY cascade;\n" +
-            "drop table if exists GROUP_HISTORY cascade;\n" +
-            "drop table if exists TASK_HISTORY cascade;\n" +
-            "drop table if exists MODIFICATION_RECORD cascade;\n" +
-            "drop table if exists USER_TASKS cascade;\n" +
-            "drop table if exists USER cascade;\n" +
-            "drop table if exists GROUP_TASKS cascade;\n" +
-            "drop table if exists \"GROUP\" cascade;\n" +
-            "drop table if exists TASK cascade;");
+    try {
+      executeStatement(PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_GROUP_MEMBERSHIP)
+              + PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_USER_HISTORY)
+              + PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_GROUP_HISTORY)
+              + PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_TASK_HISTORY)
+              + PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_MODIFICATION_RECORD)
+              + PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_USERS_TASKS)
+              + PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_USER)
+              + PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_GROUP_TASKS)
+              + PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_GROUP)
+              + PropertyLoader.getProperty(Constants.SQL_DROP_TABLE_TASK));
+    } catch (IOException e) {
+      log.error(e);
+    }
   }
 
   private void connect() {
@@ -78,21 +82,41 @@ public class DataProviderJdbc extends AbstractDataProvider {
   }
 
   public Statuses createDatabase() {
-    return executeStatement("create table if not exists user (id integer not null auto_increment, created timestamp not null default(systimestamp), email varchar(128) not null, password varchar(32) not null, name varchar(64) not null, surname varchar(64) not null, token varchar(128) not null, signUpType integer not null, primary key (id));").equals(Statuses.EXECUTED)
-            && executeStatement("create table if not exists \"GROUP\"( ID LONG auto_increment, NAME VARCHAR(128) not null, CREATED TIMESTAMP default CURRENT_TIMESTAMP not null, GROUP_TYPE INT not null, PASSWORD VARCHAR(64), constraint GROUP_PK primary key (ID));").equals(Statuses.EXECUTED)
-            && executeStatement("create table if not exists GROUP_MEMBERSHIP( USER_ID LONG not null, GROUP_ID LONG not null, ROLE INT not null, constraint GROUP_MEMBERSHIP_PK primary key (USER_ID, GROUP_ID), constraint GROUP_MEMBERSHIP_GROUP_ID_FK foreign key (GROUP_ID) references \"GROUP\" (ID) on delete cascade, constraint GROUP_MEMBERSHIP_USER_ID_FK foreign key (USER_ID) references USER (ID) on delete cascade);").equals(Statuses.EXECUTED)
-            && executeStatement("create table if not exists TASK( ID LONG auto_increment, CREATED TIMESTAMP default CURRENT_TIMESTAMP not null, NAME VARCHAR(128) not null, STATUS INT not null, TASK_TYPE INT not null, REPETITION_TYPE INT, REMIND_TYPE INT, IMPORTANCE INT, DESCRIPTION VARCHAR(512), TIME TIMESTAMP, constraint TASK_PK primary key (ID));").equals(Statuses.EXECUTED)
-            && executeStatement("create table if not exists MODIFICATION_RECORD( ID LONG auto_increment, CHANGED_VALUE_NAME VARCHAR(128) not null, CHANGED_DATE TIMESTAMP default CURRENT_TIMESTAMP not null, CHANGED_VALUE VARCHAR(128) not null, OPERATION_TYPE INT not null, constraint MODIFICATION_RECORD_PK primary key (ID));").equals(Statuses.EXECUTED)
-            && executeStatement("create table if not exists USER_HISTORY( USER_ID LONG not null, MODIFICATION_RECORD_ID LONG not null, constraint USER_HISTORY_PK primary key (USER_ID, MODIFICATION_RECORD_ID), constraint USER_HISTORY_MODIFICATION_RECORD_ID_FK foreign key (USER_ID) references MODIFICATION_RECORD (ID) on delete cascade, constraint USER_HISTORY_USER_ID_FK foreign key (USER_ID) references USER (ID) on delete cascade);").equals(Statuses.EXECUTED)
-            && executeStatement("create table if not exists GROUP_HISTORY( GROUP_ID LONG not null, MODIFICATION_RECORD_ID LONG not null, constraint GROUP_HISTORY_PK primary key (GROUP_ID, MODIFICATION_RECORD_ID), constraint GROUP_HISTORY_GROUP_ID_FK foreign key (GROUP_ID) references \"GROUP\" (ID) on delete cascade, constraint GROUP_HISTORY_MODIFICATION_RECORD_ID_FK foreign key (MODIFICATION_RECORD_ID) references MODIFICATION_RECORD (ID) on delete cascade);").equals(Statuses.EXECUTED)
-            && executeStatement("create table if not exists TASK_HISTORY( TASK_ID LONG not null, MODIFICATION_RECORD_ID LONG not null, constraint TASK_HISTORY_PK primary key (TASK_ID, MODIFICATION_RECORD_ID), constraint TASK_HISTORY_MODIFICATION_RECORD_ID_FK foreign key (MODIFICATION_RECORD_ID) references MODIFICATION_RECORD (ID) on delete cascade, constraint TASK_HISTORY_TASK_ID_FK foreign key (TASK_ID) references TASK (ID) on delete cascade);").equals(Statuses.EXECUTED)
-            && executeStatement("create table USER_TASKS\n(\n\tUSER_ID LONG not null,\n\tTASK_ID LONG not null,\n\tconstraint USER_TASKS_PK\n\t\tprimary key (USER_ID, TASK_ID),\n\tconstraint USER_TASKS_TASK_ID_FK\n\t\tforeign key (TASK_ID) references TASK (ID)\n\t\t\ton delete cascade,\n\tconstraint USER_TASKS_USER_ID_FK\n\t\tforeign key (USER_ID) references USER (ID)\n\t\t\ton delete cascade\n);\n\ncreate unique index USER_TASKS_TASK_ID_UINDEX\n\ton USER_TASKS (TASK_ID);\n\n").equals(Statuses.EXECUTED)
-            && executeStatement("create table if not exists GROUP_TASKS( GROUP_ID LONG not null, TASK_ID LONG not null, TASK_STATE INT not null, constraint GROUP_TASKS_PK primary key (GROUP_ID, TASK_ID), constraint GROUP_TASKS_GROUP_ID_FK foreign key (GROUP_ID) references \"GROUP\" (ID) on delete cascade, constraint GROUP_TASKS_TASK_ID_FK foreign key (TASK_ID) references TASK (ID) on delete cascade); create unique index GROUP_TASKS_TASK_ID_UINDEX on GROUP_TASKS (TASK_ID);").equals(Statuses.EXECUTED)
-            ? Statuses.EXECUTED
-            : Statuses.FAILED;
+    try {
+      return executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_USER))
+              .equals(Statuses.EXECUTED)
+              && executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_GROUP))
+              .equals(Statuses.EXECUTED)
+              && executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_GROUP_MEMBERSHIP))
+              .equals(Statuses.EXECUTED)
+              && executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_TASK))
+              .equals(Statuses.EXECUTED)
+              && executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_MODIFICATION_RECORD))
+              .equals(Statuses.EXECUTED)
+              && executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_USER_HISTORY))
+              .equals(Statuses.EXECUTED)
+              && executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_GROUP_HISTORY))
+              .equals(Statuses.EXECUTED)
+              && executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_TASK_HISTORY))
+              .equals(Statuses.EXECUTED)
+              && executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_USERS_TASKS))
+              .equals(Statuses.EXECUTED)
+              && executeStatement(PropertyLoader.getProperty(Constants.SQL_CREATE_TABLE_GROUP_TASKS))
+              .equals(Statuses.EXECUTED)
+              ? Statuses.EXECUTED
+              : Statuses.FAILED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
 
+  /**
+   * Is connected boolean.
+   *
+   * @return the boolean
+   */
   public boolean isConnected() {
     try {
       return connection.isValid(Connection.TRANSACTION_NONE);
@@ -102,6 +126,9 @@ public class DataProviderJdbc extends AbstractDataProvider {
     return false;
   }
 
+  /**
+   * Close connection.
+   */
   public void closeConnection() {
     try {
       connection.close();
@@ -114,15 +141,15 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected Optional<User> getUserFromDB(long userId) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from %s where id = %d;",
-              "user", userId));
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_BY_ID),
+              User.class.getSimpleName().toLowerCase(), userId));
       assert resultSet.next();
       User user = setUser(resultSet);
       user.setHistoryList(getModificationRecordListFromDB(user));
       user.setTaskList(getTaskListFromDB(user));
       statement.close();
       return Optional.of(user);
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return Optional.empty();
     } catch (AssertionError e) {
@@ -134,40 +161,49 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected Optional<User> getUserFromDB(String email, String password) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from %s where email = '%s' and password = '%s';",
-              "user", email, password));
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader
+                      .getProperty(Constants.SQL_SELECT_BY_EMAIL_PASSWORD),
+              email,
+              password));
       assert resultSet.next();
       User user = setUser(resultSet);
       user.setHistoryList(getModificationRecordListFromDB(user));
       user.setTaskList(getTaskListFromDB(user));
       statement.close();
       return Optional.of(user);
-    } catch (SQLException | AssertionError e) {
+    } catch (SQLException | AssertionError | IOException e) {
       log.error(e);
       return Optional.empty();
     }
   }
 
   private User setUser(ResultSet resultSet) throws SQLException {
-
-    User user = new User();
-    user.setId(resultSet.getInt("ID"));
-    user.setCreated(new Date(resultSet.getTimestamp("CREATED").getTime()));
-    user.setEmail(resultSet.getString("EMAIL"));
-    user.setPassword(resultSet.getString("PASSWORD"));
-    user.setName(resultSet.getString("NAME"));
-    user.setSurname(resultSet.getString("SURNAME"));
-    user.setToken(resultSet.getString("TOKEN"));
-    user.setSignUpType(SignUpTypes.values()[(resultSet.getInt("SIGNUPTYPE"))]);
-    return user;
+    try {
+      User user = new User();
+      user.setId(resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_NAME_ID).toUpperCase()));
+      user.setCreated(new Date(resultSet.getTimestamp(PropertyLoader.getProperty(Constants.FIELD_NAME_CREATED).toUpperCase())
+              .getTime()));
+      user.setEmail(resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_EMAIL).toUpperCase()));
+      user.setPassword(resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_PASSWORD).toUpperCase()));
+      user.setName(resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_NAME).toUpperCase()));
+      user.setSurname(resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_SURNAME).toUpperCase()));
+      user.setToken(resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_TOKEN).toUpperCase()));
+      user.setSignUpType(SignUpTypes.values()[(resultSet.getInt(PropertyLoader
+              .getProperty(Constants.FIELD_NAME_SIGN_UP_TYPE).toUpperCase()))]);
+      return user;
+    } catch (IOException e) {
+      log.error(e);
+      return new User();
+    }
   }
 
   @Override
   protected List<User> getUserListFromDB() {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from %s;",
-              "user"));
+      ResultSet resultSet = statement
+              .executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT),
+                      User.class.getSimpleName().toLowerCase(Locale.ROOT)));
       List<User> userList = new ArrayList<>();
       while (resultSet.next()) {
         User user = setUser(resultSet);
@@ -177,7 +213,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
       }
       statement.close();
       return userList;
-    } catch (SQLException | AssertionError e) {
+    } catch (SQLException | AssertionError | IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -187,7 +223,8 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected Map<User, UserRole> getUserListFromDB(Group group) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select A.*, B.ROLE from (select * from USER where ID in (select USER_ID from GROUP_MEMBERSHIP where GROUP_ID = %d)) as A inner join (select * from GROUP_MEMBERSHIP where GROUP_ID = %d) as B on A.ID = USER_ID;",
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader
+                      .getProperty(Constants.SQL_SELECT_MEMBER_LIST),
               group.getId(),
               group.getId()));
       Map<User, UserRole> userRoleMap = new HashMap<>();
@@ -195,11 +232,11 @@ public class DataProviderJdbc extends AbstractDataProvider {
         User user = setUser(resultSet);
         user.setHistoryList(getModificationRecordListFromDB(user));
         user.setTaskList(getTaskListFromDB(user));
-        userRoleMap.put(user, UserRole.values()[resultSet.getInt("ROLE")]);
+        userRoleMap.put(user, UserRole.values()[resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_USER_ROLE))]);
       }
       statement.close();
       return userRoleMap;
-    } catch (SQLException | AssertionError e) {
+    } catch (SQLException | AssertionError | IOException e) {
       log.error(e);
       return new HashMap<>();
     }
@@ -208,64 +245,91 @@ public class DataProviderJdbc extends AbstractDataProvider {
 
   @Override
   protected Statuses saveUserInDB(User user) {
-    Statuses status;
     try {
-      assert getUserFromDB(user.getId()).isPresent();
-      executeStatement(String.format("UPDATE USER set CREATED = parsedatetime ('%s', '%s'), EMAIL = '%s', PASSWORD = '%s', NAME = '%s', SURNAME = '%s',TOKEN = '%s', SIGNUPTYPE = '%d' where ID = '%d';",
-              dateFormat.format(user.getCreated()),
-              Constants.DATE_FORMAT,
-              user.getEmail(),
-              user.getPassword(),
-              user.getName(),
-              user.getSurname(),
-              user.getToken(),
-              user.getSignUpType().ordinal(),
-              user.getId()));
-      status = Statuses.UPDATED;
-    } catch (AssertionError e) {
-      executeStatement(String.format("insert into USER values (default, default , '%s', '%s', '%s', '%s', '%s', %d);",
-              user.getEmail(),
-              user.getPassword(),
-              user.getName(),
-              user.getSurname(),
-              user.getToken(),
-              user.getSignUpType().ordinal()));
-      status = Statuses.INSERTED;
+      Statuses status;
+      try {
+        assert getUserFromDB(user.getId()).isPresent();
+        executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_UPDATE_USER),
+                dateFormat.format(user.getCreated()),
+                Constants.DATE_FORMAT,
+                user.getEmail(),
+                user.getPassword(),
+                user.getName(),
+                user.getSurname(),
+                user.getToken(),
+                user.getSignUpType().ordinal(),
+                user.getId()));
+        status = Statuses.UPDATED;
+      } catch (AssertionError e) {
+        executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_USER),
+                user.getEmail(),
+                user.getPassword(),
+                user.getName(),
+                user.getSurname(),
+                user.getToken(),
+                user.getSignUpType().ordinal()));
+        status = Statuses.INSERTED;
+      }
+      user.getTaskList().forEach(task -> {
+        try {
+          executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_USER_TASK),
+                  user.getId(),
+                  task.getId()));
+        } catch (IOException e) {
+          log.error(e);
+        }
+      });
+      user.getHistoryList().forEach(modificationRecord -> {
+        try {
+          executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_USER_HISTORY),
+                  user.getId(),
+                  modificationRecord.getId()));
+        } catch (IOException e) {
+          log.error(e);
+        }
+      });
+      return status;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
     }
-    user.getTaskList().forEach(task -> executeStatement(String.format("insert into USER_TASKS values (%d, %d)",
-            user.getId(),
-            task.getId())));
-    user.getHistoryList().forEach(modificationRecord -> executeStatement(String.format("insert into USER_HISTORY values (%d, %d)",
-            user.getId(),
-            modificationRecord.getId())));
-    return status;
   }
 
   private Group setGroup(ResultSet resultSet) throws SQLException {
-    Group group = GroupTypes.values()[resultSet.getInt("group_type")].equals(GroupTypes.PASSWORDED)
-            ? new PasswordedGroup(resultSet.getString("PASSWORD"))
-            : new Group();
-    group.setId(resultSet.getInt("ID"));
-    group.setName(resultSet.getString("name"));
-    group.setCreated(resultSet.getTimestamp("created"));
-    group.setGroupType(GroupTypes.values()[resultSet.getInt("group_type")]);
-    group.setMemberList(getUserListFromDB(group));
-    group.setHistoryList(getModificationRecordListFromDB(group));
-    group.setTaskList(getTaskListFromDB(group));
-    return group;
+    try {
+      Group group = GroupTypes.values()[resultSet.getInt(PropertyLoader
+              .getProperty(Constants.FIELD_NAME_GROUP_TYPE_SQL))].equals(GroupTypes.PASSWORDED)
+              ? new PasswordedGroup(resultSet.getString(PropertyLoader
+              .getProperty(Constants.FIELD_NAME_PASSWORD)))
+              : new Group();
+      group.setId(resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_NAME_ID)));
+      group.setName(resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_NAME)));
+      group.setCreated(resultSet.getTimestamp(PropertyLoader.getProperty(Constants.FIELD_NAME_CREATED)));
+      group.setGroupType(GroupTypes.values()[resultSet
+              .getInt(PropertyLoader.getProperty(Constants.FIELD_NAME_GROUP_TYPE_SQL))]);
+      group.setMemberList(getUserListFromDB(group));
+      group.setHistoryList(getModificationRecordListFromDB(group));
+      group.setTaskList(getTaskListFromDB(group));
+      return group;
+    } catch (IOException e) {
+      log.error(e);
+      return new Group();
+    }
   }
 
   @Override
   protected Optional<Group> getGroupFromDB(long groupId) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from %s where id = %d;",
-              "\"GROUP\"", groupId));
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_BY_ID),
+              PropertyLoader.getProperty(Constants.QUOTES)
+                      + Group.class.getSimpleName().toUpperCase()
+                      + PropertyLoader.getProperty(Constants.QUOTES), groupId));
       assert resultSet.next();
       Group group = setGroup(resultSet);
       statement.close();
       return Optional.of(group);
-    } catch (SQLException | AssertionError e) {
+    } catch (SQLException | AssertionError | IOException e) {
       log.error(e);
       return Optional.empty();
     }
@@ -275,15 +339,17 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected List<Group> getGroupListFromDB() {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from %s;",
-              "\"GROUP\""));
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT),
+              PropertyLoader.getProperty(Constants.QUOTES)
+                      + Group.class.getSimpleName().toUpperCase()
+                      + PropertyLoader.getProperty(Constants.QUOTES)));
       List<Group> groupList = new ArrayList<>();
       while (resultSet.next()) {
         groupList.add(setGroup(resultSet));
       }
       statement.close();
       return groupList;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -293,7 +359,8 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected List<Group> getGroupListFromDB(User user) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from \"GROUP\" where ID in (select GROUP_ID from GROUP_MEMBERSHIP where USER_ID = %d);",
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader
+                      .getProperty(Constants.SQL_SELECT_GROUP_BY_USER),
               user.getId()));
       List<Group> groupList = new ArrayList<>();
       while (resultSet.next()) {
@@ -301,7 +368,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
       }
       statement.close();
       return groupList;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -311,7 +378,8 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected List<Group> getGroupListFromDB(String name) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from \"GROUP\" where name like '%%%s%%';",
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader
+                      .getProperty(Constants.SQL_SELECT_GROUP_BY_NAME),
               name));
       List<Group> groupList = new ArrayList<>();
       while (resultSet.next()) {
@@ -319,7 +387,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
       }
       statement.close();
       return groupList;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -327,78 +395,116 @@ public class DataProviderJdbc extends AbstractDataProvider {
 
   @Override
   protected Statuses saveGroupInDB(Group group) {
-    Statuses status;
     try {
-      assert getGroupFromDB(group.getId()).isPresent();
-      executeStatement(String.format("UPDATE \"GROUP\" set NAME = '%s', GROUP_TYPE = %d, PASSWORD = %s where ID = %d",
-              group.getName(),
-              group.getGroupType().ordinal(),
-              group.getGroupType().equals(GroupTypes.PASSWORDED)
-                      ? "'" + ((PasswordedGroup) group).getPassword() + "'"
-                      : "null",
-              group.getId()));
-      status = Statuses.UPDATED;
-    } catch (AssertionError e) {
-      executeStatement(String.format("INSERT INTO PUBLIC.\"GROUP\" (ID ,NAME, CREATED, GROUP_TYPE, PASSWORD) VALUES (%d ,'%s', DEFAULT, %d, %s);",
-              group.getId(),
-              group.getName(),
-              group.getGroupType().ordinal(),
-              group.getGroupType().equals(GroupTypes.PASSWORDED)
-                      ? "'" + ((PasswordedGroup) group).getPassword() + "'"
-                      : "null"
-      ));
-      status = Statuses.INSERTED;
+      Statuses status;
+      try {
+        assert getGroupFromDB(group.getId()).isPresent();
+        executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_UPDATE_GROUP),
+                group.getName(),
+                group.getGroupType().ordinal(),
+                group.getGroupType().equals(GroupTypes.PASSWORDED)
+                        ? PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                        + ((PasswordedGroup) group).getPassword()
+                        + PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                        : PropertyLoader.getProperty(Constants.NULL),
+                group.getId()));
+        status = Statuses.UPDATED;
+      } catch (AssertionError e) {
+        executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_GROUP),
+                group.getId(),
+                group.getName(),
+                group.getGroupType().ordinal(),
+                group.getGroupType().equals(GroupTypes.PASSWORDED)
+                        ? PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                        + ((PasswordedGroup) group).getPassword()
+                        + PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                        : PropertyLoader.getProperty(Constants.NULL)
+        ));
+        status = Statuses.INSERTED;
+      }
+      group.getTaskList().forEach((task, state) -> {
+        try {
+          executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_GROUP_TASK),
+                  group.getId(),
+                  task.getId(),
+                  state.ordinal()));
+        } catch (IOException e) {
+          log.error(e);
+        }
+      });
+      group.getMemberList().forEach((user, role) -> {
+        try {
+          executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_GROUP_MEMBERSHIP),
+                  user.getId(),
+                  group.getId(),
+                  role.ordinal()));
+        } catch (IOException e) {
+          log.error(e);
+        }
+      });
+      group.getHistoryList().forEach(modificationRecord -> {
+        try {
+          executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_GROUP_HISTORY),
+                  group.getId(),
+                  modificationRecord.getId()));
+        } catch (IOException e) {
+          log.error(e);
+        }
+      });
+      log.trace(getGroup(group.getId()));
+      return status;
+
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
     }
-    group.getTaskList().forEach((task, state) -> executeStatement(String.format("insert into GROUP_TASKS values (%d, %d, %d)",
-            group.getId(),
-            task.getId(),
-            state.ordinal())));
-    group.getMemberList().forEach((user, role) -> executeStatement(String.format("insert into GROUP_MEMBERSHIP values (%d, %d, %d)",
-            user.getId(),
-            group.getId(),
-            role.ordinal())));
-    group.getHistoryList().forEach(modificationRecord -> executeStatement(String.format("insert into GROUP_HISTORY values (%d, %d)",
-            group.getId(),
-            modificationRecord.getId())));
-    log.trace(getGroup(group.getId()));
-    return status;
   }
 
   @Override
   protected Statuses deleteGroupFromDB(long groupId) {
-    return executeStatement(String.format("DELETE FROM PUBLIC.\"GROUP\" WHERE ID = %d", groupId)).equals(Statuses.EXECUTED)
-            ? Statuses.DELETED
-            : Statuses.FAILED;
+    try {
+      return executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_DELETE_GROUP), groupId)).equals(Statuses.EXECUTED)
+              ? Statuses.DELETED
+              : Statuses.FAILED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
   private Task setTask(ResultSet resultSet) throws SQLException {
-    Task task = TaskTypes.values()[resultSet.getInt("task_type")].equals(TaskTypes.EXTENDED)
-            ? new ExtendedTask(RepetitionTypes.values()[resultSet.getInt("repetition_type")],
-            RemindTypes.values()[resultSet.getInt("remind_type")],
-            Importances.values()[resultSet.getInt("importance")],
-            resultSet.getString("description"),
-            resultSet.getTimestamp("time"))
-            : new Task();
-    task.setTaskType(TaskTypes.values()[resultSet.getInt("task_type")]);
-    task.setName(resultSet.getString("name"));
-    task.setId(resultSet.getLong("id"));
-    task.setCreated(resultSet.getTimestamp("created"));
-    task.setStatus(TaskStatuses.values()[resultSet.getInt("status")]);
-    task.setHistoryList(getModificationRecordListFromDB(task));
-    return task;
+    try {
+      Task task = TaskTypes.values()[resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK_TYPE))].equals(TaskTypes.EXTENDED)
+              ? new ExtendedTask(RepetitionTypes.values()[resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_NAME_REPETITION_TYPE_SQL))],
+              RemindTypes.values()[resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_NAME_REMIND_TYPE_SQL))],
+              Importances.values()[resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_NAME_IMPORTANCE))],
+              resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_DESCRIPTION)),
+              resultSet.getTimestamp(PropertyLoader.getProperty(Constants.FIELD_NAME_TIME)))
+              : new Task();
+      task.setTaskType(TaskTypes.values()[resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK_TYPE))]);
+      task.setName(resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_NAME)));
+      task.setId(resultSet.getLong(PropertyLoader.getProperty(Constants.FIELD_NAME_ID)));
+      task.setCreated(resultSet.getTimestamp(PropertyLoader.getProperty(Constants.FIELD_NAME_CREATED)));
+      task.setStatus(TaskStatuses.values()[resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_NAME_STATUS))]);
+      task.setHistoryList(getModificationRecordListFromDB(task));
+      return task;
+    } catch (IOException e) {
+      log.error(e);
+      return new Task();
+    }
   }
 
   @Override
   protected Optional<Task> getTaskFromDB(long taskId) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from %s where id = %d;",
-              "task", taskId));
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_BY_ID),
+              Task.class.getSimpleName(), taskId));
       assert resultSet.next();
       Task task = setTask(resultSet);
       statement.close();
       return Optional.of(task);
-    } catch (SQLException | AssertionError e) {
+    } catch (SQLException | AssertionError | IOException e) {
       log.error(e);
       return Optional.empty();
     }
@@ -408,15 +514,15 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected List<Task> getTaskListFromDB() {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from %s;",
-              "task"));
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT),
+              Task.class.getSimpleName()));
       List<Task> taskList = new ArrayList<>();
       while (resultSet.next()) {
         taskList.add(setTask(resultSet));
       }
       statement.close();
       return taskList;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -426,7 +532,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected List<Task> getTaskListFromDB(User user) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from TASK where ID in (SELECT TASK_ID from USER_TASKS where USER_ID = %d);",
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_USERS_TASK_LIST),
               user.getId()));
       List<Task> taskList = new ArrayList<>();
       while (resultSet.next()) {
@@ -434,7 +540,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
       }
       statement.close();
       return taskList;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -444,15 +550,16 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected Map<Task, TaskState> getTaskListFromDB(Group group) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select TASK.*, GT.TASK_STATE from TASK inner join GROUP_TASKS GT on TASK.ID = GT.TASK_ID WHERE GROUP_ID = %d",
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader
+                      .getProperty(Constants.SQL_SELECT_GROUP_TASK_LIST),
               group.getId()));
       Map<Task, TaskState> taskStateMap = new HashMap<>();
       while (resultSet.next()) {
-        taskStateMap.put(setTask(resultSet), TaskState.values()[resultSet.getInt("TASK_STATE")]);
+        taskStateMap.put(setTask(resultSet), TaskState.values()[resultSet.getInt(PropertyLoader.getProperty(Constants.FIELD_TASK_STATE))]);
       }
       statement.close();
       return taskStateMap;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return new HashMap<>();
     }
@@ -460,81 +567,101 @@ public class DataProviderJdbc extends AbstractDataProvider {
 
   @Override
   protected Statuses saveTaskInDB(Task task) {
-    Statuses status;
     try {
-      assert getTaskFromDB(task.getId()).isPresent();
-      status = executeStatement(String.format("UPDATE TASK set NAME = '%s', STATUS = %d, TASK_TYPE = %d, REPETITION_TYPE = %s, REMIND_TYPE = %s, IMPORTANCE = %s, DESCRIPTION = '%s', TIME = %s where ID = %d",
-              task.getName(),
-              task.getStatus().ordinal(),
-              task.getTaskType().ordinal(),
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? ((ExtendedTask) task).getRepetitionType().ordinal()
-                      : "null",
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? ((ExtendedTask) task).getRemindType().ordinal()
-                      : "null",
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? ((ExtendedTask) task).getImportance().ordinal()
-                      : "null",
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? "'" + ((ExtendedTask) task).getDescription() + "'"
-                      : "null",
 
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? String.format("parsedatetime ('%s', '%s')",
-                      dateFormat.format(((ExtendedTask) task).getTime()),
-                      Constants.DATE_FORMAT)
-                      : "null",
-              task.getId()
-      )).equals(Statuses.EXECUTED)
-              ? Statuses.UPDATED
-              : Statuses.FAILED;
-    } catch (AssertionError e) {
-      status = executeStatement(String.format("INSERT INTO PUBLIC.TASK " +
-                      "(NAME, STATUS, TASK_TYPE, REPETITION_TYPE, REMIND_TYPE, IMPORTANCE, DESCRIPTION, TIME)" +
-                      " VALUES ('%s', %d, %d, %s, %s, %s, %s, %s);",
-              task.getName(),
-              task.getStatus().ordinal(),
-              task.getTaskType().ordinal(),
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? ((ExtendedTask) task).getRepetitionType().ordinal()
-                      : "null",
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? ((ExtendedTask) task).getRemindType().ordinal()
-                      : "null",
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? ((ExtendedTask) task).getImportance().ordinal()
-                      : "null",
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? "'" + ((ExtendedTask) task).getDescription() + "'"
-                      : "null",
-              task.getTaskType().equals(TaskTypes.EXTENDED)
-                      ? String.format("parsedatetime ('%s', '%s')",
-                      dateFormat.format(((ExtendedTask) task).getTime()),
-                      Constants.DATE_FORMAT)
-                      : "null"
-      )).equals(Statuses.EXECUTED)
-              ? Statuses.INSERTED
-              : Statuses.FAILED;
+      Statuses status;
+      try {
+        assert getTaskFromDB(task.getId()).isPresent();
+        status = executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_UPDATE_TASK),
+                task.getName(),
+                task.getStatus().ordinal(),
+                task.getTaskType().ordinal(),
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? ((ExtendedTask) task).getRepetitionType().ordinal()
+                        : PropertyLoader.getProperty(Constants.NULL),
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? ((ExtendedTask) task).getRemindType().ordinal()
+                        : PropertyLoader.getProperty(Constants.NULL),
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? ((ExtendedTask) task).getImportance().ordinal()
+                        : PropertyLoader.getProperty(Constants.NULL),
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                        + ((ExtendedTask) task).getDescription()
+                        + PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                        : PropertyLoader.getProperty(Constants.NULL),
+
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? String.format(PropertyLoader.getProperty(Constants.SQL_PARSE_DATE_TIME),
+                        dateFormat.format(((ExtendedTask) task).getTime()),
+                        Constants.DATE_FORMAT)
+                        : PropertyLoader.getProperty(Constants.NULL),
+                task.getId()
+        )).equals(Statuses.EXECUTED)
+                ? Statuses.UPDATED
+                : Statuses.FAILED;
+      } catch (AssertionError e) {
+        status = executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_TASK),
+                task.getName(),
+                task.getStatus().ordinal(),
+                task.getTaskType().ordinal(),
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? ((ExtendedTask) task).getRepetitionType().ordinal()
+                        : PropertyLoader.getProperty(Constants.NULL),
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? ((ExtendedTask) task).getRemindType().ordinal()
+                        : PropertyLoader.getProperty(Constants.NULL),
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? ((ExtendedTask) task).getImportance().ordinal()
+                        : PropertyLoader.getProperty(Constants.NULL),
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                        + ((ExtendedTask) task).getDescription()
+                        + PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                        : PropertyLoader.getProperty(Constants.NULL),
+                task.getTaskType().equals(TaskTypes.EXTENDED)
+                        ? String.format(PropertyLoader.getProperty(Constants.SQL_PARSE_DATE_TIME),
+                        dateFormat.format(((ExtendedTask) task).getTime()),
+                        Constants.DATE_FORMAT)
+                        : PropertyLoader.getProperty(Constants.NULL)
+        )).equals(Statuses.EXECUTED)
+                ? Statuses.INSERTED
+                : Statuses.FAILED;
+      }
+      task.getHistoryList().forEach(modificationRecord -> {
+        try {
+          executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_TASK_HISTORY),
+                  task.getId(),
+                  modificationRecord.getId()));
+        } catch (IOException e) {
+          log.error(e);
+        }
+      });
+      return status;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
     }
-    task.getHistoryList().forEach(modificationRecord -> executeStatement(String.format("insert into TASK_HISTORY values (%d, %d)",
-            task.getId(),
-            modificationRecord.getId())));
-    return status;
   }
 
   @Override
   protected Statuses deleteTaskFromDB(long taskId) {
-    return executeStatement(String.format("DELETE FROM PUBLIC.\"TASK\" WHERE ID = %d", taskId)).equals(Statuses.EXECUTED)
-            ? Statuses.DELETED
-            : Statuses.FAILED;
+    try {
+      return executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_DELETE_TASK), taskId)).equals(Statuses.EXECUTED)
+              ? Statuses.DELETED
+              : Statuses.FAILED;
+    } catch (IOException e) {
+      log.error(e);
+      return Statuses.FAILED;
+    }
   }
 
   @Override
   protected List<ModificationRecord> getModificationRecordListFromDB(User user) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from MODIFICATION_RECORD where ID in (select MODIFICATION_RECORD_ID from USER_HISTORY where USER_ID = %d);",
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader
+                      .getProperty(Constants.SQL_SELECT_MODIFICATION_RECORD_USER),
               user.getId()));
       List<ModificationRecord> historyList = new ArrayList<>();
       while (resultSet.next()) {
@@ -542,7 +669,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
       }
       statement.close();
       return historyList;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -551,13 +678,15 @@ public class DataProviderJdbc extends AbstractDataProvider {
   private ModificationRecord setModificationRecord(ResultSet resultSet) {
     try {
       ModificationRecord record = new ModificationRecord();
-      record.setId(resultSet.getLong("id"));
-      record.setChangedDate(resultSet.getDate("CHANGED_DATE"));
-      record.setChangedValueName(resultSet.getString("CHANGED_VALUE_NAME"));
-      record.setChangedValue(resultSet.getString("CHANGED_VALUE"));
-      record.setOperationType(OperationType.values()[resultSet.getInt("OPERATION_TYPE")]);
+      record.setId(resultSet.getLong(PropertyLoader.getProperty(Constants.FIELD_NAME_ID)));
+      record.setChangedDate(resultSet.getDate(PropertyLoader
+              .getProperty(Constants.FIELD_NAME_CHANGED_DATE)));
+      record.setChangedValueName(resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_ID)));
+      record.setChangedValue(resultSet.getString(PropertyLoader.getProperty(Constants.FIELD_NAME_CHANGED_VALUE)));
+      record.setOperationType(OperationType.values()[resultSet.getInt(PropertyLoader
+              .getProperty(Constants.FIELD_NAME_OPERATION_TYPE))]);
       return record;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
     }
     return null;
@@ -567,7 +696,8 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected List<ModificationRecord> getModificationRecordListFromDB(Task task) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from MODIFICATION_RECORD where ID in (select MODIFICATION_RECORD_ID from TASK_HISTORY where TASK_ID = %d);",
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader
+                      .getProperty(Constants.SQL_SELECT_MODIFICATION_RECORD_TASK),
               task.getId()));
       List<ModificationRecord> historyList = new ArrayList<>();
       while (resultSet.next()) {
@@ -575,7 +705,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
       }
       statement.close();
       return historyList;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -585,7 +715,8 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected List<ModificationRecord> getModificationRecordListFromDB(Group group) {
     try {
       Statement statement = createStatement();
-      ResultSet resultSet = statement.executeQuery(String.format("select * from MODIFICATION_RECORD where ID in (select MODIFICATION_RECORD_ID from GROUP_HISTORY where GROUP_ID = %d);",
+      ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader
+                      .getProperty(Constants.SQL_SELECT_MODIFICATION_RECORD_GROUP),
               group.getId()));
       List<ModificationRecord> historyList = new ArrayList<>();
       while (resultSet.next()) {
@@ -593,7 +724,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
       }
       statement.close();
       return historyList;
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return new ArrayList<>();
     }
@@ -601,55 +732,62 @@ public class DataProviderJdbc extends AbstractDataProvider {
 
   @Override
   protected void createModificationRecordInDB(ModificationRecord modificationRecord) {
-    executeStatement(String.format("INSERT INTO PUBLIC.MODIFICATION_RECORD (CHANGED_VALUE_NAME, CHANGED_VALUE, OPERATION_TYPE) VALUES ('%s', '%s', %d)",
-            modificationRecord.getChangedValueName(),
-            modificationRecord.getChangedValue(),
-            modificationRecord.getOperationType().ordinal()));
+    try {
+      executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_MODIFICATION_RECORD),
+              modificationRecord.getChangedValueName(),
+              modificationRecord.getChangedValue(),
+              modificationRecord.getOperationType().ordinal()));
+    } catch (IOException e) {
+      log.error(e);
+    }
   }
 
   @Override
   protected <T> long getNextId(Class<T> tClass) {
     try {
-
       if (tClass.equals(User.class)) {
         Statement statement = createStatement();
-        var set = statement.executeQuery("select max(ID) as MAX_ID  from USER");
+        var set = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_MAX_ID),
+                User.class.getSimpleName().toUpperCase()));
         if (set.next()) {
-          return set.getInt("MAX_ID") + 1;
+          return set.getInt(PropertyLoader.getProperty(Constants.FIELD_MAX_ID)) + 1;
         } else {
           return 1;
         }
       }
       if (tClass.equals(Task.class)) {
         Statement statement = createStatement();
-        var set = statement.executeQuery("select max(ID) as MAX_ID  from TASK");
+        var set = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_MAX_ID),
+                Task.class.getSimpleName().toUpperCase()));
         if (set.next()) {
-          return set.getInt("MAX_ID") + 1;
+          return set.getInt(PropertyLoader.getProperty(Constants.FIELD_MAX_ID)) + 1;
         } else {
           return 1;
         }
       }
       if (tClass.equals(ModificationRecord.class)) {
         Statement statement = createStatement();
-        var set = statement.executeQuery("select max(ID) as MAX_ID  from MODIFICATION_RECORD");
+        var set = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_MAX_ID),
+                PropertyLoader.getProperty(Constants.SQL_BEAN_NAME_MODIFICATION_RECORD)));
         if (set.next()) {
-          return set.getInt("MAX_ID") + 1;
+          return set.getInt(PropertyLoader.getProperty(Constants.FIELD_MAX_ID)) + 1;
         } else {
           return 1;
         }
       }
       if (tClass.equals(Group.class)) {
         Statement statement = createStatement();
-        var set = statement.executeQuery("select max(ID) as MAX_ID  from \"GROUP\"");
+        var set = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_MAX_ID),
+                Group.class.getSimpleName().toUpperCase()));
         if (set.next()) {
-          return set.getInt("MAX_ID") + 1;
+          return set.getInt(PropertyLoader.getProperty(Constants.FIELD_MAX_ID)) + 1;
         } else {
           return 1;
         }
       } else {
         return -1;
       }
-    } catch (SQLException e) {
+    } catch (SQLException | IOException e) {
       log.error(e);
       return -1;
     }

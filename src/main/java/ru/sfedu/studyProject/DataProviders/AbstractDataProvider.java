@@ -645,7 +645,6 @@ public abstract class AbstractDataProvider implements DataProvider {
     if (!status.equals(Statuses.INSERTED)) {
       return status;
     }
-    getFullGroupList().forEach(log::info);
     return Statuses.UPDATED;
   }
 
