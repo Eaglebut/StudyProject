@@ -5,6 +5,7 @@ import lombok.extern.log4j.Log4j2;
 import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.enums.*;
 import ru.sfedu.studyProject.model.*;
+import ru.sfedu.studyProject.utils.LogUtil;
 import ru.sfedu.studyProject.utils.PropertyLoader;
 
 import java.io.IOException;
@@ -62,13 +63,19 @@ public abstract class AbstractDataProvider implements DataProvider {
   //start user zone
   @Override
   public Optional<User> getUser(long userId) {
-    return getUserFromDB(userId);
+    log.info(LogUtil.startFunc(userId));
+    var user = getUserFromDB(userId);
+    log.info(LogUtil.endFunc(userId));
+    return user;
   }
 
   @Override
   public Optional<User> getUser(@NonNull String email,
                                 @NonNull String password) {
-    return getUserFromDB(email, password);
+    log.info(LogUtil.startFunc(email, password));
+    var user = getUserFromDB(email, password);
+    log.info(LogUtil.endFunc(email, password));
+    return user;
   }
 
   @Override
@@ -77,6 +84,7 @@ public abstract class AbstractDataProvider implements DataProvider {
                              @NonNull String name,
                              @NonNull String surname,
                              @NonNull SignUpTypes signUpType) {
+    log.info(LogUtil.startFunc(email, password, name, surname, signUpType));
     List<User> userList = getUserListFromDB();
     if (userList.stream().anyMatch(listUser -> listUser.getEmail().equals(email))) {
       return Statuses.FORBIDDEN;
@@ -92,7 +100,9 @@ public abstract class AbstractDataProvider implements DataProvider {
     user.setSignUpType(signUpType);
     user.setCreated(new Date(System.currentTimeMillis()));
     user.setToken(Integer.toHexString(user.hashCode()));
-    return saveUserInDB(user);
+    var status = saveUserInDB(user);
+    log.info(LogUtil.endFunc(email, password, name, surname, signUpType));
+    return status;
   }
 
   private boolean isEditValid(User user, User editedUser) {
@@ -160,6 +170,7 @@ public abstract class AbstractDataProvider implements DataProvider {
 
   @Override
   public Statuses editUser(@NonNull User editedUser) {
+    log.info(LogUtil.startFunc(editedUser));
     var optUser = getUserFromDB(editedUser.getId());
     if (optUser.isEmpty()) {
       return Statuses.NOT_FOUNDED;
@@ -171,33 +182,43 @@ public abstract class AbstractDataProvider implements DataProvider {
     if (!status.equals(Statuses.SAVED)) {
       return status;
     }
-    return saveUserInDB(editedUser);
+    status = saveUserInDB(editedUser);
+    log.info(LogUtil.endFunc(editedUser));
+    return status;
   }
 
   @Override
   public List<User> getFullUsersList() {
-    return getUserListFromDB();
+    log.info(LogUtil.startFunc());
+    var userList = getUserListFromDB();
+    log.info(LogUtil.endFunc());
+    return userList;
   }
 
   @Override
   public List<Group> getUsersGroups(long userId) {
+    log.info(LogUtil.startFunc(userId));
     var optUser = getUserFromDB(userId);
     if (optUser.isEmpty()) {
       return new ArrayList<>();
     }
-    return getGroupListFromDB(optUser.get());
+    var groupList = getGroupListFromDB(optUser.get());
+    log.info(LogUtil.endFunc());
+    return groupList;
   }
 
   @Override
   public String getUserInfo(long userId) {
     try {
+      log.info(LogUtil.startFunc(userId));
       var optUser = getUser(userId);
       if (optUser.isEmpty()) {
+        log.info(LogUtil.endFunc(userId));
         return PropertyLoader.getProperty(Constants.MESSAGE_USER_NOT_FOUNDED);
       }
       var user = optUser.get();
       var groupList = getUsersGroups(userId);
-
+      log.info(LogUtil.endFunc(userId));
       return String.format(PropertyLoader.getProperty(Constants.FORMAT_USER),
               userToString(user),
               taskListToString(user.getTaskList(), 1),
@@ -205,6 +226,7 @@ public abstract class AbstractDataProvider implements DataProvider {
               groupListToString(groupList, 1));
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc(userId));
       return "";
     }
   }
@@ -378,21 +400,31 @@ public abstract class AbstractDataProvider implements DataProvider {
 
   @Override
   public List<Group> getFullGroupList() {
-    return getGroupListFromDB();
+    log.info(LogUtil.startFunc());
+    var groupListFromDB = getGroupListFromDB();
+    log.info(LogUtil.endFunc());
+    return groupListFromDB;
   }
 
   @Override
   public List<Group> searchGroupByName(@NonNull String name) {
-    return getGroupListFromDB(name);
+    log.info(LogUtil.startFunc(name));
+    var groupListFromDB = getGroupListFromDB(name);
+    log.info(LogUtil.endFunc(name));
+    return groupListFromDB;
   }
 
   @Override
   public Optional<Group> getGroup(long groupId) {
-    return getGroupFromDB(groupId);
+    log.info(LogUtil.startFunc(groupId));
+    var groupFromDB = getGroupFromDB(groupId);
+    log.info(LogUtil.endFunc(groupId));
+    return groupFromDB;
   }
 
   @Override
   public Statuses createGroup(@NonNull String groupName, long creatorId, @NonNull GroupTypes groupType) {
+    log.info(LogUtil.startFunc(groupName, creatorId, groupType));
     var user = getUserFromDB(creatorId);
     if (user.isEmpty()) {
       return Statuses.FORBIDDEN;
@@ -418,13 +450,17 @@ public abstract class AbstractDataProvider implements DataProvider {
     group.setTaskList(new HashMap<>());
     group.setName(groupName);
 
-    return saveGroupInDB(group);
+    var ret_val = saveGroupInDB(group);
+    log.info(LogUtil.endFunc(groupName, creatorId, groupType));
+    return ret_val;
   }
 
   @Override
   public Statuses deleteGroup(long userId, long groupId) {
+    log.info(LogUtil.startFunc(userId, groupId));
     Optional<Group> optionalGroup = getGroupFromDB(groupId);
     if (optionalGroup.isEmpty()) {
+      log.info(LogUtil.endFunc(userId, groupId));
       return Statuses.NOT_FOUNDED;
     }
     Group group = optionalGroup.get();
@@ -434,12 +470,16 @@ public abstract class AbstractDataProvider implements DataProvider {
             .filter(serverGroup -> serverGroup.getId() == userId)
             .findAny();
     if (optUser.isEmpty()) {
+      log.info(LogUtil.endFunc(userId, groupId));
       return Statuses.FORBIDDEN;
     }
     if (!group.getMemberList().get(optUser.get()).equals(UserRole.CREATOR)) {
+      log.info(LogUtil.endFunc(userId, groupId));
       return Statuses.FORBIDDEN;
     }
-    return deleteGroupFromDB(groupId);
+    var status = deleteGroupFromDB(groupId);
+    log.info(LogUtil.endFunc(userId, groupId));
+    return status;
   }
 
   @Override
@@ -448,12 +488,14 @@ public abstract class AbstractDataProvider implements DataProvider {
       var optionalUser = getUserFromDB(userId);
       var optionalGroup = getGroupFromDB(groupId);
       if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        log.info(LogUtil.endFunc(userId, groupId));
         return Statuses.NOT_FOUNDED;
       }
       var user = optionalUser.get();
       var group = optionalGroup.get();
 
       if (group.getMemberList().containsKey(user)) {
+        log.info(LogUtil.endFunc(userId, groupId));
         return Statuses.FORBIDDEN;
       }
       switch (group.getGroupType()) {
@@ -475,15 +517,18 @@ public abstract class AbstractDataProvider implements DataProvider {
                           UserRole.REQUIRES_CONFIRMATION.toString())));
           break;
         default:
+          log.info(LogUtil.endFunc(userId, groupId));
           return Statuses.FAILED;
       }
       var status = saveGroupInDB(group);
       if (status.equals(Statuses.UPDATED)) {
+        log.info(LogUtil.endFunc(userId, groupId));
         return Statuses.INSERTED;
       }
       return status;
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc(userId, groupId));
       return Statuses.FAILED;
     }
   }
@@ -491,14 +536,17 @@ public abstract class AbstractDataProvider implements DataProvider {
   @Override
   public Statuses updateGroup(long userId, @NonNull Group editedGroup) {
     try {
+      log.info(LogUtil.startFunc(userId, editedGroup));
       var optionalUser = getUserFromDB(userId);
       var optionalGroup = getGroupFromDB(editedGroup.getId());
       if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        log.info(LogUtil.endFunc(userId, editedGroup));
         return Statuses.NOT_FOUNDED;
       }
       var group = optionalGroup.get();
       var role = optionalGroup.get().getMemberList().get(optionalUser.get());
       if (role == null) {
+        log.info(LogUtil.endFunc(userId, editedGroup));
         return Statuses.FORBIDDEN;
       }
       switch (role) {
@@ -509,6 +557,7 @@ public abstract class AbstractDataProvider implements DataProvider {
                   && group.getMemberList().equals(editedGroup.getMemberList())
                   && group.getGroupType().equals(editedGroup.getGroupType())
                   && group.getCreated().equals(editedGroup.getCreated()))) {
+            log.info(LogUtil.endFunc(userId, editedGroup));
             return Statuses.FORBIDDEN;
           }
           if (!group.getName().equals(editedGroup.getName())) {
@@ -522,15 +571,20 @@ public abstract class AbstractDataProvider implements DataProvider {
                     OperationType.EDIT,
                     ((PasswordedGroup) group).getPassword()));
           }
-          return saveGroupInDB(editedGroup);
+          var status = saveGroupInDB(editedGroup);
+          log.info(LogUtil.endFunc(userId, editedGroup));
+          return status;
         case MEMBER:
         case REQUIRES_CONFIRMATION:
+          log.info(LogUtil.endFunc(userId, editedGroup));
           return Statuses.FORBIDDEN;
         default:
+          log.info(LogUtil.endFunc(userId, editedGroup));
           return Statuses.FAILED;
       }
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc(userId, editedGroup));
       return Statuses.FAILED;
     }
   }
@@ -538,14 +592,17 @@ public abstract class AbstractDataProvider implements DataProvider {
   @Override
   public Statuses deleteUserFromGroup(long userId, long groupId) {
     try {
+      log.info(LogUtil.startFunc(userId, groupId));
       var optionalUser = getUserFromDB(userId);
       var optionalGroup = getGroupFromDB(groupId);
       if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        log.info(LogUtil.endFunc(userId, groupId));
         return Statuses.NOT_FOUNDED;
       }
       var user = optionalUser.get();
       var group = optionalGroup.get();
       if (!group.getMemberList().containsKey(user)) {
+        log.info(LogUtil.endFunc(userId, groupId));
         return Statuses.FORBIDDEN;
       }
 
@@ -557,12 +614,15 @@ public abstract class AbstractDataProvider implements DataProvider {
                       UserRole.MEMBER.toString())));
       var status = saveGroupInDB(group);
       if (status.equals(Statuses.UPDATED)) {
+        log.info(LogUtil.endFunc(userId, groupId));
         return Statuses.DELETED;
       } else {
+        log.info(LogUtil.endFunc(userId, groupId));
         return status;
       }
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc(userId, groupId));
       return Statuses.FAILED;
     }
   }
@@ -570,20 +630,25 @@ public abstract class AbstractDataProvider implements DataProvider {
   @Override
   public Statuses changeGroupType(long userId, long groupId, @NonNull GroupTypes groupType) {
     try {
+      log.info(LogUtil.startFunc(userId, groupId, groupType));
       var optionalUser = getUserFromDB(userId);
       var optionalGroup = getGroupFromDB(groupId);
       if (optionalGroup.isEmpty() || optionalUser.isEmpty()) {
+        log.info(LogUtil.endFunc(userId, groupId, groupType));
         return Statuses.NOT_FOUNDED;
       }
       var user = optionalUser.get();
       var group = optionalGroup.get();
       if (!group.getMemberList().containsKey(user)) {
+        log.info(LogUtil.endFunc(userId, groupId, groupType));
         return Statuses.FORBIDDEN;
       }
       if (!group.getMemberList().get(user).equals(UserRole.CREATOR)) {
+        log.info(LogUtil.endFunc(userId, groupId, groupType));
         return Statuses.FORBIDDEN;
       }
       if (groupType.equals(group.getGroupType())) {
+        log.info(LogUtil.endFunc(userId, groupId, groupType));
         return Statuses.UPDATED;
       }
       group.getHistoryList().add(createHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_GROUP_TYPE),
@@ -593,17 +658,25 @@ public abstract class AbstractDataProvider implements DataProvider {
         case PUBLIC:
         case WITH_CONFIRMATION:
           if (groupType.equals(GroupTypes.PASSWORDED)) {
-            return changeGroupTypeToPassworded(group);
+            var status = changeGroupTypeToPassworded(group);
+            log.info(LogUtil.endFunc(userId, groupId, groupType));
+            return status;
           }
           group.setGroupType(groupType);
-          return saveGroupInDB(group);
+          var status = saveGroupInDB(group);
+          log.info(LogUtil.endFunc(userId, groupId, groupType));
+          return status;
         case PASSWORDED:
-          return changeGroupTypeFromPassworded(group, groupType);
+          var returnStatus = changeGroupTypeFromPassworded(group, groupType);
+          log.info(LogUtil.endFunc(userId, groupId, groupType));
+          return returnStatus;
         default:
+          log.info(LogUtil.endFunc(userId, groupId, groupType));
           return Statuses.FAILED;
       }
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc(userId, groupId, groupType));
       return Statuses.FAILED;
     }
   }
@@ -651,17 +724,22 @@ public abstract class AbstractDataProvider implements DataProvider {
   @Override
   public String getGroupsStatistic() {
     try {
+      log.info(LogUtil.startFunc());
       var avgGroupSize = getAverageGroupSize();
       if (avgGroupSize.isEmpty()) {
+        log.info(LogUtil.endFunc());
         return "";
       }
-      return String.format(PropertyLoader.getProperty(Constants.FORMAT_GROUP_STATISTIC),
+      var ret = String.format(PropertyLoader.getProperty(Constants.FORMAT_GROUP_STATISTIC),
               getFullGroupList().size(),
               mapToString(getGroupCountPerType(), 1),
               avgGroupSize.get(),
               mapToString(getAverageGroupSizeDividedByGroupType(), 1));
+      log.info(LogUtil.endFunc());
+      return ret;
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc());
       return "";
     }
   }
@@ -684,6 +762,7 @@ public abstract class AbstractDataProvider implements DataProvider {
 
   @Override
   public Map<GroupTypes, Double> getAverageGroupSizeDividedByGroupType() {
+    log.info(LogUtil.startFunc());
     var groupList = getGroupListFromDB();
     Map<GroupTypes, Double> groupSizes = new HashMap<>();
 
@@ -695,11 +774,13 @@ public abstract class AbstractDataProvider implements DataProvider {
     });
     var groupCount = getGroupCountPerType();
     groupSizes.forEach((groupType, size) -> groupSizes.replace(groupType, size / groupCount.get(groupType)));
+    log.info(LogUtil.endFunc());
     return groupSizes;
   }
 
   @Override
   public Map<GroupTypes, Long> getGroupCountPerType() {
+    log.info(LogUtil.startFunc());
     var groupList = getGroupListFromDB();
     Map<GroupTypes, Long> groupCount = new HashMap<>();
 
@@ -709,71 +790,91 @@ public abstract class AbstractDataProvider implements DataProvider {
       }
       groupCount.replace(group.getGroupType(), groupCount.get(group.getGroupType()) + 1);
     });
+    log.info(LogUtil.endFunc());
     return groupCount;
   }
 
   @Override
   public Optional<Double> getAverageTaskPerGroup() {
+    log.info(LogUtil.startFunc());
     var groupList = getGroupListFromDB();
     long groupCount = groupList.stream().mapToLong(group -> group.getTaskList().size()).sum();
+    log.info(LogUtil.endFunc());
     return Optional.of(((double) groupCount) / groupList.size());
   }
 
   @Override
   public Optional<Double> getAverageGroupSize() {
+    log.info(LogUtil.startFunc());
     var groupList = getGroupListFromDB();
     long groupSizes = 0;
     for (Group group : groupList) {
       groupSizes += group.getMemberList().size();
     }
+    log.info(LogUtil.endFunc());
     return Optional.of(((double) groupSizes) / groupList.size());
   }
 
   @Override
   public Statuses setUserRole(long administratorId, long groupId, long userIdToSet, @NonNull UserRole role) {
-
+    log.info(LogUtil.startFunc(administratorId, groupId, userIdToSet, role));
     Optional<Group> optionalGroup = getGroupFromDB(groupId);
     Optional<User> optionalAdministrator = getUserFromDB(administratorId);
     Optional<User> optionalUser = getUserFromDB(userIdToSet);
     if (optionalGroup.isEmpty() || optionalAdministrator.isEmpty() || optionalUser.isEmpty()) {
+      log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
       return Statuses.NOT_FOUNDED;
     }
     var group = optionalGroup.get();
     var administrator = optionalAdministrator.get();
     var user = optionalUser.get();
     if (!group.getMemberList().containsKey(user) || !group.getMemberList().containsKey(administrator)) {
+      log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
       return Statuses.FORBIDDEN;
     }
     var userRole = group.getMemberList().get(user);
     var administratorRole = group.getMemberList().get(administrator);
 
     if (userRole.equals(UserRole.CREATOR)) {
+      log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
       return Statuses.FORBIDDEN;
     }
     switch (role) {
       case CREATOR:
+        log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
         return Statuses.FORBIDDEN;
       case MEMBER:
         switch (userRole) {
           case REQUIRES_CONFIRMATION:
             if (!administratorRole.equals(UserRole.ADMINISTRATOR) && !administratorRole.equals(UserRole.CREATOR)) {
+              log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
               return Statuses.FORBIDDEN;
             }
-            return setRole(group, user, role);
+            var status = setRole(group, user, role);
+            log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
+            return status;
           case ADMINISTRATOR:
             if (!administratorRole.equals(UserRole.CREATOR)) {
+              log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
               return Statuses.FORBIDDEN;
             }
-            return setRole(group, user, role);
+            status = setRole(group, user, role);
+            log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
+            return status;
           default:
+            log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
             return Statuses.FORBIDDEN;
         }
       case ADMINISTRATOR:
         if (!administratorRole.equals(UserRole.CREATOR)) {
+          log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
           return Statuses.FORBIDDEN;
         }
-        return setRole(group, user, role);
+        var status = setRole(group, user, role);
+        log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
+        return status;
       default:
+        log.info(LogUtil.endFunc(administratorId, groupId, userIdToSet, role));
         return Statuses.FAILED;
     }
   }
@@ -794,11 +895,13 @@ public abstract class AbstractDataProvider implements DataProvider {
   @Override
   public Statuses changeTaskState(long userId, long groupId, long taskId, @NonNull TaskState state) {
     try {
+      log.info(LogUtil.startFunc(taskId, groupId, state));
       Optional<Group> optionalGroup = getGroupFromDB(groupId);
       Optional<User> optionalAdministrator = getUserFromDB(userId);
       Optional<Task> optionalTask = getTaskFromDB(taskId);
 
       if (optionalGroup.isEmpty() || optionalAdministrator.isEmpty() || optionalTask.isEmpty()) {
+        log.info(LogUtil.endFunc(taskId, groupId, state));
         return Statuses.NOT_FOUNDED;
       }
       var group = optionalGroup.get();
@@ -806,6 +909,7 @@ public abstract class AbstractDataProvider implements DataProvider {
       var task = optionalTask.get();
 
       if (!group.getTaskList().containsKey(task) || !group.getMemberList().containsKey(administrator)) {
+        log.info(LogUtil.endFunc(taskId, groupId, state));
         return Statuses.FORBIDDEN;
       }
       var administratorRole = group.getMemberList().get(administrator);
@@ -817,20 +921,26 @@ public abstract class AbstractDataProvider implements DataProvider {
           group.getHistoryList().add(createHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
                   OperationType.EDIT,
                   String.format(PropertyLoader.getProperty(Constants.MAP_FORMAT_STRING), taskId, state)));
-          return saveGroupInDB(group);
+          var status = saveGroupInDB(group);
+          log.info(LogUtil.endFunc(taskId, groupId, state));
+          return status;
         default:
+          log.info(LogUtil.endFunc(taskId, groupId, state));
           return Statuses.FORBIDDEN;
       }
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc(taskId, groupId, state));
       return Statuses.FAILED;
     }
   }
 
   @Override
   public Statuses suggestTask(long userId, long groupId, long taskId) {
+    log.info(LogUtil.startFunc(taskId, groupId, taskId));
     var optionalGroup = getGroupFromDB(groupId);
     if (optionalGroup.isEmpty()) {
+      log.info(LogUtil.endFunc(taskId, groupId, taskId));
       return Statuses.NOT_FOUNDED;
     }
     var group = optionalGroup.get();
@@ -840,6 +950,7 @@ public abstract class AbstractDataProvider implements DataProvider {
             .filter(groupUser -> groupUser.getId() == userId)
             .findAny();
     if (optionalUser.isEmpty()) {
+      log.info(LogUtil.endFunc(taskId, groupId, taskId));
       return Statuses.FORBIDDEN;
     }
     User user = optionalUser.get();
@@ -847,15 +958,20 @@ public abstract class AbstractDataProvider implements DataProvider {
             .filter(task -> task.getId() == taskId)
             .findAny();
     if (optionalTask.isEmpty()) {
+      log.info(LogUtil.endFunc(taskId, groupId, taskId));
       return Statuses.FORBIDDEN;
     }
     switch (group.getGroupType()) {
       case PUBLIC:
+        log.info(LogUtil.endFunc(taskId, groupId, taskId));
         return Statuses.FORBIDDEN;
       case PASSWORDED:
       case WITH_CONFIRMATION:
-        return suggestTask(group, user, optionalTask.get());
+        var status = suggestTask(group, user, optionalTask.get());
+        log.info(LogUtil.endFunc(taskId, groupId, taskId));
+        return status;
       default:
+        log.info(LogUtil.endFunc(taskId, groupId, taskId));
         return Statuses.FAILED;
     }
   }
@@ -951,11 +1067,13 @@ public abstract class AbstractDataProvider implements DataProvider {
   public Statuses createTask(long userId,
                              @NonNull String taskName,
                              @NonNull TaskStatuses status) {
-
+    log.info(LogUtil.startFunc(userId, taskName, status));
     Task task = new Task();
     setBasicTask(task, taskName, status);
     task.setTaskType(TaskTypes.BASIC);
-    return saveUserWithTask(userId, task);
+    var retStatus = saveUserWithTask(userId, task);
+    log.info(LogUtil.endFunc(userId, taskName, status));
+    return retStatus;
   }
 
   @Override
@@ -967,6 +1085,7 @@ public abstract class AbstractDataProvider implements DataProvider {
                              @NonNull Importances importance,
                              @NonNull String description,
                              @NonNull Date time) {
+    log.info(LogUtil.startFunc(userId, taskName, status, repetitionType, remindType, importance, description, time));
     ExtendedTask task = new ExtendedTask();
     setBasicTask(task, taskName, status);
     task.setTaskType(TaskTypes.EXTENDED);
@@ -975,13 +1094,17 @@ public abstract class AbstractDataProvider implements DataProvider {
     task.setImportance(importance);
     task.setDescription(description);
     task.setTime(time);
-    return saveUserWithTask(userId, task);
+    var retStatus = saveUserWithTask(userId, task);
+    log.info(LogUtil.endFunc(userId, taskName, status, repetitionType, remindType, importance, description, time));
+    return retStatus;
   }
 
   @Override
   public Statuses createTask(long userId, long groupId, @NonNull String taskName, @NonNull TaskStatuses taskStatus) {
+    log.info(LogUtil.startFunc(userId, groupId, taskName, taskStatus));
     var optionalGroup = getGroupFromDB(groupId);
     if (optionalGroup.isEmpty()) {
+      log.info(LogUtil.endFunc(userId, groupId, taskName, taskStatus));
       return Statuses.NOT_FOUNDED;
     }
     var group = optionalGroup.get();
@@ -992,10 +1115,12 @@ public abstract class AbstractDataProvider implements DataProvider {
             .filter(user -> user.getId() == userId)
             .findAny();
     if (optionalUser.isEmpty()) {
+      log.info(LogUtil.endFunc(userId, groupId, taskName, taskStatus));
       return Statuses.FORBIDDEN;
     }
     var role = optionalGroup.get().getMemberList().get(optionalUser.get());
     if (role == null) {
+      log.info(LogUtil.endFunc(userId, groupId, taskName, taskStatus));
       return Statuses.FORBIDDEN;
     }
     switch (role) {
@@ -1005,11 +1130,15 @@ public abstract class AbstractDataProvider implements DataProvider {
         setBasicTask(task, taskName, taskStatus);
         task.setTaskType(TaskTypes.BASIC);
         group.getTaskList().put(task, TaskState.APPROVED);
-        return saveGroupWithTask(group, task);
+        var retStatus = saveGroupWithTask(group, task);
+        log.info(LogUtil.endFunc(userId, groupId, taskName, taskStatus));
+        return retStatus;
       case MEMBER:
       case REQUIRES_CONFIRMATION:
+        log.info(LogUtil.endFunc(userId, groupId, taskName, taskStatus));
         return Statuses.FORBIDDEN;
       default:
+        log.info(LogUtil.endFunc(userId, groupId, taskName, taskStatus));
         return Statuses.FAILED;
     }
   }
@@ -1024,8 +1153,28 @@ public abstract class AbstractDataProvider implements DataProvider {
                              @NonNull Importances importance,
                              @NonNull String description,
                              @NonNull Date time) {
+    log.info(LogUtil.startFunc(
+            userId,
+            groupId,
+            taskName,
+            taskStatus,
+            remindType,
+            remindType,
+            importance,
+            description,
+            time));
     var optionalGroup = getGroupFromDB(groupId);
     if (optionalGroup.isEmpty()) {
+      log.info(LogUtil.endFunc(
+              userId,
+              groupId,
+              taskName,
+              taskStatus,
+              remindType,
+              remindType,
+              importance,
+              description,
+              time));
       return Statuses.NOT_FOUNDED;
     }
     var group = optionalGroup.get();
@@ -1036,10 +1185,30 @@ public abstract class AbstractDataProvider implements DataProvider {
             .filter(user -> user.getId() == userId)
             .findAny();
     if (optionalUser.isEmpty()) {
+      log.info(LogUtil.endFunc(
+              userId,
+              groupId,
+              taskName,
+              taskStatus,
+              remindType,
+              remindType,
+              importance,
+              description,
+              time));
       return Statuses.FORBIDDEN;
     }
     var role = optionalGroup.get().getMemberList().get(optionalUser.get());
     if (role == null) {
+      log.info(LogUtil.endFunc(
+              userId,
+              groupId,
+              taskName,
+              taskStatus,
+              remindType,
+              remindType,
+              importance,
+              description,
+              time));
       return Statuses.FORBIDDEN;
     }
     switch (role) {
@@ -1054,25 +1223,61 @@ public abstract class AbstractDataProvider implements DataProvider {
         task.setDescription(description);
         task.setTime(time);
         group.getTaskList().put(task, TaskState.APPROVED);
-        return saveGroupWithTask(group, task);
+        var retStatus = saveGroupWithTask(group, task);
+        log.info(LogUtil.endFunc(
+                userId,
+                groupId,
+                taskName,
+                taskStatus,
+                remindType,
+                remindType,
+                importance,
+                description,
+                time));
+        return retStatus;
       case MEMBER:
       case REQUIRES_CONFIRMATION:
+        log.info(LogUtil.endFunc(
+                userId,
+                groupId,
+                taskName,
+                taskStatus,
+                remindType,
+                remindType,
+                importance,
+                description,
+                time));
         return Statuses.FORBIDDEN;
       default:
+        log.info(LogUtil.endFunc(
+                userId,
+                groupId,
+                taskName,
+                taskStatus,
+                remindType,
+                remindType,
+                importance,
+                description,
+                time));
         return Statuses.FAILED;
     }
   }
 
   @Override
   public List<Task> getFullTaskList() {
-    return getTaskListFromDB();
+    log.info(LogUtil.startFunc());
+    var taskListFromDB = getTaskListFromDB();
+    log.info(LogUtil.endFunc());
+    return taskListFromDB;
   }
 
   @Override
   public Statuses deleteTask(long userId, long taskId) {
     try {
+      log.info(LogUtil.startFunc(userId, taskId));
       var optionalUser = getUserFromDB(userId);
       if (optionalUser.isEmpty()) {
+        log.info(LogUtil.endFunc(userId, taskId));
         return Statuses.NOT_FOUNDED;
       }
       User user = optionalUser.get();
@@ -1082,12 +1287,14 @@ public abstract class AbstractDataProvider implements DataProvider {
               .filter(task -> task.getId() == taskId)
               .findAny();
       if (optionalTask.isEmpty()) {
+        log.info(LogUtil.endFunc(userId, taskId));
         return Statuses.FORBIDDEN;
       }
       Task task = optionalTask.get();
       user.getTaskList().remove(task);
       var status = deleteTaskFromDB(taskId);
       if (!status.equals(Statuses.DELETED)) {
+        log.info(LogUtil.endFunc(userId, taskId));
         return status;
       }
       user.getHistoryList().add(createHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_TASK),
@@ -1095,11 +1302,14 @@ public abstract class AbstractDataProvider implements DataProvider {
               String.valueOf(taskId)));
       var updateUserStatus = saveUserInDB(user);
       if (updateUserStatus != Statuses.UPDATED) {
+        log.info(LogUtil.endFunc(userId, taskId));
         return updateUserStatus;
       }
+      log.info(LogUtil.endFunc(userId, taskId));
       return Statuses.DELETED;
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc(userId, taskId));
       return Statuses.FAILED;
     }
   }
@@ -1107,8 +1317,10 @@ public abstract class AbstractDataProvider implements DataProvider {
   @Override
   public Statuses deleteTask(long userId, long groupId, long taskId) {
     try {
+      log.info(LogUtil.startFunc(userId, groupId, taskId));
       var optionalGroup = getGroup(groupId);
       if (optionalGroup.isEmpty()) {
+        log.info(LogUtil.endFunc(userId, groupId, taskId));
         return Statuses.NOT_FOUNDED;
       }
       var group = optionalGroup.get();
@@ -1128,6 +1340,7 @@ public abstract class AbstractDataProvider implements DataProvider {
               optionalTask.isEmpty() ||
               (!group.getMemberList().get(optionalUser.get()).equals(UserRole.CREATOR) &&
                       !group.getMemberList().get(optionalUser.get()).equals(UserRole.ADMINISTRATOR))) {
+        log.info(LogUtil.endFunc(userId, groupId, taskId));
         return Statuses.FORBIDDEN;
       }
       var task = optionalTask.get();
@@ -1139,20 +1352,23 @@ public abstract class AbstractDataProvider implements DataProvider {
 
       var status = saveGroupInDB(group);
       if (status.equals(Statuses.UPDATED)) {
-        return deleteTaskFromDB(task.getId());
-      } else {
-        return status;
+        status = deleteTaskFromDB(task.getId());
       }
+      log.info(LogUtil.endFunc(userId, groupId, taskId));
+      return status;
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc(userId, groupId, taskId));
       return Statuses.FAILED;
     }
   }
 
   @Override
   public Statuses editTask(long userId, @NonNull Task editedTask) {
+    log.info(LogUtil.startFunc(userId, editedTask));
     var optionalUser = getUserFromDB(userId);
     if (optionalUser.isEmpty()) {
+      log.info(LogUtil.endFunc(userId, editedTask));
       return Statuses.FORBIDDEN;
     }
     User user = optionalUser.get();
@@ -1160,21 +1376,27 @@ public abstract class AbstractDataProvider implements DataProvider {
             .filter(task -> task.getId() == editedTask.getId())
             .findAny();
     if (optionalUserTask.isEmpty()) {
+      log.info(LogUtil.endFunc(userId, editedTask));
       return Statuses.FORBIDDEN;
     }
     if (!isEditValid(editedTask, optionalUserTask.get())) {
+      log.info(LogUtil.endFunc(userId, editedTask));
       return Statuses.FORBIDDEN;
     }
     switch (optionalUserTask.get().getTaskType()) {
       case BASIC:
         Task basicUserTask = optionalUserTask.get();
         saveChangesHistory(basicUserTask, editedTask);
-        return saveTaskInDB(basicUserTask);
+        var status = saveTaskInDB(basicUserTask);
+        log.info(LogUtil.endFunc(userId, editedTask));
+        return status;
       case EXTENDED:
         ExtendedTask extendedUserTask = (ExtendedTask) optionalUserTask.get();
         saveChangesHistory(extendedUserTask, (ExtendedTask) editedTask);
+        log.info(LogUtil.endFunc(userId, editedTask));
         return Statuses.UPDATED;
       default:
+        log.info(LogUtil.endFunc(userId, editedTask));
         return Statuses.FAILED;
     }
   }
@@ -1251,19 +1473,24 @@ public abstract class AbstractDataProvider implements DataProvider {
   @Override
   public String getTaskStatistic() {
     try {
-      return String.format(PropertyLoader.getProperty(Constants.FORMAT_TASK_STATISTIC),
+      log.info(LogUtil.startFunc());
+      var str = String.format(PropertyLoader.getProperty(Constants.FORMAT_TASK_STATISTIC),
               getFullTaskList().size(),
               mapToString(getTaskCountPerType(), 1),
               mapToString(getTaskCountPerOwner(), 1),
               mapToString(getAverageTaskPerOwner(), 1));
+      log.info(LogUtil.endFunc());
+      return str;
     } catch (IOException e) {
       log.error(e);
+      log.info(LogUtil.endFunc());
       return "";
     }
   }
 
   @Override
   public Map<Owner, Long> getTaskCountPerOwner() {
+    log.info(LogUtil.startFunc());
     List<User> userList = getFullUsersList();
     var groupList = getFullGroupList();
     Map<Owner, Long> taskCount = new HashMap<>();
@@ -1286,11 +1513,13 @@ public abstract class AbstractDataProvider implements DataProvider {
                   taskCount.get(Owner.GROUP_WITH_CONFIRMATION) + group.getTaskList().size());
       }
     });
+    log.info(LogUtil.endFunc());
     return taskCount;
   }
 
   @Override
   public Map<Owner, Double> getAverageTaskPerOwner() {
+    log.info(LogUtil.startFunc());
     var taskCount = getTaskCountPerOwner();
     Map<Owner, Double> averageTask = new HashMap<>();
     averageTask.put(Owner.USER, ((double) taskCount.get(Owner.USER)) / getFullUsersList().size());
@@ -1306,15 +1535,18 @@ public abstract class AbstractDataProvider implements DataProvider {
             ((double) taskCount.get(Owner.PASSWORDED_GROUP)) / getFullGroupList().stream()
                     .filter(group -> group.getGroupType().equals(GroupTypes.PASSWORDED))
                     .count());
+    log.info(LogUtil.endFunc());
     return averageTask;
   }
 
   @Override
   public Map<TaskTypes, Long> getTaskCountPerType() {
+    log.info(LogUtil.startFunc());
     Map<TaskTypes, Long> taskCount = new HashMap<>();
     var taskList = getFullTaskList();
     Arrays.stream(TaskTypes.values()).forEach(taskType -> taskCount.put(taskType, 0L));
     taskList.forEach(task -> taskCount.replace(task.getTaskType(), taskCount.get(task.getTaskType()) + 1));
+    log.info(LogUtil.endFunc());
     return taskCount;
   }
 

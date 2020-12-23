@@ -1,13 +1,12 @@
 package ru.sfedu.studyProject;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * The type Main.
  */
+@Log4j2
 public class Client {
-  private static final Logger log = LogManager.getLogger(Client.class);
 
 
   /**
@@ -16,5 +15,6 @@ public class Client {
    * @param args the input arguments
    */
   public static void main(String[] args) {
+
   }
 }

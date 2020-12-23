@@ -51,10 +51,14 @@ public class TaskListConverter extends AbstractBeanField<Task, Integer> {
       List<Task> taskList = (List<Task>) value;
       StringBuilder builder = new StringBuilder(PropertyLoader.getProperty(Constants.ARRAY_START_SYMBOL));
       if (taskList.size() > 0) {
-        for (Task task : taskList) {
-          builder.append(task.getId());
-          builder.append(PropertyLoader.getProperty(Constants.ARRAY_DELIMITER));
-        }
+        taskList.forEach(task -> {
+          try {
+            builder.append(task.getId());
+            builder.append(PropertyLoader.getProperty(Constants.ARRAY_DELIMITER));
+          } catch (IOException e) {
+            log.error(e);
+          }
+        });
 
         builder.delete(builder.length() - 1, builder.length());
       }
