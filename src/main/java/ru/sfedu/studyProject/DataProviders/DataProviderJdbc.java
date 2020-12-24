@@ -52,7 +52,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
     try {
       Class.forName(PropertyLoader.getProperty(Constants.JDBC_DRIVER));
       connection = DriverManager
-              .getConnection(PropertyLoader.getProperty(Constants.JDBC_URL));
+              .getConnection(String.format(PropertyLoader.getProperty(Constants.JDBC_URL)));
     } catch (ClassNotFoundException | SQLException | IOException e) {
       log.error(e);
     }
