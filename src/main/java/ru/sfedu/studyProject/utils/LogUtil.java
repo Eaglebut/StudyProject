@@ -9,22 +9,32 @@ import java.util.Arrays;
 @Log4j2
 public class LogUtil {
   public static String startFunc(Object... args) {
-    return String.format("Start %s %s",
-            Thread.currentThread().getStackTrace()[2].getMethodName(),
-            prepareArgs(args));
+    try {
+      return String.format(PropertyLoader.getProperty(Constants.START_STR),
+              Thread.currentThread().getStackTrace()[2].getMethodName(),
+              prepareArgs(args));
+    } catch (IOException e) {
+      log.error(e);
+      return "";
+    }
   }
 
   public static String endFunc(Object... args) {
-    return String.format("End %s %s",
-            Thread.currentThread().getStackTrace()[2].getMethodName(),
-            prepareArgs(args));
+    try {
+      return String.format(PropertyLoader.getProperty(Constants.END_STR),
+              Thread.currentThread().getStackTrace()[2].getMethodName(),
+              prepareArgs(args));
+    } catch (IOException e) {
+      log.error(e);
+      return "";
+    }
   }
 
 
-  private static String prepareArgs(Object[] args) {
+  private static String prepareArgs(Object[] args) throws IOException {
     StringBuilder argsStringBuilder = new StringBuilder();
     if (args.length > 0) {
-      argsStringBuilder.append("with arguments: ");
+      argsStringBuilder.append(PropertyLoader.getProperty(Constants.WITH_ARGUMENTS));
       Arrays.stream(args).forEach(arg -> {
         try {
           argsStringBuilder.append(arg);

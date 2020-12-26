@@ -9,6 +9,8 @@ public class Constants {
   public static final String CSV_EXTENSION = "csv.extension";
   public static final String XML_EXTENSION = "xml.extension";
   public static final String EXCEPTION_CANNOT_CREATE_FILE = "exception.IOException.cannotCreateFile.message";
+  public static final String EXCEPTION_WRONG_DATA = "exception.NPE.wrongData.message";
+  public static final String EXCEPTION_NOT_ENOUGH = "exception.NPE.notEnough.message";
   public static final String ARRAY_DELIMITER = "array.delimiter";
   public static final String ARRAY_START_SYMBOL = "array.startSymbol";
   public static final String ARRAY_END_SYMBOL = "array.endSymbol";
@@ -116,4 +118,15 @@ public class Constants {
   public static final String FIELD_NAME_CHANGED_VALUE = "field.changed_value";
   public static final String FIELD_NAME_OPERATION_TYPE = "field.operation_type";
   public static final String SQL_BEAN_NAME_MODIFICATION_RECORD = "sql.bean.name.modification_record";
+  public static final String DATA_PROVIDER_CSV = "DataProviderCsv";
+  public static final String DATA_PROVIDER_XML = "DataProviderXml";
+  public static final String DATA_PROVIDER_JDBC = "DataProviderJdbc";
+  public static final String GET_TASK_STATISTIC = "getTaskStatistic";
+  public static final String GET_GROUP_STATISTIC = "getGroupStatistic";
+  public static final String GET_USER_INFO = "getUserInfo";
+  public static final String START_STR = "start.format";
+  public static final String END_STR = "end.format";
+  public static final String WITH_ARGUMENTS = "with_arguments";
+  public static final String TEST = "test";
+  public static final String AT = "@";
 }

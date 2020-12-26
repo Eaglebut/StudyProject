@@ -50,10 +50,10 @@ public class DataProviderJdbc extends AbstractDataProvider {
 
   private void connect() {
     try {
-      Class.forName(PropertyLoader.getProperty(Constants.JDBC_DRIVER));
+      //Class.forName(PropertyLoader.getProperty(Constants.JDBC_DRIVER));
       connection = DriverManager
-              .getConnection(String.format(PropertyLoader.getProperty(Constants.JDBC_URL)));
-    } catch (ClassNotFoundException | SQLException | IOException e) {
+              .getConnection(PropertyLoader.getProperty(Constants.JDBC_URL));
+    } catch (SQLException | IOException e) {
       log.error(e);
     }
   }
@@ -143,7 +143,9 @@ public class DataProviderJdbc extends AbstractDataProvider {
       Statement statement = createStatement();
       ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_BY_ID),
               User.class.getSimpleName().toLowerCase(), userId));
-      assert resultSet.next();
+      if (!resultSet.next()) {
+        return Optional.empty();
+      }
       User user = setUser(resultSet);
       user.setHistoryList(getModificationRecordListFromDB(user));
       user.setTaskList(getTaskListFromDB(user));
@@ -151,8 +153,6 @@ public class DataProviderJdbc extends AbstractDataProvider {
       return Optional.of(user);
     } catch (SQLException | IOException e) {
       log.error(e);
-      return Optional.empty();
-    } catch (AssertionError e) {
       return Optional.empty();
     }
   }
@@ -165,7 +165,9 @@ public class DataProviderJdbc extends AbstractDataProvider {
                       .getProperty(Constants.SQL_SELECT_BY_EMAIL_PASSWORD),
               email,
               password));
-      assert resultSet.next();
+      if (!resultSet.next()) {
+        return Optional.empty();
+      }
       User user = setUser(resultSet);
       user.setHistoryList(getModificationRecordListFromDB(user));
       user.setTaskList(getTaskListFromDB(user));
@@ -247,8 +249,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected Statuses saveUserInDB(User user) {
     try {
       Statuses status;
-      try {
-        assert getUserFromDB(user.getId()).isPresent();
+      if (getUserFromDB(user.getId()).isPresent()) {
         executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_UPDATE_USER),
                 dateFormat.format(user.getCreated()),
                 Constants.DATE_FORMAT,
@@ -260,7 +261,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
                 user.getSignUpType().ordinal(),
                 user.getId()));
         status = Statuses.UPDATED;
-      } catch (AssertionError e) {
+      } else {
         executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_USER),
                 user.getEmail(),
                 user.getPassword(),
@@ -325,7 +326,9 @@ public class DataProviderJdbc extends AbstractDataProvider {
               PropertyLoader.getProperty(Constants.QUOTES)
                       + Group.class.getSimpleName().toUpperCase()
                       + PropertyLoader.getProperty(Constants.QUOTES), groupId));
-      assert resultSet.next();
+      if (!resultSet.next()) {
+        return Optional.empty();
+      }
       Group group = setGroup(resultSet);
       statement.close();
       return Optional.of(group);
@@ -397,8 +400,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
   protected Statuses saveGroupInDB(Group group) {
     try {
       Statuses status;
-      try {
-        assert getGroupFromDB(group.getId()).isPresent();
+      if (getGroupFromDB(group.getId()).isPresent()) {
         executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_UPDATE_GROUP),
                 group.getName(),
                 group.getGroupType().ordinal(),
@@ -409,7 +411,7 @@ public class DataProviderJdbc extends AbstractDataProvider {
                         : PropertyLoader.getProperty(Constants.NULL),
                 group.getId()));
         status = Statuses.UPDATED;
-      } catch (AssertionError e) {
+      } else {
         executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_GROUP),
                 group.getId(),
                 group.getName(),
@@ -500,7 +502,9 @@ public class DataProviderJdbc extends AbstractDataProvider {
       Statement statement = createStatement();
       ResultSet resultSet = statement.executeQuery(String.format(PropertyLoader.getProperty(Constants.SQL_SELECT_BY_ID),
               Task.class.getSimpleName(), taskId));
-      assert resultSet.next();
+      if (!resultSet.next()) {
+        return Optional.empty();
+      }
       Task task = setTask(resultSet);
       statement.close();
       return Optional.of(task);
@@ -567,60 +571,59 @@ public class DataProviderJdbc extends AbstractDataProvider {
 
   @Override
   protected Statuses saveTaskInDB(Task task) {
-    try {
 
       Statuses status;
       try {
-        assert getTaskFromDB(task.getId()).isPresent();
-        status = executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_UPDATE_TASK),
-                task.getName(),
-                task.getStatus().ordinal(),
-                task.getTaskType().ordinal(),
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? ((ExtendedTask) task).getRepetitionType().ordinal()
-                        : PropertyLoader.getProperty(Constants.NULL),
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? ((ExtendedTask) task).getRemindType().ordinal()
-                        : PropertyLoader.getProperty(Constants.NULL),
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? ((ExtendedTask) task).getImportance().ordinal()
-                        : PropertyLoader.getProperty(Constants.NULL),
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
-                        + ((ExtendedTask) task).getDescription()
-                        + PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
-                        : PropertyLoader.getProperty(Constants.NULL),
+        if (getTaskFromDB(task.getId()).isPresent()) {
+          status = executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_UPDATE_TASK),
+                  task.getName(),
+                  task.getStatus().ordinal(),
+                  task.getTaskType().ordinal(),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? ((ExtendedTask) task).getRepetitionType().ordinal()
+                          : PropertyLoader.getProperty(Constants.NULL),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? ((ExtendedTask) task).getRemindType().ordinal()
+                          : PropertyLoader.getProperty(Constants.NULL),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? ((ExtendedTask) task).getImportance().ordinal()
+                          : PropertyLoader.getProperty(Constants.NULL),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                          + ((ExtendedTask) task).getDescription()
+                          + PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                          : PropertyLoader.getProperty(Constants.NULL),
 
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? String.format(PropertyLoader.getProperty(Constants.SQL_PARSE_DATE_TIME),
-                        dateFormat.format(((ExtendedTask) task).getTime()),
-                        Constants.DATE_FORMAT)
-                        : PropertyLoader.getProperty(Constants.NULL),
-                task.getId()
-        )).equals(Statuses.EXECUTED)
-                ? Statuses.UPDATED
-                : Statuses.FAILED;
-      } catch (AssertionError e) {
-        status = executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_TASK),
-                task.getName(),
-                task.getStatus().ordinal(),
-                task.getTaskType().ordinal(),
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? ((ExtendedTask) task).getRepetitionType().ordinal()
-                        : PropertyLoader.getProperty(Constants.NULL),
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? ((ExtendedTask) task).getRemindType().ordinal()
-                        : PropertyLoader.getProperty(Constants.NULL),
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? ((ExtendedTask) task).getImportance().ordinal()
-                        : PropertyLoader.getProperty(Constants.NULL),
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
-                        + ((ExtendedTask) task).getDescription()
-                        + PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
-                        : PropertyLoader.getProperty(Constants.NULL),
-                task.getTaskType().equals(TaskTypes.EXTENDED)
-                        ? String.format(PropertyLoader.getProperty(Constants.SQL_PARSE_DATE_TIME),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? String.format(PropertyLoader.getProperty(Constants.SQL_PARSE_DATE_TIME),
+                          dateFormat.format(((ExtendedTask) task).getTime()),
+                          Constants.DATE_FORMAT)
+                          : PropertyLoader.getProperty(Constants.NULL),
+                  task.getId()
+          )).equals(Statuses.EXECUTED)
+                  ? Statuses.UPDATED
+                  : Statuses.FAILED;
+        } else {
+          status = executeStatement(String.format(PropertyLoader.getProperty(Constants.SQL_INSERT_TASK),
+                  task.getName(),
+                  task.getStatus().ordinal(),
+                  task.getTaskType().ordinal(),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? ((ExtendedTask) task).getRepetitionType().ordinal()
+                          : PropertyLoader.getProperty(Constants.NULL),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? ((ExtendedTask) task).getRemindType().ordinal()
+                          : PropertyLoader.getProperty(Constants.NULL),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? ((ExtendedTask) task).getImportance().ordinal()
+                          : PropertyLoader.getProperty(Constants.NULL),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                          + ((ExtendedTask) task).getDescription()
+                          + PropertyLoader.getProperty(Constants.SINGLE_QUOTES)
+                          : PropertyLoader.getProperty(Constants.NULL),
+                  task.getTaskType().equals(TaskTypes.EXTENDED)
+                          ? String.format(PropertyLoader.getProperty(Constants.SQL_PARSE_DATE_TIME),
                         dateFormat.format(((ExtendedTask) task).getTime()),
                         Constants.DATE_FORMAT)
                         : PropertyLoader.getProperty(Constants.NULL)

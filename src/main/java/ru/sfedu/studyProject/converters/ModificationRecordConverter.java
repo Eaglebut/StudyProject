@@ -13,6 +13,7 @@ import java.util.List;
 @Log4j2
 public class ModificationRecordConverter extends AbstractBeanField<ModificationRecord, Integer> {
 
+
   @Override
   protected Object convert(String s) {
     if (s.isEmpty()) {

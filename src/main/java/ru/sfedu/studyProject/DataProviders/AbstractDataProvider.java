@@ -534,7 +534,7 @@ public abstract class AbstractDataProvider implements DataProvider {
   }
 
   @Override
-  public Statuses updateGroup(long userId, @NonNull Group editedGroup) {
+  public Statuses editGroup(long userId, @NonNull Group editedGroup) {
     try {
       log.info(LogUtil.startFunc(userId, editedGroup));
       var optionalUser = getUserFromDB(userId);
@@ -601,11 +601,10 @@ public abstract class AbstractDataProvider implements DataProvider {
       }
       var user = optionalUser.get();
       var group = optionalGroup.get();
-      if (!group.getMemberList().containsKey(user)) {
+      if (!group.getMemberList().containsKey(user) || group.getMemberList().get(user).equals(UserRole.CREATOR)) {
         log.info(LogUtil.endFunc(userId, groupId));
         return Statuses.FORBIDDEN;
       }
-
       group.getMemberList().remove(user);
       group.getHistoryList().add(createHistoryRecord(PropertyLoader.getProperty(Constants.FIELD_NAME_MEMBER),
               OperationType.DELETE,

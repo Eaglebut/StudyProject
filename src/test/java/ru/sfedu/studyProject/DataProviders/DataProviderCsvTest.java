@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.sfedu.studyProject.utils.Generator;
 
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ public class DataProviderCsvTest extends AbstractDataProviderTest {
     DataProviderCsv dataProviderCsv = DataProviderCsv.getInstance();
     dataProviderCsv.deleteAll();
     dataProviderCsv.createFiles();
-    setUp(dataProviderCsv);
+    user = Generator.setUp(dataProviderCsv, 0);
   }
 
   @BeforeEach
@@ -141,6 +142,12 @@ public class DataProviderCsvTest extends AbstractDataProviderTest {
 
   @Test
   @Override
+  void createGroupIncorrect() {
+    super.createGroupIncorrect();
+  }
+
+  @Test
+  @Override
   void getFullGroupList() {
     super.getFullGroupList();
   }
@@ -153,14 +160,32 @@ public class DataProviderCsvTest extends AbstractDataProviderTest {
 
   @Test
   @Override
+  void getGroupIncorrect() {
+    super.getGroupIncorrect();
+  }
+
+  @Test
+  @Override
   void addUserToGroupCorrect() {
     super.addUserToGroupCorrect();
   }
 
   @Test
   @Override
+  void addUserToGroupIncorrect() {
+    super.addUserToGroupIncorrect();
+  }
+
+  @Test
+  @Override
   void removeUserFromGroupCorrect() {
     super.removeUserFromGroupCorrect();
+  }
+
+  @Test
+  @Override
+  void removeUserFromGroupIncorrect() {
+    super.removeUserFromGroupIncorrect();
   }
 
   @Test
@@ -291,8 +316,14 @@ public class DataProviderCsvTest extends AbstractDataProviderTest {
 
   @Test
   @Override
-  void getUserInfoCorrect() {
+  void getUserInfoCorrect() throws IOException {
     super.getUserInfoCorrect();
+  }
+
+  @Test
+  @Override
+  void getUserInfoIncorrect() throws IOException {
+    super.getUserInfoIncorrect();
   }
 
   @Test

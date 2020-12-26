@@ -238,14 +238,14 @@ public interface DataProvider {
 
 
   /**
-   * Update group.
+   * Edit group.
    *
    * @param userId      the user id
    * @param editedGroup the edited group
    * @return the status
    * @throws NullPointerException when input variables are null
    */
-  Statuses updateGroup(long userId, @NonNull Group editedGroup);
+  Statuses editGroup(long userId, @NonNull Group editedGroup);
 
   /**
    * Sets user role.

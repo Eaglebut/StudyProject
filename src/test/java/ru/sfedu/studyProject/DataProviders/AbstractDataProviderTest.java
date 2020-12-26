@@ -16,108 +16,12 @@ import java.util.*;
 @Log4j2
 abstract class AbstractDataProviderTest {
 
-  private static List<User> userList;
   private static final Random random = new Random();
   protected DataProvider dataProvider;
-  private static User user;
-  private static int num = 0;
+  protected static User user;
   long userId;
 
-  static void setUp(DataProvider dataProvider) {
-    userList = new ArrayList<>();
-    for (int k = 0; k < 1; k++) {
-      String userEmail = new Date(System.currentTimeMillis()).toString() + "@" + random.nextInt();
-      Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(userEmail,
-              "test",
-              "Test" + num,
-              "Surname",
-              SignUpTypes.SIMPLE));
 
-      var optUser = dataProvider.getUser(userEmail, "test");
-      Assertions.assertTrue(optUser.isPresent());
-      user = optUser.get();
-
-      for (int i = 0; i < 30; i++) {
-        userEmail = new Date(System.currentTimeMillis()).toString() + "@" + random.nextInt();
-        Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(userEmail,
-                "test",
-                "Test" + num,
-                "Surname",
-                SignUpTypes.SIMPLE));
-
-        optUser = dataProvider.getUser(userEmail, "test");
-        Assertions.assertTrue(optUser.isPresent());
-        userList.add(optUser.get());
-      }
-
-      for (int i = 0; i < 10; i++) {
-        Assertions.assertEquals(Statuses.INSERTED,
-                dataProvider.createTask(user.getId(), "test", TaskStatuses.TEST_TASK_STATUS));
-        Assertions.assertEquals(Statuses.INSERTED,
-                dataProvider.createTask(user.getId(),
-                        "test",
-                        TaskStatuses.TEST_TASK_STATUS,
-                        RepetitionTypes.DONT_REPEAT,
-                        RemindTypes.DONT_REMIND,
-                        Importances.ORDINAL,
-                        "test description",
-                        new Date(System.currentTimeMillis() + random.nextLong())));
-      }
-
-      for (int i = 0; i < 3; i++) {
-        Assertions.assertEquals(Statuses.INSERTED,
-                dataProvider.createGroup("test group " + num + " public",
-                        user.getId(),
-                        GroupTypes.PUBLIC));
-        Assertions.assertEquals(Statuses.INSERTED,
-                dataProvider.createGroup("test group " + num + " passworded",
-                        user.getId(),
-                        GroupTypes.PASSWORDED));
-        Assertions.assertEquals(Statuses.INSERTED,
-                dataProvider.createGroup("test group " + num + " with confirmation",
-                        user.getId(),
-                        GroupTypes.WITH_CONFIRMATION));
-      }
-      List<Group> groupList = dataProvider.getUsersGroups(user.getId());
-
-      groupList.forEach(group -> {
-        for (int i = 0; i < random.nextInt() % 5 + 2; i++) {
-          Assertions.assertEquals(Statuses.INSERTED,
-                  dataProvider.createTask(user.getId(),
-                          group.getId(),
-                          "test " + random.nextInt(),
-                          TaskStatuses.TEST_TASK_STATUS));
-        }
-        dataProvider.getFullGroupList().forEach(log::info);
-        for (int i = 0; i < random.nextInt() % 5 + 2; i++) {
-          Assertions.assertEquals(Statuses.INSERTED,
-                  dataProvider.createTask(user.getId(),
-                          group.getId(),
-                          "test " + random.nextInt(),
-                          TaskStatuses.TEST_TASK_STATUS,
-                          RepetitionTypes.DONT_REPEAT,
-                          RemindTypes.DONT_REMIND,
-                          Importances.ORDINAL,
-                          "test description",
-                          new Date(System.currentTimeMillis() + random.nextLong())));
-        }
-        userList.forEach(user -> {
-          if (random.nextInt() % 3 == 0) {
-            log.debug(user);
-            log.debug(group);
-            Assertions.assertEquals(Statuses.INSERTED, dataProvider.addUserToGroup(user.getId(), group.getId()));
-          }
-        });
-      });
-
-
-      optUser = dataProvider.getUser(userEmail, "test");
-      Assertions.assertTrue(optUser.isPresent());
-      user = optUser.get();
-
-      num++;
-    }
-  }
 
   void setUser() {
     var optUser = dataProvider.getUser(userId);
@@ -126,17 +30,19 @@ abstract class AbstractDataProviderTest {
   }
 
   void createUserCorrect() {
+    String email = user.getEmail() + new Date(System.currentTimeMillis()).toString();
     Assertions.assertEquals(Statuses.INSERTED,
-            dataProvider.createUser(user.getEmail() + new Date(System.currentTimeMillis()).toString(),
+            dataProvider.createUser(email,
                     user.getPassword(),
                     user.getName(),
                     user.getSurname(),
                     user.getSignUpType()));
-    Assertions.assertEquals(Statuses.INSERTED, dataProvider.createUser(new Date(System.currentTimeMillis()).toString(),
-            user.getPassword(),
-            user.getName(),
-            user.getSurname(),
-            user.getSignUpType()));
+    var optUser = dataProvider.getUser(email, user.getPassword());
+    Assertions.assertTrue(optUser.isPresent());
+    Assertions.assertEquals(email, optUser.get().getEmail());
+    Assertions.assertEquals(user.getPassword(), optUser.get().getPassword());
+    Assertions.assertEquals(user.getName(), optUser.get().getName());
+    Assertions.assertEquals(user.getSurname(), optUser.get().getSurname());
   }
 
   void createUserIncorrect() {
@@ -150,22 +56,6 @@ abstract class AbstractDataProviderTest {
             user.getName(),
             user.getSurname(),
             user.getSignUpType()));
-    Assertions.assertThrows(NullPointerException.class, () -> dataProvider.createUser(user.getEmail(),
-            user.getPassword(),
-            null,
-            user.getSurname(),
-            user.getSignUpType()));
-    Assertions.assertThrows(NullPointerException.class, () -> dataProvider.createUser(user.getEmail(),
-            user.getPassword(),
-            user.getName(),
-            null,
-            user.getSignUpType()));
-    Assertions.assertThrows(NullPointerException.class, () -> dataProvider.createUser(user.getEmail(),
-            user.getPassword(),
-            user.getName(),
-            user.getSurname(),
-            null));
-
   }
 
   void getUserByIdCorrect() {
@@ -345,19 +235,11 @@ abstract class AbstractDataProviderTest {
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.editTask(user.getId(), task));
 
     task = user.getTaskList().get(0);
-    task.setCreated(null);
-    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.editTask(user.getId(), task));
-
-    task = user.getTaskList().get(0);
     task.setId(204214124);
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.editTask(user.getId(), task));
 
     task = user.getTaskList().get(0);
     task.setTaskType(TaskTypes.EXTENDED);
-    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.editTask(user.getId(), task));
-
-    task = user.getTaskList().get(0);
-    task.getHistoryList().add(new ModificationRecord());
     Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.editTask(user.getId(), task));
   }
 
@@ -373,6 +255,12 @@ abstract class AbstractDataProviderTest {
     Assertions.assertEquals(Statuses.INSERTED, dataProvider.createGroup("test conf",
             user.getId(),
             GroupTypes.WITH_CONFIRMATION));
+  }
+
+  void createGroupIncorrect() {
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.createGroup("test group",
+            213213,
+            GroupTypes.PUBLIC));
   }
 
 
@@ -397,12 +285,16 @@ abstract class AbstractDataProviderTest {
     Assertions.assertEquals(group.getMemberList(), optionalGroup.get().getMemberList());
   }
 
+  void getGroupIncorrect() {
+    Assertions.assertFalse(dataProvider.getGroup(135135).isPresent());
+  }
+
   void addUserToGroupCorrect() {
     var groupList = dataProvider.getUsersGroups(user.getId());
     var optGroup = groupList.stream().findAny();
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
-
+    var userList = dataProvider.getFullUsersList();
     for (User user1 : userList) {
       if (!group.getMemberList().containsKey(user1)) {
         Assertions.assertEquals(Statuses.INSERTED,
@@ -412,18 +304,54 @@ abstract class AbstractDataProviderTest {
     }
   }
 
+  void addUserToGroupIncorrect() {
+    var groupList = dataProvider.getUsersGroups(user.getId());
+    var optGroup = groupList.stream().findAny();
+    Assertions.assertTrue(optGroup.isPresent());
+    var group = optGroup.get();
+    var userList = dataProvider.getFullUsersList();
+    for (User user1 : userList) {
+      if (group.getMemberList().containsKey(user1)) {
+        Assertions.assertEquals(Statuses.FORBIDDEN,
+                dataProvider.addUserToGroup(user1.getId(), group.getId()));
+        break;
+      }
+    }
+    Assertions.assertEquals(Statuses.NOT_FOUNDED,
+            dataProvider.addUserToGroup(123, group.getId()));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED,
+            dataProvider.addUserToGroup(userId, 165));
+
+  }
+
   void removeUserFromGroupCorrect() {
     var groupList = dataProvider.getUsersGroups(user.getId());
     var optGroup = groupList.stream().findAny();
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
-    userList.forEach(user -> {
+    dataProvider.getFullUsersList().forEach(user -> {
       if (group.getMemberList().containsKey(user)) {
         if (!group.getMemberList().get(user).equals(UserRole.CREATOR)) {
           Assertions.assertEquals(Statuses.DELETED, dataProvider.deleteUserFromGroup(user.getId(), group.getId()));
         }
       }
     });
+  }
+
+  void removeUserFromGroupIncorrect() {
+    var groupList = dataProvider.getUsersGroups(user.getId());
+    var optGroup = groupList.stream().findAny();
+    Assertions.assertTrue(optGroup.isPresent());
+    var group = optGroup.get();
+    for (User user1 : dataProvider.getFullUsersList()) {
+      if (group.getMemberList().containsKey(user1)) {
+        if (group.getMemberList().get(user1).equals(UserRole.CREATOR)) {
+          Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.deleteUserFromGroup(user1.getId(), group.getId()));
+        }
+      }
+    }
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteUserFromGroup(123213, group.getId()));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteUserFromGroup(user.getId(), 12312));
   }
 
   void changeGroupTypeCorrect() {
@@ -571,7 +499,7 @@ abstract class AbstractDataProviderTest {
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
     group.setName("updated group");
-    Assertions.assertEquals(Statuses.UPDATED, dataProvider.updateGroup(user.getId(), group));
+    Assertions.assertEquals(Statuses.UPDATED, dataProvider.editGroup(user.getId(), group));
   }
 
   void updateGroupIncorrect() {
@@ -580,7 +508,7 @@ abstract class AbstractDataProviderTest {
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
     group.setCreated(null);
-    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.updateGroup(user.getId(), group));
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.editGroup(user.getId(), group));
 
 
     groupList = dataProvider.getUsersGroups(user.getId());
@@ -588,20 +516,20 @@ abstract class AbstractDataProviderTest {
     Assertions.assertTrue(optGroup.isPresent());
     group = optGroup.get();
     group.setCreated(new Date(System.currentTimeMillis()));
-    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.updateGroup(user.getId(), group));
+    Assertions.assertEquals(Statuses.FORBIDDEN, dataProvider.editGroup(user.getId(), group));
 
     groupList = dataProvider.getUsersGroups(user.getId());
     optGroup = groupList.stream().findAny();
     Assertions.assertTrue(optGroup.isPresent());
     group = optGroup.get();
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.updateGroup(45, group));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.editGroup(45, group));
 
     groupList = dataProvider.getUsersGroups(user.getId());
     optGroup = groupList.stream().findAny();
     Assertions.assertTrue(optGroup.isPresent());
     group = optGroup.get();
     group.setId(156);
-    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.updateGroup(user.getId(), group));
+    Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.editGroup(user.getId(), group));
   }
 
   void setUserRoleCorrect() {
@@ -610,7 +538,9 @@ abstract class AbstractDataProviderTest {
             .filter(group -> group.getGroupType().equals(GroupTypes.WITH_CONFIRMATION)).findAny();
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
-    var confUser = userList.stream().filter(user1 -> !group.getMemberList().containsKey(user1))
+    var confUser = dataProvider.getFullUsersList()
+            .stream()
+            .filter(user1 -> !group.getMemberList().containsKey(user1))
             .findAny();
     Assertions.assertTrue(confUser.isPresent());
 
@@ -634,7 +564,7 @@ abstract class AbstractDataProviderTest {
             .filter(group -> group.getGroupType().equals(GroupTypes.WITH_CONFIRMATION)).findAny();
     Assertions.assertTrue(optGroup.isPresent());
     var group = optGroup.get();
-    var confUser = userList.stream()
+    var confUser = dataProvider.getFullUsersList().stream()
             .filter(user1 ->
                     !group.getMemberList().containsKey(user1))
             .findAny();
@@ -734,7 +664,6 @@ abstract class AbstractDataProviderTest {
 
 
   void getUserGroupsCorrect() {
-
     var usersGroupList = dataProvider.getUsersGroups(userId);
     Assertions.assertTrue(usersGroupList.size() > 0);
   }
@@ -762,8 +691,18 @@ abstract class AbstractDataProviderTest {
     Assertions.assertEquals(Statuses.NOT_FOUNDED, dataProvider.deleteGroup(user.getId(), 165165));
   }
 
-  void getUserInfoCorrect() {
-    log.info(dataProvider.getUserInfo(userId));
+  void getUserInfoCorrect() throws IOException {
+    var str = dataProvider.getUserInfo(userId);
+    Assertions.assertNotEquals(PropertyLoader.getProperty(Constants.MESSAGE_USER_NOT_FOUNDED),
+            str);
+    log.info(str);
+  }
+
+  void getUserInfoIncorrect() throws IOException {
+    var str = dataProvider.getUserInfo(15654);
+    Assertions.assertEquals(PropertyLoader.getProperty(Constants.MESSAGE_USER_NOT_FOUNDED),
+            str);
+    log.info(str);
   }
 
   void getFullUserList() {
@@ -808,11 +747,15 @@ abstract class AbstractDataProviderTest {
   }
 
   void getGroupStatistic() {
-    log.info(dataProvider.getGroupsStatistic());
+    var str = dataProvider.getGroupsStatistic();
+    Assertions.assertFalse(str.isEmpty());
+    log.info(str);
   }
 
   void getTaskStatistic() {
-    log.info(dataProvider.getTaskStatistic());
+    var str = dataProvider.getTaskStatistic();
+    Assertions.assertFalse(str.isEmpty());
+    log.info(str);
   }
 
 }

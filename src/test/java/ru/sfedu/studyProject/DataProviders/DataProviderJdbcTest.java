@@ -3,6 +3,7 @@ package ru.sfedu.studyProject.DataProviders;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.*;
 import ru.sfedu.studyProject.enums.Statuses;
+import ru.sfedu.studyProject.utils.Generator;
 
 import java.io.IOException;
 
@@ -20,7 +21,7 @@ class DataProviderJdbcTest extends AbstractDataProviderTest {
     DataProviderJdbc dataProviderJdbc = DataProviderJdbc.getInstance();
     dataProviderJdbc.dropAll();
     Assertions.assertEquals(Statuses.EXECUTED, dataProviderJdbc.createDatabase());
-    setUp(dataProviderJdbc);
+    user = Generator.setUp(dataProviderJdbc, 1);
   }
 
 
@@ -140,6 +141,12 @@ class DataProviderJdbcTest extends AbstractDataProviderTest {
 
   @Test
   @Override
+  void createGroupIncorrect() {
+    super.createGroupIncorrect();
+  }
+
+  @Test
+  @Override
   void getFullGroupList() {
     super.getFullGroupList();
   }
@@ -152,14 +159,32 @@ class DataProviderJdbcTest extends AbstractDataProviderTest {
 
   @Test
   @Override
+  void getGroupIncorrect() {
+    super.getGroupIncorrect();
+  }
+
+  @Test
+  @Override
   void addUserToGroupCorrect() {
     super.addUserToGroupCorrect();
   }
 
   @Test
   @Override
+  void addUserToGroupIncorrect() {
+    super.addUserToGroupIncorrect();
+  }
+
+  @Test
+  @Override
   void removeUserFromGroupCorrect() {
     super.removeUserFromGroupCorrect();
+  }
+
+  @Test
+  @Override
+  void removeUserFromGroupIncorrect() {
+    super.removeUserFromGroupIncorrect();
   }
 
   @Test
@@ -290,8 +315,14 @@ class DataProviderJdbcTest extends AbstractDataProviderTest {
 
   @Test
   @Override
-  void getUserInfoCorrect() {
+  void getUserInfoCorrect() throws IOException {
     super.getUserInfoCorrect();
+  }
+
+  @Test
+  @Override
+  void getUserInfoIncorrect() throws IOException {
+    super.getUserInfoIncorrect();
   }
 
   @Test
