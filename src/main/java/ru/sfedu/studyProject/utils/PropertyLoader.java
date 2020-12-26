@@ -42,7 +42,6 @@ public class PropertyLoader {
   private static void loadProperty() throws IOException {
     File nf;
     if (System.getProperty(Constants.CONFIG_PATH) != null) {
-      System.out.println(System.getProperty(Constants.CONFIG_PATH));
       nf = new File(System.getProperty(Constants.CONFIG_PATH));
     } else {
       nf = new File(DEFAULT_CONFIG_PATH);
