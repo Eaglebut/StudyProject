@@ -40,14 +40,10 @@ public class PropertyLoader {
    * @throws IOException In case of the configuration file read failure
    */
   private static void loadProperty() throws IOException {
-    File nf;
-    if (System.getProperty(Constants.CONFIG_PATH) != null) {
-      nf = new File(System.getProperty(Constants.CONFIG_PATH));
-    } else {
-      nf = new File(DEFAULT_CONFIG_PATH);
-    }
-    // DEFAULT_CONFIG_PATH.getClass().getResourceAsStream(DEFAULT_CONFIG_PATH);
-    try (InputStream in = new FileInputStream(nf)) {
+    File propertyFile = new File(System.getProperty(Constants.CONFIG_PATH) != null
+            ? System.getProperty(Constants.CONFIG_PATH)
+            : DEFAULT_CONFIG_PATH);
+    try (InputStream in = new FileInputStream(propertyFile)) {
       PROPERTIES.load(in);
     } catch (IOException ex) {
       throw new IOException(ex);
