@@ -2,6 +2,7 @@ package ru.sfedu.studyProject.lab1;
 
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 @Log4j2
@@ -12,6 +13,11 @@ class HibernateDataProviderTest {
     private static final String SECOND_COLUMN_NAME = "2";
     private static final String FIRST_COLUMN_TYPE = "bigint";
     private static final String SECOND_COLUMN_TYPE = "text";
+
+    @BeforeAll
+    static void setUp() {
+        HibernateDataProvider.setUp();
+    }
 
     @Test
     void getTableList() {

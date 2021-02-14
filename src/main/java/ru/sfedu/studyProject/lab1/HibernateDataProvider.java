@@ -3,6 +3,7 @@ package ru.sfedu.studyProject.lab1;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import ru.sfedu.studyProject.Constants;
 import ru.sfedu.studyProject.utils.HibernateUtil;
 
 import java.math.BigInteger;
@@ -12,6 +13,10 @@ import java.util.Map;
 
 @Log4j2
 public class HibernateDataProvider {
+
+    public static void setUp() {
+        System.setProperty(Constants.HIBERNATE_CONFIG_PATH, Constants.HIBERNATE_LAB1_CONFIG_PATH);
+    }
 
     public static List<String> getTableList() {
         SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
