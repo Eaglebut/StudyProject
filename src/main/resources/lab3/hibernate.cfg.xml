@@ -9,14 +9,14 @@
         <property name="connection.url">jdbc:h2:file:Z:\projects\StudyProject\src\main\resources\data\lab3\lab3
         </property>
         <property name="connection.pool_size">3</property>
-        <property name="hibernate.hbm2ddl.auto">create</property>
+        <property name="hibernate.hbm2ddl.auto">create-drop</property>
         <!-- SQL диалект, определяется платформой СУБД-->
         <property name="dialect">org.hibernate.dialect.H2Dialect</property>
         <!-- Включить автоматическое управление контекстом сессии -->
         <property name="current_session_context_class">thread</property>
         <!-- Вывод в консоль SQL-запросов -->
         <property name="show_sql">true</property>
-        
+
     </session-factory>
 
 </hibernate-configuration>

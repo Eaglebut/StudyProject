@@ -25,7 +25,7 @@ public abstract class AbstractHibernateDataProvider implements DataProvider {
 
   @Override
   public Optional<Group> getGroup(long id) {
-    return Optional.empty();
+    return getEntityById(Group.class, id);
   }
 
   @Override
@@ -40,7 +40,7 @@ public abstract class AbstractHibernateDataProvider implements DataProvider {
 
   @Override
   public Statuses saveGroup(Group group) {
-    return null;
+    return saveOrUpdateEntity(group);
   }
 
   @Override
@@ -55,7 +55,7 @@ public abstract class AbstractHibernateDataProvider implements DataProvider {
 
   @Override
   public Statuses deleteGroup(long groupId) {
-    return null;
+    return deleteEntity(Group.class, groupId);
   }
 
   @Override

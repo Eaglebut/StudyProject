@@ -18,7 +18,7 @@ public class HibernateUtil {
             TestEntity.class,
             SecondTestEntity.class,
             ru.sfedu.studyProject.lab3.mappedSuperclass.model.User.class,
-            //ru.sfedu.studyProject.lab3.mappedSuperclass.model.Group.class
+            ru.sfedu.studyProject.lab3.mappedSuperclass.model.Group.class
     };
 
 
