@@ -3,11 +3,12 @@ package ru.sfedu.studyProject.lab3.joinedTable.model;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 public class User implements Serializable {
   private long id;
-  private long created;
+  private Date created;
   private String name;
   private String surname;
 }

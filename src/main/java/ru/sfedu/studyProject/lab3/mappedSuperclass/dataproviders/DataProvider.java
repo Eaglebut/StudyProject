@@ -9,11 +9,13 @@ import java.util.Optional;
 
 public interface DataProvider {
 
-  Optional<Task> getTask();
+  Optional<Task> getTask(long id);
 
-  Optional<Group> getGroup();
+  Optional<Group> getGroup(long id);
 
-  Optional<User> getUser();
+  Optional<User> getUser(long id);
+
+  Optional<User> getUser(String email, String password);
 
   Statuses saveTask(Task task);
 

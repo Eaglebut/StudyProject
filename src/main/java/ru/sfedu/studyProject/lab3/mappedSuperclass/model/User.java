@@ -2,12 +2,18 @@ package ru.sfedu.studyProject.lab3.mappedSuperclass.model;
 
 import lombok.Data;
 
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
+@Entity
+@Table(schema = "mapped_superclass")
 public class User implements Serializable {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
-  private long created;
+  private Date created;
   private String name;
   private String surname;
 }
