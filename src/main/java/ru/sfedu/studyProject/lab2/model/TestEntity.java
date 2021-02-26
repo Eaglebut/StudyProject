@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(name = "TEST_ENTITY")
+@Table(schema = "TEST")
 public class TestEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,4 +19,7 @@ public class TestEntity implements Serializable {
     private Date dateCreated;
     @Column(name = "\"check\"")
     private Boolean check;
+    @Embedded
+    private SecondTestEntity secondTestEntity;
+
 }

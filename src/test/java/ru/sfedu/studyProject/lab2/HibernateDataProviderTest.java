@@ -4,6 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.sfedu.studyProject.lab2.model.SecondTestEntity;
 import ru.sfedu.studyProject.lab2.model.TestEntity;
 
 import java.util.Date;
@@ -25,6 +26,9 @@ class HibernateDataProviderTest {
         entity.setDateCreated(new Date(System.currentTimeMillis()));
         entity.setName("testGet");
         entity.setDescription("test");
+        SecondTestEntity secondTestEntity = new SecondTestEntity();
+        secondTestEntity.setSomeText("some text");
+        entity.setSecondTestEntity(secondTestEntity);
         Assertions.assertTrue(HibernateDataProvider.setTestEntity(entity));
         Optional<TestEntity> optBaseEntity = HibernateDataProvider.getTestEntity(entity.getId());
         Assertions.assertTrue(optBaseEntity.isPresent());
@@ -39,6 +43,9 @@ class HibernateDataProviderTest {
         entity.setDateCreated(new Date(System.currentTimeMillis()));
         entity.setName("testGet");
         entity.setDescription("test");
+        SecondTestEntity secondTestEntity = new SecondTestEntity();
+        secondTestEntity.setSomeText("some text");
+        entity.setSecondTestEntity(secondTestEntity);
         Assertions.assertTrue(HibernateDataProvider.setTestEntity(entity));
         Optional<TestEntity> optBaseEntity = HibernateDataProvider.getTestEntity(entity.getId());
         Assertions.assertTrue(optBaseEntity.isPresent());
@@ -53,6 +60,9 @@ class HibernateDataProviderTest {
         entity.setDateCreated(new Date(System.currentTimeMillis()));
         entity.setName("testGet");
         entity.setDescription("test");
+        SecondTestEntity secondTestEntity = new SecondTestEntity();
+        secondTestEntity.setSomeText("some text");
+        entity.setSecondTestEntity(secondTestEntity);
         Assertions.assertTrue(HibernateDataProvider.setTestEntity(entity));
         Optional<TestEntity> optBaseEntity = HibernateDataProvider.getTestEntity(entity.getId());
         Assertions.assertTrue(optBaseEntity.isPresent());

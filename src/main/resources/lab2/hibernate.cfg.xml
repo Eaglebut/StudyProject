@@ -6,7 +6,8 @@
     <session-factory>
         <!-- Настройки подключения к БД -->
         <property name="connection.driver_class">org.h2.Driver</property>
-        <property name="connection.url">jdbc:h2:mem:lab2</property>
+        <property name="connection.url">jdbc:h2:file:Z:\projects\StudyProject\src\main\resources\data\lab2\db.db
+        </property>
         <property name="connection.pool_size">1</property>
         <property name="hibernate.hbm2ddl.auto">create-drop</property>
         <!-- SQL диалект, определяется платформой СУБД-->
