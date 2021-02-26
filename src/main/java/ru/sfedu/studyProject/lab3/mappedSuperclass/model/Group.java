@@ -5,11 +5,12 @@ import ru.sfedu.studyProject.curs.enums.TaskState;
 import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.GroupTypes;
 import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.UserRoles;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Map;
 
 @Data
-public class Group {
+public class Group implements Serializable {
   private long id;
   private String name;
   private Date created;

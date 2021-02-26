@@ -5,10 +5,11 @@ import ru.sfedu.studyProject.lab3.singleTable.model.enums.RemindTypes;
 import ru.sfedu.studyProject.lab3.singleTable.model.enums.TaskStatuses;
 import ru.sfedu.studyProject.lab3.singleTable.model.enums.TaskTypes;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class Task {
+public class Task implements Serializable {
   private long id;
   private Date created;
   private String name;
