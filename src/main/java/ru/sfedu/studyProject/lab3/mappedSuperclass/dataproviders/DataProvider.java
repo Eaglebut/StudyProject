@@ -3,13 +3,14 @@ package ru.sfedu.studyProject.lab3.mappedSuperclass.dataproviders;
 import ru.sfedu.studyProject.lab3.mappedSuperclass.model.Group;
 import ru.sfedu.studyProject.lab3.mappedSuperclass.model.Task;
 import ru.sfedu.studyProject.lab3.mappedSuperclass.model.User;
+import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.TaskTypes;
 import ru.sfedu.studyProject.utils.Statuses;
 
 import java.util.Optional;
 
 public interface DataProvider {
 
-  Optional<Task> getTask(long id);
+  Optional<? extends Task> getTask(long id, TaskTypes taskType);
 
   Optional<Group> getGroup(long id);
 
@@ -23,7 +24,7 @@ public interface DataProvider {
 
   Statuses saveUser(User user);
 
-  Statuses deleteTask(long taskId);
+  Statuses deleteTask(long taskId, TaskTypes taskType);
 
   Statuses deleteGroup(long groupId);
 

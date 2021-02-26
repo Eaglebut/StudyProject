@@ -1,9 +1,8 @@
 package ru.sfedu.studyProject.lab3.mappedSuperclass.dataproviders;
 
 import lombok.extern.log4j.Log4j2;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.Group;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.Task;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.User;
+import ru.sfedu.studyProject.lab3.mappedSuperclass.model.*;
+import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.TaskTypes;
 import ru.sfedu.studyProject.utils.Statuses;
 
 import java.util.Optional;
@@ -19,8 +18,20 @@ public abstract class AbstractHibernateDataProvider implements DataProvider {
   protected abstract <T> Statuses deleteEntity(Class<T> tClass, long id);
 
   @Override
-  public Optional<Task> getTask(long id) {
-    return Optional.empty();
+  public Optional<? extends Task> getTask(long id, TaskTypes taskType) {
+    switch (taskType) {
+      case LESSON:
+        return getEntityById(Lesson.class, id);
+
+      case EXTENDED:
+        return getEntityById(ExtendedTask.class, id);
+
+      case WORK_TASK:
+        return getEntityById(WorkTask.class, id);
+
+      default:
+        return Optional.empty();
+    }
   }
 
   @Override
@@ -35,7 +46,7 @@ public abstract class AbstractHibernateDataProvider implements DataProvider {
 
   @Override
   public Statuses saveTask(Task task) {
-    return null;
+    return saveOrUpdateEntity(task);
   }
 
   @Override
@@ -49,8 +60,20 @@ public abstract class AbstractHibernateDataProvider implements DataProvider {
   }
 
   @Override
-  public Statuses deleteTask(long taskId) {
-    return null;
+  public Statuses deleteTask(long taskId, TaskTypes taskType) {
+    switch (taskType) {
+      case LESSON:
+        return deleteEntity(Lesson.class, taskId);
+
+      case EXTENDED:
+        return deleteEntity(ExtendedTask.class, taskId);
+
+      case WORK_TASK:
+        return deleteEntity(WorkTask.class, taskId);
+
+      default:
+        return Statuses.FAILED;
+    }
   }
 
   @Override

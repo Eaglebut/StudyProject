@@ -15,6 +15,10 @@ public class HibernateDataProvider extends AbstractHibernateDataProvider {
 
   public HibernateDataProvider() {
     System.setProperty(Constants.HIBERNATE_CONFIG_PATH, Constants.HIBERNATE_LAB3_CONFIG_PATH);
+    Session session = HibernateUtil.getSessionFactory().openSession();
+    session.getTransaction().begin();
+    session.createSQLQuery("create schema MAPPED_SUPERCLASS;");
+    session.flush();
   }
 
   @Override

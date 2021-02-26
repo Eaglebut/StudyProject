@@ -5,11 +5,18 @@ import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.RemindTypes;
 import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.TaskStatuses;
 import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.TaskTypes;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class Task implements Serializable {
+@MappedSuperclass
+public abstract class Task implements Serializable {
+  @Id
+  @GeneratedValue(strategy = GenerationType.AUTO)
   private long id;
   private Date created;
   private String name;

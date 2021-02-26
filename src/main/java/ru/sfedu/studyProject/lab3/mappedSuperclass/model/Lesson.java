@@ -5,13 +5,16 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.LessonTypes;
 
-import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.Date;
 
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
-public class Lesson extends Task implements Serializable {
+@Entity
+@Table(schema = "MAPPED_SUPERCLASS")
+public class Lesson extends Task {
   private String teacherName;
   private Date beginDate;
   private Date endDate;

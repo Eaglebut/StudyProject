@@ -3,10 +3,8 @@ package ru.sfedu.studyProject.lab3.mappedSuperclass.dataproviders;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.Group;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.User;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.GroupTypes;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.UserRoles;
+import ru.sfedu.studyProject.lab3.mappedSuperclass.model.*;
+import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.*;
 import ru.sfedu.studyProject.utils.Statuses;
 
 import java.util.*;
@@ -55,6 +53,54 @@ class HibernateDataProviderMappedSuperclassTest {
       groupList.add(group);
     }
     return groupList;
+  }
+
+  private void setBasicTask(Task task) {
+    task.setCreated(new Date(System.currentTimeMillis()));
+    task.setLastUpdated(new Date(System.currentTimeMillis() + 100000));
+    task.setTaskStatus(TaskStatuses.STANDARD);
+    task.setRemindType(RemindTypes.DONT_REMIND);
+  }
+
+  private List<Task> generateTaskList(int count) {
+    Random random = new Random();
+    var taskList = new ArrayList<Task>();
+    for (int i = 0; i < count; i++) {
+      switch (random.nextInt() % 3) {
+        case 0:
+          ExtendedTask extendedTask = new ExtendedTask();
+          setBasicTask(extendedTask);
+          extendedTask.setTaskType(TaskTypes.EXTENDED);
+          extendedTask.setName("extended task " + random.nextInt());
+          extendedTask.setDescription("task description");
+          extendedTask.setTime(new Date(System.currentTimeMillis() + random.nextInt()));
+          extendedTask.setImportance(Importances.STANDARD);
+          taskList.add(extendedTask);
+          break;
+        case 1:
+          Lesson lesson = new Lesson();
+          setBasicTask(lesson);
+          lesson.setTaskType(TaskTypes.LESSON);
+          lesson.setName("lesson " + random.nextInt());
+          lesson.setTeacherName("teacher " + random.nextInt());
+          lesson.setBeginDate(new Date(System.currentTimeMillis() + random.nextInt()));
+          lesson.setEndDate(new Date(System.currentTimeMillis() + random.nextInt()));
+          lesson.setAssigment("Assigment");
+          lesson.setLessonType(LessonTypes.LECTURE);
+          taskList.add(lesson);
+          break;
+        case 2:
+          WorkTask workTask = new WorkTask();
+          setBasicTask(workTask);
+          workTask.setTaskType(TaskTypes.WORK_TASK);
+          workTask.setName("work task " + random.nextInt());
+          workTask.setTime(new Date(System.currentTimeMillis() + random.nextInt()));
+          workTask.setType(WorkTaskType.MEETING);
+          workTask.setDescription("description");
+          taskList.add(workTask);
+      }
+    }
+    return taskList;
   }
 
 
@@ -127,6 +173,39 @@ class HibernateDataProviderMappedSuperclassTest {
       log.info(group);
       Assertions.assertEquals(Statuses.SUCCESSFUL, dataProvider.deleteGroup(group.getId()));
       Assertions.assertTrue(dataProvider.getGroup(group.getId()).isEmpty());
+    });
+  }
+
+  @Test
+  void saveTask() {
+    var taskList = generateTaskList(30);
+    taskList.forEach(task -> {
+      Assertions.assertEquals(Statuses.SUCCESSFUL, dataProvider.saveTask(task));
+      Assertions.assertTrue(task.getId() != 0);
+    });
+  }
+
+  @Test
+  void getTask() {
+    var taskList = generateTaskList(30);
+    taskList.forEach(task -> {
+      Assertions.assertEquals(Statuses.SUCCESSFUL, dataProvider.saveTask(task));
+      Assertions.assertTrue(task.getId() != 0);
+      var optTask = dataProvider.getTask(task.getId(), task.getTaskType());
+      Assertions.assertTrue(optTask.isPresent());
+      Assertions.assertEquals(task, optTask.get());
+      log.info(optTask.get());
+    });
+  }
+
+  @Test
+  void deleteTask() {
+    var taskList = generateTaskList(30);
+    taskList.forEach(task -> {
+      Assertions.assertEquals(Statuses.SUCCESSFUL, dataProvider.saveTask(task));
+      Assertions.assertTrue(task.getId() != 0);
+      Assertions.assertEquals(Statuses.SUCCESSFUL, dataProvider.deleteTask(task.getId(), task.getTaskType()));
+      Assertions.assertTrue(dataProvider.getTask(task.getId(), task.getTaskType()).isEmpty());
     });
   }
 
