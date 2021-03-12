@@ -29,6 +29,9 @@ public abstract class AbstractHibernateDataProvider implements DataProvider {
       case WORK_TASK:
         return getEntityById(WorkTask.class, id);
 
+      case BASIC:
+        return getEntityById(Task.class, id);
+
       default:
         return Optional.empty();
     }
@@ -70,6 +73,9 @@ public abstract class AbstractHibernateDataProvider implements DataProvider {
 
       case WORK_TASK:
         return deleteEntity(WorkTask.class, taskId);
+
+      case BASIC:
+        return deleteEntity(Task.class, taskId);
 
       default:
         return Statuses.FAILED;

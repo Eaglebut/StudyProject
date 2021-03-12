@@ -62,7 +62,7 @@ public class EntityGenerator {
     Random random = new Random();
     var taskList = new ArrayList<Task>();
     for (int i = 0; i < count; i++) {
-      switch (random.nextInt() % 3) {
+      switch (random.nextInt() % 4) {
         case 0:
           ExtendedTask extendedTask = new ExtendedTask();
           setBasicTask(extendedTask);
@@ -94,6 +94,12 @@ public class EntityGenerator {
           workTask.setType(WorkTaskType.MEETING);
           workTask.setDescription("description");
           taskList.add(workTask);
+        case 3:
+          Task task = new Task();
+          setBasicTask(task);
+          task.setTaskType(TaskTypes.BASIC);
+          task.setName("task " + random.nextInt());
+          taskList.add(task);
       }
     }
     return taskList;

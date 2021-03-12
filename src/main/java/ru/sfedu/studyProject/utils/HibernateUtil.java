@@ -6,23 +6,25 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import ru.sfedu.studyProject.Constants;
+import ru.sfedu.studyProject.lab2.model.SecondTestEntity;
+import ru.sfedu.studyProject.lab2.model.TestEntity;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class HibernateUtil {
     private static SessionFactory sessionFactory;
 
-    private static final Class[] classList = new Class[]{
-            ru.sfedu.studyProject.lab2.model.TestEntity.class,
-            ru.sfedu.studyProject.lab2.model.SecondTestEntity.class,
-            ru.sfedu.studyProject.lab3.mappedSuperclass.model.User.class,
-            ru.sfedu.studyProject.lab3.mappedSuperclass.model.Group.class,
-            ru.sfedu.studyProject.lab3.mappedSuperclass.model.Task.class,
-            ru.sfedu.studyProject.lab3.mappedSuperclass.model.ExtendedTask.class,
-            ru.sfedu.studyProject.lab3.mappedSuperclass.model.Lesson.class,
-            ru.sfedu.studyProject.lab3.mappedSuperclass.model.WorkTask.class
-    };
+    private static final List<Class> classList = new ArrayList<>(Arrays.asList(new Class[]{
+            TestEntity.class,
+            SecondTestEntity.class
+    }));
 
+    public static void addClassesToRegister(List<Class> classesToAdd) {
+        classList.addAll(classesToAdd);
+    }
 
     private static void registerClasses(MetadataSources metadataSources) {
         for (Class clazz : classList) {
