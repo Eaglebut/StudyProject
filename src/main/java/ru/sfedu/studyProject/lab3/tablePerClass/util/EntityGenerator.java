@@ -1,8 +1,9 @@
-package ru.sfedu.studyProject.lab3.mappedSuperclass.util;
+package ru.sfedu.studyProject.lab3.tablePerClass.util;
+
 
 import ru.sfedu.studyProject.lab3.enums.*;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.dataproviders.HibernateDataProvider;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.*;
+import ru.sfedu.studyProject.lab3.tablePerClass.dataproviders.HibernateDataProvider;
+import ru.sfedu.studyProject.lab3.tablePerClass.model.*;
 
 import java.util.*;
 

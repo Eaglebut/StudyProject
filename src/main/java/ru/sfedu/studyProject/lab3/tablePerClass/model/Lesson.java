@@ -3,7 +3,7 @@ package ru.sfedu.studyProject.lab3.tablePerClass.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import ru.sfedu.studyProject.lab3.tablePerClass.model.enums.LessonTypes;
+import ru.sfedu.studyProject.lab3.enums.LessonTypes;
 
 import java.io.Serializable;
 import java.util.Date;

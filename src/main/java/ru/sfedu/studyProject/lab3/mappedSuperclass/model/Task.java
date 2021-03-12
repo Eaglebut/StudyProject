@@ -1,9 +1,9 @@
 package ru.sfedu.studyProject.lab3.mappedSuperclass.model;
 
 import lombok.Data;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.RemindTypes;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.TaskStatuses;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.TaskTypes;
+import ru.sfedu.studyProject.lab3.enums.RemindTypes;
+import ru.sfedu.studyProject.lab3.enums.TaskStatuses;
+import ru.sfedu.studyProject.lab3.enums.TaskTypes;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;

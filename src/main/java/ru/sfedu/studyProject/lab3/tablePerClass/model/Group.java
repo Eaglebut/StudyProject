@@ -2,8 +2,8 @@ package ru.sfedu.studyProject.lab3.tablePerClass.model;
 
 import lombok.Data;
 import ru.sfedu.studyProject.curs.enums.TaskState;
-import ru.sfedu.studyProject.lab3.tablePerClass.model.enums.GroupTypes;
-import ru.sfedu.studyProject.lab3.tablePerClass.model.enums.UserRoles;
+import ru.sfedu.studyProject.lab3.enums.GroupTypes;
+import ru.sfedu.studyProject.lab3.enums.UserRoles;
 
 import java.io.Serializable;
 import java.util.Date;

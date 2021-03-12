@@ -1,9 +1,9 @@
 package ru.sfedu.studyProject.lab3.tablePerClass.model;
 
 import lombok.Data;
-import ru.sfedu.studyProject.lab3.tablePerClass.model.enums.RemindTypes;
-import ru.sfedu.studyProject.lab3.tablePerClass.model.enums.TaskStatuses;
-import ru.sfedu.studyProject.lab3.tablePerClass.model.enums.TaskTypes;
+import ru.sfedu.studyProject.lab3.enums.RemindTypes;
+import ru.sfedu.studyProject.lab3.enums.TaskStatuses;
+import ru.sfedu.studyProject.lab3.enums.TaskTypes;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -1,8 +1,8 @@
-package ru.sfedu.studyProject.lab3.mappedSuperclass.dataproviders;
+package ru.sfedu.studyProject.lab3.tablePerClass.dataproviders;
 
 import lombok.extern.log4j.Log4j2;
 import ru.sfedu.studyProject.lab3.enums.TaskTypes;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.*;
+import ru.sfedu.studyProject.lab3.tablePerClass.model.*;
 import ru.sfedu.studyProject.utils.Statuses;
 
 import java.util.Optional;

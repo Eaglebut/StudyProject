@@ -3,7 +3,7 @@ package ru.sfedu.studyProject.lab3.mappedSuperclass.model;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.WorkTaskType;
+import ru.sfedu.studyProject.lab3.enums.WorkTaskType;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;

@@ -1,8 +1,8 @@
 package ru.sfedu.studyProject.lab3.mappedSuperclass.model;
 
 import lombok.Data;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.GroupTypes;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.enums.UserRoles;
+import ru.sfedu.studyProject.lab3.enums.GroupTypes;
+import ru.sfedu.studyProject.lab3.enums.UserRoles;
 
 import javax.persistence.*;
 import java.io.Serializable;
