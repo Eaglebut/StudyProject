@@ -56,8 +56,8 @@ public class HibernateUtil {
             ru.sfedu.studyProject.lab3.tablePerClass.model.WorkTask.class,
             ru.sfedu.studyProject.lab5.model.WorkTask.class,
             ru.sfedu.studyProject.lab4.model.WorkTask.class,
-            ru.sfedu.studyProject.lab4.model.Adress.class
-
+            ru.sfedu.studyProject.lab4.model.Adress.class,
+            ru.sfedu.studyProject.lab4.model.Assigment.class
     }));
 
     private static void registerClasses(MetadataSources metadataSources) {

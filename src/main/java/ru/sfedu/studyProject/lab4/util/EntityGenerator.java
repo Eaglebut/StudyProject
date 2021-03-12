@@ -98,7 +98,10 @@ public class EntityGenerator {
           breakPointMap.put("Begin", new Date(random.nextLong()));
           breakPointMap.put("End", new Date(random.nextLong()));
           lesson.setBreakPoints(breakPointMap);
-          lesson.setAssigment("Assigment");
+          Map<Assigment, Date> assigmentDateMap = new HashMap<>();
+          assigmentDateMap.put(new Assigment("do something", "Some Body Shrekov"), new Date(random.nextLong()));
+          assigmentDateMap.put(new Assigment("do something else", "Some Body Shrekov"), new Date(random.nextLong()));
+          lesson.setAssigment(assigmentDateMap);
           lesson.setLessonType(LessonTypes.LECTURE);
           taskList.add(lesson);
           break;

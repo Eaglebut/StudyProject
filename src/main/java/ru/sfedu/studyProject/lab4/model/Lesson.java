@@ -23,6 +23,9 @@ public class Lesson extends Task {
   @ElementCollection(fetch = FetchType.EAGER)
   @CollectionTable(schema = "LAB4")
   private Map<String, Date> breakPoints;
-  private String assigment;
+  @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(schema = "LAB4")
+  @MapKeyColumn
+  private Map<Assigment, Date> assigment;
   private LessonTypes lessonType;
 }
