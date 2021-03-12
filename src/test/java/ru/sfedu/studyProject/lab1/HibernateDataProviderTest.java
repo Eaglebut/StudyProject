@@ -21,14 +21,14 @@ class HibernateDataProviderTest {
 
     @Test
     void getTableList() {
-        Assertions.assertEquals(1, HibernateDataProvider.getTableList().size());
+        Assertions.assertEquals(2, HibernateDataProvider.getTableList().size());
         Assertions.assertEquals(TABLE_NAME, HibernateDataProvider.getTableList().get(0));
         HibernateDataProvider.getTableList().forEach(log::info);
     }
 
     @Test
     void getTableCount() {
-        Assertions.assertEquals(1, HibernateDataProvider.getTableCount());
+        Assertions.assertEquals(2, HibernateDataProvider.getTableCount());
         log.info(HibernateDataProvider.getTableCount());
     }
 
