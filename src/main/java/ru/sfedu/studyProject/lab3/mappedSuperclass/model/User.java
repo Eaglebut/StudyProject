@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity
+@Entity(name = "User_MAPPED_SUPERCLASS")
 @Table(schema = "mapped_superclass")
 public class User implements Serializable {
   @Id

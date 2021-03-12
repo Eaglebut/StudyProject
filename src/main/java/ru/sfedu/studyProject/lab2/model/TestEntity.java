@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Data
 @Entity
-@Table(schema = "TEST")
+@Table(schema = "LAB2")
 public class TestEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

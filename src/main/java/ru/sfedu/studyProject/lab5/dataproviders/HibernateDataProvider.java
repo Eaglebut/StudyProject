@@ -1,10 +1,10 @@
-package ru.sfedu.studyProject.lab3.mappedSuperclass.dataproviders;
+package ru.sfedu.studyProject.lab5.dataproviders;
 
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
 import ru.sfedu.studyProject.Constants;
-import ru.sfedu.studyProject.lab3.mappedSuperclass.model.User;
+import ru.sfedu.studyProject.lab5.model.User;
 import ru.sfedu.studyProject.utils.HibernateUtil;
 import ru.sfedu.studyProject.utils.Statuses;
 

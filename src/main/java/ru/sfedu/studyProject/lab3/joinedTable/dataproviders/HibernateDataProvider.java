@@ -4,11 +4,10 @@ import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
 import ru.sfedu.studyProject.Constants;
-import ru.sfedu.studyProject.lab3.joinedTable.model.*;
+import ru.sfedu.studyProject.lab3.joinedTable.model.User;
 import ru.sfedu.studyProject.utils.HibernateUtil;
 import ru.sfedu.studyProject.utils.Statuses;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 @Log4j2
@@ -16,16 +15,6 @@ public class HibernateDataProvider extends AbstractHibernateDataProvider {
 
   public HibernateDataProvider() {
     System.setProperty(Constants.HIBERNATE_CONFIG_PATH, Constants.HIBERNATE_LAB3_CONFIG_PATH);
-    HibernateUtil.addClassesToRegister(Arrays.asList(ExtendedTask.class,
-            Group.class,
-            Lesson.class,
-            Task.class,
-            User.class,
-            WorkTask.class));
-    Session session = HibernateUtil.getSessionFactory().openSession();
-    session.getTransaction().begin();
-    session.createSQLQuery("create schema JOINED_TABLE;");
-    session.flush();
   }
 
   @Override

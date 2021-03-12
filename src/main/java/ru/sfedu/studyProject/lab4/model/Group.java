@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity
+@Entity(name = "Group_LAB4")
 @EqualsAndHashCode
 @Table(schema = "LAB4", name = "\"GROUP\"")
 public class Group implements Serializable {

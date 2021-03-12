@@ -13,7 +13,7 @@ import java.util.Set;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ToString(callSuper = true)
-@Entity
+@Entity(name = "WorkTask_LAB4")
 @Table(schema = "LAB4")
 public class WorkTask extends Task implements Serializable {
   private Date time;

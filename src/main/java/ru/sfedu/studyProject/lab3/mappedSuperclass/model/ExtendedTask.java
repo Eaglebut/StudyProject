@@ -12,7 +12,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ToString(callSuper = true)
-@Entity
+@Entity(name = "ExtendedTask_MAPPED_SUPERCLASS")
 @Table(schema = "MAPPED_SUPERCLASS")
 public class ExtendedTask extends Task {
   private String description;

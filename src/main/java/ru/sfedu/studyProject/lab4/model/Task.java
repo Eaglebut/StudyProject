@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity
+@Entity(name = "Task_LAB4")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(schema = "LAB4")
 @EqualsAndHashCode

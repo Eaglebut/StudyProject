@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity
+@Entity(name = "Task_TABLE_PER_CLASS")
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(schema = "TABLE_PER_CLASS")
 public class Task implements Serializable {

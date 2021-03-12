@@ -13,7 +13,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ToString(callSuper = true)
-@Entity
+@Entity(name = "WorkTask_TABLE_PER_CLASS")
 @Table(schema = "TABLE_PER_CLASS")
 public class WorkTask extends Task implements Serializable {
   private Date time;

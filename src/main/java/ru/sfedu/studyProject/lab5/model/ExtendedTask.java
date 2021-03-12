@@ -1,4 +1,4 @@
-package ru.sfedu.studyProject.lab3.singleTable.model;
+package ru.sfedu.studyProject.lab5.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,8 +12,8 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ToString(callSuper = true)
-@Entity(name = "ExtendedTask_SINGLE_TABLE")
-@Table(schema = "SINGLE_TABLE")
+@Entity(name = "_LAB5")
+@Table(schema = "LAB5")
 public class ExtendedTask extends Task {
   private String description;
   private Date time;

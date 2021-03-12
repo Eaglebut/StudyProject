@@ -19,12 +19,46 @@ public class HibernateUtil {
 
     private static final List<Class> classList = new ArrayList<>(Arrays.asList(new Class[]{
             TestEntity.class,
-            SecondTestEntity.class
-    }));
+            SecondTestEntity.class,
+            ru.sfedu.studyProject.lab3.mappedSuperclass.model.ExtendedTask.class,
+            ru.sfedu.studyProject.lab3.joinedTable.model.ExtendedTask.class,
+            ru.sfedu.studyProject.lab3.singleTable.model.ExtendedTask.class,
+            ru.sfedu.studyProject.lab3.tablePerClass.model.ExtendedTask.class,
+            ru.sfedu.studyProject.lab4.model.ExtendedTask.class,
+            ru.sfedu.studyProject.lab5.model.ExtendedTask.class,
+            ru.sfedu.studyProject.lab3.mappedSuperclass.model.Group.class,
+            ru.sfedu.studyProject.lab3.joinedTable.model.Group.class,
+            ru.sfedu.studyProject.lab3.singleTable.model.Group.class,
+            ru.sfedu.studyProject.lab3.tablePerClass.model.Group.class,
+            ru.sfedu.studyProject.lab5.model.Group.class,
+            ru.sfedu.studyProject.lab4.model.Group.class,
+            ru.sfedu.studyProject.lab3.mappedSuperclass.model.Lesson.class,
+            ru.sfedu.studyProject.lab3.joinedTable.model.Lesson.class,
+            ru.sfedu.studyProject.lab3.singleTable.model.Lesson.class,
+            ru.sfedu.studyProject.lab3.tablePerClass.model.Lesson.class,
+            ru.sfedu.studyProject.lab5.model.Lesson.class,
+            ru.sfedu.studyProject.lab4.model.Lesson.class,
+            ru.sfedu.studyProject.lab3.mappedSuperclass.model.Task.class,
+            ru.sfedu.studyProject.lab3.joinedTable.model.Task.class,
+            ru.sfedu.studyProject.lab3.singleTable.model.Task.class,
+            ru.sfedu.studyProject.lab3.tablePerClass.model.Task.class,
+            ru.sfedu.studyProject.lab5.model.Task.class,
+            ru.sfedu.studyProject.lab4.model.Task.class,
+            ru.sfedu.studyProject.lab3.mappedSuperclass.model.User.class,
+            ru.sfedu.studyProject.lab3.joinedTable.model.User.class,
+            ru.sfedu.studyProject.lab3.singleTable.model.User.class,
+            ru.sfedu.studyProject.lab3.tablePerClass.model.User.class,
+            ru.sfedu.studyProject.lab5.model.User.class,
+            ru.sfedu.studyProject.lab4.model.User.class,
+            ru.sfedu.studyProject.lab3.mappedSuperclass.model.WorkTask.class,
+            ru.sfedu.studyProject.lab3.joinedTable.model.WorkTask.class,
+            ru.sfedu.studyProject.lab3.singleTable.model.WorkTask.class,
+            ru.sfedu.studyProject.lab3.tablePerClass.model.WorkTask.class,
+            ru.sfedu.studyProject.lab5.model.WorkTask.class,
+            ru.sfedu.studyProject.lab4.model.WorkTask.class,
+            ru.sfedu.studyProject.lab4.model.Adress.class
 
-    public static void addClassesToRegister(List<Class> classesToAdd) {
-        classList.addAll(classesToAdd);
-    }
+    }));
 
     private static void registerClasses(MetadataSources metadataSources) {
         for (Class clazz : classList) {

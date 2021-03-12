@@ -1,4 +1,4 @@
-package ru.sfedu.studyProject.lab3.mappedSuperclass.model;
+package ru.sfedu.studyProject.lab5.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,8 +12,8 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
-@Entity(name = "Lesson_MAPPED_SUPERCLASS")
-@Table(schema = "MAPPED_SUPERCLASS")
+@Entity(name = "Lesson_LAB5")
+@Table(schema = "LAB5")
 public class Lesson extends Task {
   private String teacherName;
   private Date beginDate;

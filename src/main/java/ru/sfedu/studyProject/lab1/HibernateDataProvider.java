@@ -15,7 +15,7 @@ import java.util.Map;
 public class HibernateDataProvider {
 
     public static void setUp() {
-        System.setProperty(Constants.HIBERNATE_CONFIG_PATH, Constants.HIBERNATE_LAB1_CONFIG_PATH);
+        System.setProperty(Constants.HIBERNATE_CONFIG_PATH, Constants.HIBERNATE_LAB3_CONFIG_PATH);
     }
 
     public static List<String> getTableList() {

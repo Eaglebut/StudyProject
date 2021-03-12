@@ -13,7 +13,7 @@ import java.util.Map;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
-@Entity
+@Entity(name = "Lesson_LAB4")
 @Table(schema = "LAB4")
 public class Lesson extends Task {
   @ElementCollection(fetch = FetchType.EAGER)

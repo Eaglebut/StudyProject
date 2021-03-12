@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Data
-@Entity
+@Entity(name = "Group_TABLE_PER_CLASS")
 @Table(schema = "TABLE_PER_CLASS", name = "\"GROUP\"")
 public class Group implements Serializable {
   @Id

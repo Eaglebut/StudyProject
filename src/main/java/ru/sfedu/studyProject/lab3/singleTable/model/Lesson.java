@@ -12,7 +12,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Data
-@Entity
+@Entity(name = "Lesson_SINGLE_TABLE")
 @Table(schema = "SINGLE_TABLE")
 public class Lesson extends Task {
   private String teacherName;

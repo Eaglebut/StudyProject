@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Data
-@Entity
+@Entity(name = "Group_MAPPED_SUPERCLASS")
 @Table(schema = "MAPPED_SUPERCLASS", name = "\"GROUP\"")
 public class Group implements Serializable {
   @Id

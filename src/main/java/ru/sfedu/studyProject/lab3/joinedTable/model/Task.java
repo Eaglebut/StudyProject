@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity
+@Entity(name = "Task_JOINED_TABLE")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Table(schema = "JOINED_TABLE")
 public class Task implements Serializable {

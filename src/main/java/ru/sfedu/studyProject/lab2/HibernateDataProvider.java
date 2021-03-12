@@ -13,7 +13,7 @@ import java.util.Optional;
 public class HibernateDataProvider {
 
     public static void setUp() {
-        System.setProperty(Constants.HIBERNATE_CONFIG_PATH, Constants.HIBERNATE_LAB2_CONFIG_PATH);
+        System.setProperty(Constants.HIBERNATE_CONFIG_PATH, Constants.HIBERNATE_LAB3_CONFIG_PATH);
     }
 
     public static Optional<TestEntity> getTestEntity(long id) {

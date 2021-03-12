@@ -1,4 +1,4 @@
-package ru.sfedu.studyProject.lab3.tablePerClass.model;
+package ru.sfedu.studyProject.lab5.model;
 
 import lombok.Data;
 
@@ -7,8 +7,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity(name = "User_TABLE_PER_CLASS")
-@Table(schema = "TABLE_PER_CLASS", name = "USER")
+@Entity(name = "USER_LAB5")
+@Table(schema = "LAB5")
 public class User implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

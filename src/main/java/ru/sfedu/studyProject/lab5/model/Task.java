@@ -1,4 +1,4 @@
-package ru.sfedu.studyProject.lab3.singleTable.model;
+package ru.sfedu.studyProject.lab5.model;
 
 import lombok.Data;
 import ru.sfedu.studyProject.lab3.enums.RemindTypes;
@@ -10,10 +10,9 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity(name = "Task_SINGLE_TABLE")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@Table(schema = "SINGLE_TABLE")
-public class Task implements Serializable {
+@Entity(name = "Task_LAB5")
+@Table(schema = "LAB5")
+public abstract class Task implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private long id;

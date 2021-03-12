@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Set;
 
 @Data
-@Entity
+@Entity(name = "User_LAB4")
 @Table(schema = "LAB4")
 @EqualsAndHashCode
 public class User implements Serializable {
