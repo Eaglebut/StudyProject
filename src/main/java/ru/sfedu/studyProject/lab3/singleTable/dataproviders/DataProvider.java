@@ -1,5 +1,6 @@
 package ru.sfedu.studyProject.lab3.singleTable.dataproviders;
 
+import ru.sfedu.studyProject.lab3.enums.TaskTypes;
 import ru.sfedu.studyProject.lab3.singleTable.model.Group;
 import ru.sfedu.studyProject.lab3.singleTable.model.Task;
 import ru.sfedu.studyProject.lab3.singleTable.model.User;
@@ -9,7 +10,7 @@ import java.util.Optional;
 
 public interface DataProvider {
 
-  Optional<Task> getTask(long id);
+  Optional<? extends Task> getTask(long id, TaskTypes taskType);
 
   Optional<Group> getGroup(long id);
 
@@ -23,7 +24,7 @@ public interface DataProvider {
 
   Statuses saveUser(User user);
 
-  Statuses deleteTask(long taskId);
+  Statuses deleteTask(long taskId, TaskTypes taskType);
 
   Statuses deleteGroup(long groupId);
 
