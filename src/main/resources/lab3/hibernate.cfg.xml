@@ -6,7 +6,7 @@
     <session-factory>
         <!-- Настройки подключения к БД -->
         <property name="connection.driver_class">org.h2.Driver</property>
-        <property name="connection.url">jdbc:h2:file:Z:\projects\StudyProject\src\main\resources\data\lab3\lab3;
+        <property name="connection.url">jdbc:h2:file:/home/eaglebut/IdeaProjects/StudyProject/src/main/resources/data/db/db;
         </property>
         <property name="connection.pool_size">100</property>
         <property name="hibernate.hbm2ddl.auto">create</property>

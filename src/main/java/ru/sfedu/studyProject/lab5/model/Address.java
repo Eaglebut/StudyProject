@@ -1,4 +1,4 @@
-package ru.sfedu.studyProject.lab5.generatedPrimaryKey.model;
+package ru.sfedu.studyProject.lab5.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -7,10 +7,10 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
-@Entity(name = "Address_LAB5_GPK")
+@Entity(name = "Address_LAB5")
 @Data
 @EqualsAndHashCode(doNotUseGetters = true)
-@Table(schema = "LAB5_generatedPrimaryKey")
+@Table(schema = "LAB5")
 public class Address {
   @Id
   @GeneratedValue(generator = "addressKeyGenerator")
@@ -31,3 +31,4 @@ public class Address {
   @EqualsAndHashCode.Exclude
   private User user;
 }
+

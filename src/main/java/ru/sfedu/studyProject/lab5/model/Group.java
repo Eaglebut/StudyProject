@@ -1,16 +1,19 @@
-package ru.sfedu.studyProject.lab5.generatedPrimaryKey.model;
+package ru.sfedu.studyProject.lab5.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import ru.sfedu.studyProject.lab3.enums.GroupTypes;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-@Entity(name = "Group_LAB5_GPK")
-@Table(schema = "LAB5_generatedPrimaryKey")
+@Entity(name = "Group_LAB5")
+@Table(schema = "LAB5")
 @EqualsAndHashCode(doNotUseGetters = true)
 public class Group implements Serializable {
   @Id
@@ -18,11 +21,11 @@ public class Group implements Serializable {
   private long id;
   private String name;
   private Date created;
-  //@OneToMany(fetch = FetchType.EAGER,mappedBy = "id")
-  //@ToString.Exclude
-  //private Set<Task> taskList;
-  //@OneToMany(fetch = FetchType.EAGER)
-  //private Set<User> userList;
+  @OneToMany(fetch = FetchType.EAGER,mappedBy = "id")
+  private Set<Task> taskList = new HashSet<>();
+  @ManyToMany(fetch = FetchType.EAGER)
+  @JoinTable(schema = "LAB5")
+  private Set<User> userList;
   private GroupTypes groupType;
   private String password;
 

@@ -1,10 +1,7 @@
-package ru.sfedu.studyProject.lab5.generatedPrimaryKey.dataproviders;
+package ru.sfedu.studyProject.lab5.dataproviders;
 
 import ru.sfedu.studyProject.lab3.enums.TaskTypes;
-import ru.sfedu.studyProject.lab5.generatedPrimaryKey.model.Address;
-import ru.sfedu.studyProject.lab5.generatedPrimaryKey.model.Group;
-import ru.sfedu.studyProject.lab5.generatedPrimaryKey.model.Task;
-import ru.sfedu.studyProject.lab5.generatedPrimaryKey.model.User;
+import ru.sfedu.studyProject.lab5.model.*;
 import ru.sfedu.studyProject.utils.Statuses;
 
 import java.util.Optional;
@@ -36,5 +33,17 @@ public interface DataProvider {
   Statuses deleteAddress(long addressId);
 
   Optional<Address> getAddress(long id);
+
+  Statuses saveAssigment(Assigment address);
+
+  Statuses deleteAssigment(long addressId);
+
+  Optional<Assigment> getAssigment(long id);
+
+  Statuses saveMetadata(Metadata metadata);
+
+  Statuses deleteMetadata(long addressId);
+
+  Optional<Metadata> getMetadata(long id);
 
 }

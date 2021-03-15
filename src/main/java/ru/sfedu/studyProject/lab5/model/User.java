@@ -1,4 +1,4 @@
-package ru.sfedu.studyProject.lab5.generatedPrimaryKey.model;
+package ru.sfedu.studyProject.lab5.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -8,13 +8,14 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity(name = "USER_LAB5_GPK")
-@Table(schema = "LAB5_generatedPrimaryKey")
+@Entity(name = "USER_LAB5")
+@Table(schema = "LAB5")
 @EqualsAndHashCode
 public class User implements Serializable {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private long id;
+  @EqualsAndHashCode.Exclude
   private Date created;
   private String name;
   private String surname;
