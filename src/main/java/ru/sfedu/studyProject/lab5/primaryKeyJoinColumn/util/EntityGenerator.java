@@ -1,10 +1,13 @@
-package ru.sfedu.studyProject.lab5.util;
+package ru.sfedu.studyProject.lab5.primaryKeyJoinColumn.util;
 
 import ru.sfedu.studyProject.lab3.enums.*;
-import ru.sfedu.studyProject.lab5.dataproviders.HibernateDataProvider;
-import ru.sfedu.studyProject.lab5.model.*;
+import ru.sfedu.studyProject.lab5.primaryKeyJoinColumn.dataproviders.HibernateDataProvider;
+import ru.sfedu.studyProject.lab5.primaryKeyJoinColumn.model.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
 
 public class EntityGenerator {
 
@@ -16,6 +19,14 @@ public class EntityGenerator {
     Random random = new Random();
     for (int i = 0; i < count; i++) {
       user = new User();
+      Address address = new Address();
+      address.setCity("Rostov_on_don");
+      address.setStreet("Zorge");
+      address.setHouse(21);
+
+      dataProvider.saveAddress(address);
+
+      user.setAddress(address);
       user.setName("testName" + random.nextInt());
       user.setSurname("testSurname" + random.nextInt());
       user.setCreated(new Date(System.currentTimeMillis()));
@@ -29,16 +40,18 @@ public class EntityGenerator {
     Group group;
     Random random = new Random();
 
-    var userList = generateUserList(count * 10);
+    var userList = generateUserList(2);
     userList.forEach(dataProvider::saveUser);
+    List<Task> taskList = generateTaskList(2);
+    taskList.forEach(dataProvider::saveTask);
 
     for (int i = 0; i < count; i++) {
       group = new Group();
       group.setGroupType(GroupTypes.PUBLIC);
       group.setCreated(new Date(System.currentTimeMillis()));
       group.setName("testGroup" + random.nextInt());
-      group.setUserList(new HashSet<>(userList));
-      group.setTaskList(generateTaskList(5));
+      //group.setUserList(new HashSet<>(userList));
+      //group.setTaskList(new HashSet<>(taskList));
       groupList.add(group);
     }
     return groupList;

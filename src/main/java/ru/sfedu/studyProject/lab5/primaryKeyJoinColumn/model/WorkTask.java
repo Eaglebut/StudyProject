@@ -1,4 +1,4 @@
-package ru.sfedu.studyProject.lab5.model;
+package ru.sfedu.studyProject.lab5.primaryKeyJoinColumn.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,8 +13,8 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ToString(callSuper = true)
-@Entity(name = "WorkTask_LAB5")
-@Table(schema = "LAB5")
+@Entity(name = "WorkTask_LAB5_PKJC")
+@Table(schema = "LAB5_primaryKeyJoinColumn")
 public class WorkTask extends Task implements Serializable {
   private Date time;
   private String address;

@@ -1,4 +1,4 @@
-package ru.sfedu.studyProject.lab4.model;
+package ru.sfedu.studyProject.lab5.generatedPrimaryKey.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,8 +12,8 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ToString(callSuper = true)
-@Entity(name = "ExtendedTask_LAB4")
-@Table(schema = "LAB4")
+@Entity(name = "ExtendedTask_LAB5_GPK")
+@Table(schema = "LAB5_generatedPrimaryKey")
 public class ExtendedTask extends Task {
   private String description;
   private Date time;

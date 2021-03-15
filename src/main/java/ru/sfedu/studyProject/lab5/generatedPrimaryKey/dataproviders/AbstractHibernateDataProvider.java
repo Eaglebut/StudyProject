@@ -1,8 +1,8 @@
-package ru.sfedu.studyProject.lab5.dataproviders;
+package ru.sfedu.studyProject.lab5.generatedPrimaryKey.dataproviders;
 
 import lombok.extern.log4j.Log4j2;
 import ru.sfedu.studyProject.lab3.enums.TaskTypes;
-import ru.sfedu.studyProject.lab5.model.*;
+import ru.sfedu.studyProject.lab5.generatedPrimaryKey.model.*;
 import ru.sfedu.studyProject.utils.Statuses;
 
 import java.util.Optional;
@@ -84,5 +84,20 @@ public abstract class AbstractHibernateDataProvider implements DataProvider {
   @Override
   public Statuses deleteUser(long userId) {
     return deleteEntity(User.class, userId);
+  }
+
+  @Override
+  public Statuses saveAddress(Address address) {
+    return saveOrUpdateEntity(address);
+  }
+
+  @Override
+  public Statuses deleteAddress(long addressId) {
+    return deleteEntity(Address.class, addressId);
+  }
+
+  @Override
+  public Optional<Address> getAddress(long id) {
+    return getEntityById(Address.class, id);
   }
 }
