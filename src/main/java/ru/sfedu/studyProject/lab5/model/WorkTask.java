@@ -16,6 +16,8 @@ import java.util.Date;
 @Entity(name = "WorkTask_LAB5")
 @Table(schema = "LAB5")
 public class WorkTask extends Task implements Serializable {
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private Date time;
   private String address;
   private WorkTaskType type;

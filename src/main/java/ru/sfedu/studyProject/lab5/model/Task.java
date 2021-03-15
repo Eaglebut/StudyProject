@@ -9,7 +9,6 @@ import ru.sfedu.studyProject.lab3.enums.TaskTypes;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @Entity(name = "Task_LAB5")
@@ -23,6 +22,8 @@ public abstract class Task implements Serializable {
   private String name;
   @OneToOne(fetch = FetchType.EAGER)
   @JoinColumn(unique = true)
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private Metadata metadata;
   private TaskStatuses taskStatus;
   private TaskTypes taskType;

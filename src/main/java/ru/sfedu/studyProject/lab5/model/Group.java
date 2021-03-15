@@ -20,12 +20,14 @@ public class Group implements Serializable {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private long id;
   private String name;
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private Date created;
-  @OneToMany(fetch = FetchType.EAGER,mappedBy = "id")
+  @OneToMany(fetch = FetchType.EAGER, mappedBy = "group")
   private Set<Task> taskList = new HashSet<>();
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
   @JoinTable(schema = "LAB5")
-  private Set<User> userList;
+  private Set<User> userList = new HashSet<>();
   private GroupTypes groupType;
   private String password;
 

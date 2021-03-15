@@ -16,6 +16,8 @@ import java.util.Date;
 @Table(schema = "LAB5")
 public class ExtendedTask extends Task {
   private String description;
+  @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private Date time;
   private Importances importance;
 }
