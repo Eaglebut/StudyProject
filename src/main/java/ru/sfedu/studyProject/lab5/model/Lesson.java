@@ -16,8 +16,10 @@ import java.util.Date;
 public class Lesson extends Task {
   private String teacherName;
   @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private Date beginDate;
   @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private Date endDate;
   @OneToOne(fetch = FetchType.EAGER)
   @PrimaryKeyJoinColumn

@@ -2,6 +2,7 @@ package ru.sfedu.studyProject.lab5.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import ru.sfedu.studyProject.lab3.enums.GroupTypes;
 
 import javax.persistence.*;
@@ -20,6 +21,7 @@ public class Group implements Serializable {
   private long id;
   private String name;
   @EqualsAndHashCode.Exclude
+  @ToString.Exclude
   private Date created;
   @OneToMany(fetch = FetchType.EAGER, mappedBy = "group")
   private Set<Task> taskList = new HashSet<>();

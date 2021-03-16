@@ -64,14 +64,12 @@ public class HibernateDataProviderTest {
   void getGroup() {
     var groupList = EntityGenerator.generateGroupList(10);
     groupList.forEach(group -> {
-
       Assertions.assertEquals(Statuses.SUCCESSFUL, dataProvider.saveGroup(group));
       Assertions.assertTrue(group.getId() != 0);
-      var taskList = EntityGenerator.generateTaskList(5);
+      var taskList = group.getTaskList();
       taskList.forEach(task -> {
         task.setGroup(group);
         dataProvider.saveTask(task);
-        group.getTaskList().add(task);
       });
       var optGroup = dataProvider.getGroup(group.getId());
       Assertions.assertTrue(optGroup.isPresent());

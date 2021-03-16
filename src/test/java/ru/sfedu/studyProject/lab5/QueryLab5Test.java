@@ -18,17 +18,13 @@ public class QueryLab5Test {
   static void setUp() {
     group = EntityGenerator.generateGroupList(1).get(0);
     dataProvider.saveGroup(group);
-    var taskList = EntityGenerator.generateTaskList(2);
-    var userList = EntityGenerator.generateUserList(3);
-    taskList.forEach(task -> {
+    group.getTaskList().forEach(task -> {
       task.setGroup(group);
       dataProvider.saveTask(task);
-      group.getTaskList().add(task);
     });
-    userList.forEach(user -> {
+    group.getUserList().forEach(user -> {
       user.getGroup().add(group);
       dataProvider.saveUser(user);
-      group.getUserList().add(user);
     });
     dataProvider.saveGroup(group);
 
