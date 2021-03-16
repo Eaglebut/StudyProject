@@ -8,8 +8,6 @@ import ru.sfedu.studyProject.lab5.dataproviders.HibernateDataProvider;
 import ru.sfedu.studyProject.lab5.util.EntityGenerator;
 import ru.sfedu.studyProject.utils.Statuses;
 
-import java.util.HashSet;
-
 @Log4j2
 public class HibernateDataProviderTest {
 
@@ -73,6 +71,7 @@ public class HibernateDataProviderTest {
       taskList.forEach(task -> {
         task.setGroup(group);
         dataProvider.saveTask(task);
+        group.getTaskList().add(task);
       });
       var optGroup = dataProvider.getGroup(group.getId());
       Assertions.assertTrue(optGroup.isPresent());
