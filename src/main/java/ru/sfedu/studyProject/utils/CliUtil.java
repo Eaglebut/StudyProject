@@ -8,6 +8,7 @@ import ru.sfedu.studyProject.lab3.enums.TaskTypes;
 import ru.sfedu.studyProject.lab3.joinedTable.util.EntityGenerator;
 
 import java.util.Date;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class CliUtil {
@@ -28,6 +29,9 @@ public class CliUtil {
         break;
       case "lab5":
         lab5(args);
+        break;
+      default:
+        System.out.println("Ошибка");
     }
   }
 
@@ -38,6 +42,9 @@ public class CliUtil {
         break;
       case "getTableColumns":
         getTableColumns(args);
+        break;
+      default:
+        System.out.println("Ошибка");
     }
   }
 
@@ -46,7 +53,7 @@ public class CliUtil {
   }
 
   private static void getTableColumns(String[] args) {
-    HibernateDataProvider.getTableColumns(args[2]).forEach((s, s2) -> System.out.print(s + " : " + s2));
+    HibernateDataProvider.getTableColumns(args[2]).forEach((s, s2) -> System.out.println(s + " : " + s2));
   }
 
 
@@ -60,6 +67,9 @@ public class CliUtil {
         break;
       case "deleteTestEntity":
         deleteTestEntity(args);
+        break;
+      default:
+        System.out.println("Ошибка");
     }
   }
 
@@ -100,6 +110,8 @@ public class CliUtil {
       case "tablePerClass":
         tablePerClass(args);
         break;
+      default:
+        System.out.println("Ошибка");
     }
   }
 
@@ -110,17 +122,17 @@ public class CliUtil {
         break;
       case "getTask":
         getTaskJoinedTable(args);
+      default:
+        System.out.println("Ошибка");
     }
   }
 
   private static void generateTaskJoinedTable() {
-    var taskList = EntityGenerator.generateTaskList(1);
+    var taskList = EntityGenerator.generateTaskList(10);
     ru.sfedu.studyProject.lab3.joinedTable.dataproviders.HibernateDataProvider dataProvider =
             new ru.sfedu.studyProject.lab3.joinedTable.dataproviders.HibernateDataProvider();
-    taskList.forEach(task -> {
-      dataProvider.saveTask(task);
-      System.out.println(task);
-    });
+    taskList.forEach(dataProvider::saveTask);
+    taskList.forEach(System.out::println);
   }
 
   private static void getTaskJoinedTable(String[] args) {
@@ -137,17 +149,18 @@ public class CliUtil {
         break;
       case "getTask":
         getTaskMappedSuperclass(args);
+        break;
+      default:
+        System.out.println("Ошибка");
     }
   }
 
   private static void generateTaskMappedSuperclass() {
-    var taskList = ru.sfedu.studyProject.lab3.mappedSuperclass.util.EntityGenerator.generateTaskList(1);
+    var taskList = ru.sfedu.studyProject.lab3.mappedSuperclass.util.EntityGenerator.generateTaskList(10);
     ru.sfedu.studyProject.lab3.mappedSuperclass.dataproviders.HibernateDataProvider dataProvider =
             new ru.sfedu.studyProject.lab3.mappedSuperclass.dataproviders.HibernateDataProvider();
-    taskList.forEach(task -> {
-      dataProvider.saveTask(task);
-      System.out.println(task);
-    });
+    taskList.forEach(dataProvider::saveTask);
+    taskList.forEach(System.out::println);
   }
 
   private static void getTaskMappedSuperclass(String[] args) {
@@ -164,17 +177,18 @@ public class CliUtil {
         break;
       case "getTask":
         getTaskSingleTable(args);
+        break;
+      default:
+        System.out.println("Ошибка");
     }
   }
 
   private static void generateTaskSingleTable() {
-    var taskList = ru.sfedu.studyProject.lab3.singleTable.util.EntityGenerator.generateTaskList(1);
+    var taskList = ru.sfedu.studyProject.lab3.singleTable.util.EntityGenerator.generateTaskList(10);
     ru.sfedu.studyProject.lab3.singleTable.dataproviders.HibernateDataProvider dataProvider =
             new ru.sfedu.studyProject.lab3.singleTable.dataproviders.HibernateDataProvider();
-    taskList.forEach(task -> {
-      dataProvider.saveTask(task);
-      System.out.println(task);
-    });
+    taskList.forEach(dataProvider::saveTask);
+    taskList.forEach(System.out::println);
   }
 
   private static void getTaskSingleTable(String[] args) {
@@ -191,17 +205,18 @@ public class CliUtil {
         break;
       case "getTask":
         getTaskTablePerClass(args);
+        break;
+      default:
+        System.out.println("Ошибка");
     }
   }
 
   private static void generateTaskTablePerClass() {
-    var taskList = ru.sfedu.studyProject.lab3.tablePerClass.util.EntityGenerator.generateTaskList(1);
+    var taskList = ru.sfedu.studyProject.lab3.tablePerClass.util.EntityGenerator.generateTaskList(10);
     ru.sfedu.studyProject.lab3.tablePerClass.dataproviders.HibernateDataProvider dataProvider =
             new ru.sfedu.studyProject.lab3.tablePerClass.dataproviders.HibernateDataProvider();
-    taskList.forEach(task -> {
-      dataProvider.saveTask(task);
-      System.out.println(task);
-    });
+    taskList.forEach(dataProvider::saveTask);
+    taskList.forEach(System.out::println);
   }
 
   private static void getTaskTablePerClass(String[] args) {
@@ -212,10 +227,75 @@ public class CliUtil {
   }
 
   private static void lab4(String[] args) {
+    switch (args[1]) {
+      case "generateLesson":
+        generateLessons();
+        break;
+      case "generateUser":
+        generateUsers();
+        break;
+      case "generateWorkTask":
+        generateWorkTasks();
+        break;
+      default:
+        System.out.println("Ошибка");
+    }
+  }
 
+  private static void generateLessons() {
+    var lessonList = ru.sfedu.studyProject.lab4.util.EntityGenerator.generateTaskList(10).stream()
+            .filter(task -> task.getTaskType().equals(TaskTypes.LESSON))
+            .collect(Collectors.toList());
+    ru.sfedu.studyProject.lab4.dataproviders.HibernateDataProvider dataProvider =
+            new ru.sfedu.studyProject.lab4.dataproviders.HibernateDataProvider();
+    lessonList.forEach(lesson -> {
+      dataProvider.saveTask(lesson);
+      System.out.println(lesson);
+    });
+  }
+
+  private static void generateUsers() {
+    var userList = ru.sfedu.studyProject.lab4.util.EntityGenerator.generateUserList(3);
+    ru.sfedu.studyProject.lab4.dataproviders.HibernateDataProvider dataProvider =
+            new ru.sfedu.studyProject.lab4.dataproviders.HibernateDataProvider();
+    userList.forEach(user -> {
+      dataProvider.saveUser(user);
+      System.out.println(user);
+    });
+  }
+
+  private static void generateWorkTasks() {
+    var lessonList = ru.sfedu.studyProject.lab4.util.EntityGenerator.generateTaskList(10).stream()
+            .filter(task -> task.getTaskType().equals(TaskTypes.WORK_TASK))
+            .collect(Collectors.toList());
+    ru.sfedu.studyProject.lab4.dataproviders.HibernateDataProvider dataProvider =
+            new ru.sfedu.studyProject.lab4.dataproviders.HibernateDataProvider();
+    lessonList.forEach(lesson -> {
+      dataProvider.saveTask(lesson);
+      System.out.println(lesson);
+    });
   }
 
   private static void lab5(String[] args) {
-
+    if ("generateGroup".equals(args[1])) {
+      generateGroup();
+    }
   }
+
+  private static void generateGroup() {
+    var groupList = ru.sfedu.studyProject.lab5.util.EntityGenerator.generateGroupList(1);
+    ru.sfedu.studyProject.lab5.dataproviders.HibernateDataProvider dataProvider =
+            new ru.sfedu.studyProject.lab5.dataproviders.HibernateDataProvider();
+    groupList.forEach(group -> {
+      dataProvider.saveGroup(group);
+      group.getTaskList().forEach(task -> {
+        task.setGroup(group);
+        dataProvider.saveTask(task);
+      });
+      dataProvider.saveGroup(group);
+      System.out.println(group);
+    });
+  }
+
+
 }

@@ -20,10 +20,9 @@ public abstract class Task implements Serializable {
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private long id;
   private String name;
-  @OneToOne(fetch = FetchType.EAGER)
+  @OneToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(unique = true)
   @EqualsAndHashCode.Exclude
-  @ToString.Exclude
   private Metadata metadata;
   private TaskStatuses taskStatus;
   private TaskTypes taskType;

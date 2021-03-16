@@ -46,15 +46,28 @@ public class EntityGenerator {
     Random random = new Random();
 
     var userList = generateUserList(2);
-    userList.forEach(dataProvider::saveUser);
-    List<Task> taskList = generateTaskList(2);
-    taskList.forEach(dataProvider::saveTask);
+    userList.forEach(user -> {
+      dataProvider.saveUser(user);
+      Address address = new Address();
+      address.setCity("Rostov_on_don");
+      address.setStreet("Zorge");
+      address.setHouse(21);
+      address.setUser(user);
+      dataProvider.saveAddress(address);
+      user.setAddress(address);
+      dataProvider.saveUser(user);
+    });
+
     for (int i = 0; i < count; i++) {
       group = new Group();
       group.setGroupType(GroupTypes.PUBLIC);
       group.setCreated(new Date(System.currentTimeMillis()));
       group.setName("testGroup" + random.nextInt());
       group.setUserList(new HashSet<>(userList));
+      List<Task> taskList = generateTaskList(5);
+      taskList.forEach(dataProvider::saveTask);
+      group.setTaskList(new HashSet<>(taskList));
+
       groupList.add(group);
 
     }

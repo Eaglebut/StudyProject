@@ -15,10 +15,8 @@ import java.util.Date;
 @Table(schema = "LAB5")
 public class Lesson extends Task {
   private String teacherName;
-  @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private Date beginDate;
-  @ToString.Exclude
   @EqualsAndHashCode.Exclude
   private Date endDate;
   @OneToOne(fetch = FetchType.EAGER)
